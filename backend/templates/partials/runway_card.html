@@ -1,27 +1,51 @@
-<div class="card">
-  <h2 class="card-title">Runway</h2>
-  {% if twist %}<p class="text-muted mb-3">Twist: <em>{{ twist }}</em></p>{% endif %}
-  <div class="grid grid-cols-2 gap-4 mb-4">
+{% set after = res.after %}
+{% set before = res.before %}
+<div class="card runway-card">
+  {% if twist %}<p class="twist-quote">“{{ twist }}”</p>{% endif %}
+
+  <div class="runway-hero">
     <div>
-      <div class="metric-label">Before</div>
-      <div class="metric-value">{{ res.before.runway | months }}</div>
+      <div class="metric-label">Runway after shock</div>
+      <div class="runway-big {{ after.runway | runway_class }}">{{ after.runway | runway_num }}</div>
+      <div class="runway-unit">{{ 'months · no shortfall' if after.runway is string else 'months' }}</div>
     </div>
-    <div>
-      <div class="metric-label">After shock</div>
-      <div class="metric-value">{{ res.after.runway | months }}</div>
+    <div class="runway-before">
+      <div class="metric-label">Before shock</div>
+      <div class="metric-value {{ before.runway | runway_class }}">{{ before.runway | runway_num }}</div>
+      <div class="runway-unit">months</div>
     </div>
   </div>
-  <p class="text-muted mb-3">
-    Income {{ res.after.income | money }}/mo · spending {{ res.after.spending | money }}/mo ·
-    monthly gap {{ res.after.monthly_gap | money }} · one-off cost {{ res.after.one_off_cost | money }} ·
-    buffer left {{ res.after.buffer_left | money }}
-  </p>
+
   {% if res.survives_duration %}
     {% set s = res.survives_duration %}
-    <p class="{{ 'status-ok' if s.makes_it else 'font-semibold' }}" {% if not s.makes_it %}style="color:var(--bad)"{% endif %}>
-      {% if s.makes_it %}Makes it through {{ s.months }} months (buffer at end {{ s.buffer_at_end | money }}).
-      {% else %}Does not make it through {{ s.months }} months: short by {{ s.shortfall | money }}.{% endif %}
-    </p>
+    <div class="verdict {{ 'good' if s.makes_it else 'bad' }}">
+      {% if s.makes_it %}
+        ✓ Makes it through {{ s.months }} months of EI with {{ s.buffer_at_end | money }} left.
+      {% else %}
+        ✗ Doesn't make it through {{ s.months }} months: runs out at month {{ after.runway | runway_num }}, short {{ s.shortfall | money }}.
+      {% endif %}
+    </div>
+  {% elif after.runway is string %}
+    <div class="verdict good">✓ Income still covers spending, so the buffer never drains.</div>
+  {% elif after.runway == 0 %}
+    <div class="verdict bad">✗ The one-off cost wipes out the buffer immediately.</div>
+  {% else %}
+    <div class="verdict {{ after.runway | runway_class }}">Buffer runs out in {{ after.runway | runway_num }} months at this pace.</div>
   {% endif %}
+
+  <div class="stat-grid">
+    <div class="stat"><div class="metric-label">Income / mo</div><div class="stat-value">{{ after.income | money }}</div></div>
+    <div class="stat"><div class="metric-label">Spending / mo</div><div class="stat-value">{{ after.spending | money }}</div></div>
+    <div class="stat">
+      {% if after.monthly_gap > 0 %}
+        <div class="metric-label">Monthly shortfall</div><div class="stat-value bad">−{{ after.monthly_gap | money }}</div>
+      {% else %}
+        <div class="metric-label">Monthly surplus</div><div class="stat-value good">+{{ (-after.monthly_gap) | money }}</div>
+      {% endif %}
+    </div>
+    <div class="stat"><div class="metric-label">One-off cost</div><div class="stat-value">{{ after.one_off_cost | money }}</div></div>
+    <div class="stat"><div class="metric-label">Buffer left</div><div class="stat-value">{{ after.buffer_left | money }}</div></div>
+  </div>
+
   <div class="chart mt-4" data-chart='{{ chart | tojson }}'></div>
 </div>

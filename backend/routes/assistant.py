@@ -1,5 +1,7 @@
 """/assistant/twist: turn a judge's twist card (plain English) into shock settings, then run it."""
-from flask import Blueprint, render_template, request
+import json
+
+from flask import Blueprint, make_response, render_template, request
 
 from engine import Shock
 from services import llm
@@ -40,4 +42,16 @@ def twist():
         one_off_months_of_spending=min(max(float(s.get("one_off_months", 0)), 0), 24),
         duration_months=int(min(max(float(s.get("duration_months", 0)), 0), 120)) or None)
     ctx = build_scenario(account_id, shock)
-    return render_template("partials/scenario_result.html", **ctx, show_plan=True, twist=text)
+    resp = make_response(render_template("partials/scenario_result.html", **ctx, show_plan=True, twist=text))
+    # Tell the Shock Lab page what was parsed so its sliders move to match (see static/js/shock_lab.js).
+    sliders = {
+        "job_loss": shock.income_factor < 1,
+        "income_pct": round(shock.income_factor * 100),
+        "duration_months": shock.duration_months or 0,
+        "bills_pct": round(shock.household_bills_pct * 100),
+        "one_off_months": shock.one_off_months_of_spending,
+        "one_off_cost": shock.one_off_cost,
+        "extra_spending": shock.extra_monthly_spending,
+    }
+    resp.headers["HX-Trigger"] = json.dumps({"twistParsed": sliders})
+    return resp

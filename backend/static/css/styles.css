@@ -105,3 +105,211 @@ body {
   opacity: 1;
   transition: opacity 0.2s;
 }
+
+/* ---------- Form inputs ---------- */
+.input {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  background: var(--surface);
+  color: var(--ink);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgb(249 115 22 / 0.15);
+}
+.input-lg {
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 0.6rem 0.8rem;
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-secondary:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+/* ---------- Shock Lab layout ---------- */
+.lab-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .lab-grid { grid-template-columns: 400px 1fr; }
+  .lab-controls { position: sticky; top: 1.5rem; }
+}
+.lab-controls { padding: 1.5rem; }
+
+/* Results update on every slider move: no fade (it would flicker), just dim while loading */
+.lab-result .htmx-added { opacity: 1; }
+.lab-result.htmx-request > * { opacity: 0.55; transition: opacity 0.15s; }
+
+.lab-group {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: grid;
+  gap: 1rem;
+  transition: opacity 0.15s;
+}
+.lab-group legend { padding: 0 0.4rem; }
+.lab-group.is-off .slider-field { opacity: 0.4; }
+
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+.preset-btn {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.preset-btn:hover { border-color: var(--brand); color: var(--brand); }
+.preset-btn.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+.twist-form {
+  border-top: 1px solid var(--border);
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+}
+
+/* ---------- Sliders ---------- */
+.slider-field { display: block; }
+.slider-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+.slider-value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--brand);
+  white-space: nowrap;
+}
+.slider {
+  width: 100%;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+.slider:disabled { cursor: not-allowed; }
+
+/* ---------- Toggle switch (job loss) ---------- */
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+.toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  position: relative;
+  width: 2.5rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  background: var(--border);
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 0.2rem;
+  left: 0.2rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+  transition: transform 0.15s;
+}
+.toggle input:checked + .toggle-track { background: var(--brand); }
+.toggle input:checked + .toggle-track::after { transform: translateX(1.1rem); }
+.toggle input:focus-visible + .toggle-track { box-shadow: 0 0 0 3px rgb(249 115 22 / 0.3); }
+
+/* ---------- Runway card ---------- */
+.runway-card { padding: 1.75rem; }
+.twist-quote {
+  font-style: italic;
+  color: var(--muted);
+  border-left: 3px solid var(--brand);
+  padding-left: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.runway-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.runway-big {
+  font-size: 5rem;
+  line-height: 1;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+.runway-unit { color: var(--muted); font-weight: 500; margin-top: 0.25rem; }
+.runway-before { text-align: right; }
+
+.good { color: var(--good); }
+.warn { color: var(--warn); }
+.bad  { color: var(--bad); }
+
+.verdict {
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+.verdict.good { background: rgb(5 150 105 / 0.1); }
+.verdict.warn { background: rgb(217 119 6 / 0.1); }
+.verdict.bad  { background: rgb(220 38 38 / 0.1); }
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.6rem;
+}
+.stat {
+  background: var(--page);
+  border-radius: 0.6rem;
+  padding: 0.7rem 0.85rem;
+}
+.stat .metric-label { font-size: 0.7rem; }
+.stat-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Empty state ---------- */
+.empty-state { text-align: center; padding: 3.5rem 2rem; }
+.empty-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
