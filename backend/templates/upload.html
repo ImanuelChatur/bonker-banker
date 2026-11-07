@@ -12,7 +12,6 @@
   <form id="upload-form" hx-post="/upload" hx-encoding="multipart/form-data" hx-target="#result"
         hx-indicator="#spinner">
     <label class="dropzone" id="drop">
-      <span class="dropzone-icon" aria-hidden="true">📄</span>
       <span class="dropzone-title">Drop PDFs here, or click to choose</span>
       <span class="text-muted text-sm">Up to {{ max_files }} text-based statements, 15 MB each. Unfamiliar layouts may use an
         AI fallback when a key is configured.</span>

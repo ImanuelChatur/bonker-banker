@@ -57,11 +57,7 @@ function renderLineChart(el, { labels, series, yName = "" }) {
       const color = s.color || palette[i % palette.length];
       return {
         type: "line", name: s.name, data: s.data, smooth: s.smooth !== false,
-        showSymbol: false, lineStyle: { width: 3, color }, itemStyle: { color },
-        areaStyle: single ? {
-          color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1,
-                   colorStops: [{ offset: 0, color: color + "55" }, { offset: 1, color: color + "00" }] },
-        } : undefined,
+        showSymbol: false, lineStyle: { width: 2.5, color }, itemStyle: { color },
       };
     }),
   });
