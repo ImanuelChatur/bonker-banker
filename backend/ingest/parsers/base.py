@@ -169,7 +169,8 @@ def _find_period(text: str) -> tuple[date | None, date | None]:
 
 
 def _find_account(text: str) -> str:
-    mt = re.search(r"account\s*(?:number|no\.?|#)?\s*[:#]?\s*[*xX•\-\s]*(\d[\d\s-]{2,})", text, re.I)
+    # Horizontal whitespace only: `\s` also matches newlines, which let the number run into the next line.
+    mt = re.search(r"account[ \t]*(?:number|no\.?|#)?[ \t]*[:#]?[ \t]*[*xX\u2022\- \t]*(\d[\d \t-]{2,})", text, re.I)
     if mt:
         digits = re.sub(r"\D", "", mt.group(1))
         if len(digits) >= 4:

@@ -11,7 +11,9 @@ DATA_RAW = ROOT / "data" / "raw"              # provided CSVs (gitignored, too b
 DATA_PROCESSED = ROOT / "data" / "processed"  # Parquet written by scripts/precompute.py (gitignored)
 UPLOAD_DIR = ROOT / "uploads"                 # ledger.db lives here (gitignored)
 
-MAX_UPLOAD_BYTES = 15 * 1024 * 1024
+MAX_FILES = 10                                    # statements per upload
+MAX_FILE_BYTES = 15 * 1024 * 1024                 # per statement
+MAX_UPLOAD_BYTES = MAX_FILES * MAX_FILE_BYTES + 1024 * 1024   # whole request (Flask MAX_CONTENT_LENGTH)
 
 
 def gemini_key() -> str | None:

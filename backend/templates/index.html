@@ -1,39 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card">
-  <h1 class="text-3xl font-bold mb-1">Bonker Banker</h1>
-  <p class="text-muted mb-6">Know your runway before life goes bonkers.</p>
+<section class="hero">
+  <span class="hero-eyebrow">💸 Financial resilience, in plain numbers</span>
+  <h1>Know your runway <em>before life goes bonkers.</em></h1>
+  <p>See how many months your savings would last, stress-test a job loss or a surprise bill,
+     and get a plan. Or upload a bank statement and see where the money went.</p>
 
-  <!-- HTMX test: clicking calls /health and swaps the reply into #status -->
-  <button hx-get="/health" hx-target="#status" class="btn-primary">
-    Test connection
-  </button>
-  <span id="status" class="ml-3 text-muted">Not tested yet</span>
-</div>
-
-<div class="card">
-  <h2 class="card-title">Get started</h2>
-  <form action="/customer" method="get" class="flex flex-wrap gap-3 mb-4">
-    <input name="account_id" required placeholder="account_id, e.g. 20111"
-           class="border rounded px-2 py-1" style="border-color:var(--border)">
+  <form action="/customer" method="get" class="hero-form">
+    <input name="account_id" required placeholder="Account ID, e.g. 20111"
+           inputmode="numeric" autocomplete="off" aria-label="Account ID">
     <button class="btn-primary" type="submit">Look up customer</button>
+    <a href="/upload" class="btn-secondary">Upload a statement</a>
   </form>
-  <div class="flex flex-wrap gap-3">
-    <a href="/shock" class="btn-primary inline-block">Shock Lab</a>
-    <a href="/plan" class="btn-primary inline-block">Make a plan</a>
-    <a href="/insights" class="btn-primary inline-block">Insights</a>
-    <a href="/upload" class="btn-primary inline-block">Upload a statement</a>
-  </div>
-</div>
+</section>
 
-<div class="card">
-  <h2 class="card-title">Runway test chart (fake data)</h2>
-  <!-- charts.js draws this automatically from the data-chart attribute -->
-  <div class="chart" data-chart='{
-    "labels": ["Now", "M1", "M2", "M3", "M4", "M5", "M6"],
-    "yName": "Buffer ($)",
-    "series": [{ "name": "Buffer", "data": [8000, 6900, 5800, 4700, 3600, 2500, 1400] }]
-  }'></div>
-</div>
+<section class="feature-grid" aria-label="What you can do">
+  <a class="feature-card" href="/customer"><article>
+    <div class="feature-icon" aria-hidden="true">👤</div>
+    <h3>Customer</h3>
+    <p>Income, bills, savings buffer and months of runway for any account.</p>
+  </article></a>
+  <a class="feature-card" href="/shock"><article>
+    <div class="feature-icon" aria-hidden="true">⚡</div>
+    <h3>Shock Lab</h3>
+    <p>Job loss, higher bills, a repair. Move a slider and watch the runway change.</p>
+  </article></a>
+  <a class="feature-card" href="/plan"><article>
+    <div class="feature-icon" aria-hidden="true">🧭</div>
+    <h3>Plan</h3>
+    <p>An emergency-fund goal plus a backup plan if the shock hits.</p>
+  </article></a>
+  <a class="feature-card" href="/insights"><article>
+    <div class="feature-icon" aria-hidden="true">📈</div>
+    <h3>Insights</h3>
+    <p>How runway relates to loan default across the whole dataset.</p>
+  </article></a>
+  <a class="feature-card" href="/upload"><article>
+    <div class="feature-icon" aria-hidden="true">📄</div>
+    <h3>Upload</h3>
+    <p>Parse a statement, break down spending and flag unusual purchases.</p>
+  </article></a>
+</section>
+
+<p class="footer-note text-muted text-sm">
+  <!-- HTMX health check: runs on load and swaps the reply into the pill -->
+  <span class="status-pill" hx-get="/health" hx-trigger="load" hx-swap="innerHTML">Checking server…</span>
+</p>
 {% endblock %}

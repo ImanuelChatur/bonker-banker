@@ -1,5 +1,6 @@
 // Bonker Banker — chart helpers (Apache ECharts).
 // Any element like <div class="chart" data-chart='{...}'> is drawn automatically.
+// Colours come from the CSS theme tokens, so charts follow light/dark mode.
 
 const BB_COLORS = {
   brand: "#f97316",
@@ -8,23 +9,62 @@ const BB_COLORS = {
   muted: "#94a3b8",
 };
 
+function themeColors() {
+  const cs = getComputedStyle(document.documentElement);
+  const v = (name, fallback) => cs.getPropertyValue(name).trim() || fallback;
+  return { ink: v("--ink", "#0f172a"), muted: v("--muted", "#64748b"), border: v("--border", "#e2e8f0"),
+           surface: v("--surface", "#ffffff") };
+}
+
+// 12500 -> "12.5k" so axis labels stay short.
+function compactNumber(n) {
+  const a = Math.abs(n);
+  if (a >= 1e6) return +(n / 1e6).toFixed(1) + "M";
+  if (a >= 1e3) return +(n / 1e3).toFixed(1) + "k";
+  return String(n);
+}
+
 // Line chart: labels on the x-axis, one or more named series.
-// series = [{ name: "Buffer", data: [...] }, ...]
+// series = [{ name: "Buffer", data: [...], color?: "#hex", smooth?: false }, ...]
 function renderLineChart(el, { labels, series, yName = "" }) {
   const chart = echarts.init(el);
+  const t = themeColors();
   const palette = [BB_COLORS.brand, BB_COLORS.good, BB_COLORS.bad, BB_COLORS.muted];
+  const single = series.length === 1;
 
   chart.setOption({
     color: palette,
-    tooltip: { trigger: "axis" },
-    legend: series.length > 1 ? { top: 0 } : undefined,
-    grid: { left: 60, right: 20, top: series.length > 1 ? 40 : 20, bottom: 30 },
-    xAxis: { type: "category", data: labels },
-    yAxis: { type: "value", name: yName },
-    series: series.map((s) => ({ type: "line", smooth: true, name: s.name, data: s.data })),
+    textStyle: { color: t.muted, fontFamily: "inherit" },
+    tooltip: {
+      trigger: "axis",
+      backgroundColor: t.surface,
+      borderColor: t.border,
+      textStyle: { color: t.ink },
+      valueFormatter: (v) => (typeof v === "number" ? "$" + v.toLocaleString(undefined, { maximumFractionDigits: 0 }) : v),
+    },
+    legend: single ? undefined : { top: 0, textStyle: { color: t.muted } },
+    grid: { left: 56, right: 20, top: single ? 24 : 44, bottom: 30 },
+    xAxis: {
+      type: "category", data: labels, boundaryGap: false,
+      axisLine: { lineStyle: { color: t.border } }, axisTick: { show: false }, axisLabel: { color: t.muted },
+    },
+    yAxis: {
+      type: "value", name: yName, nameTextStyle: { color: t.muted, align: "left" },
+      axisLabel: { color: t.muted, formatter: compactNumber },
+      splitLine: { lineStyle: { color: t.border, type: "dashed" } },
+    },
+    series: series.map((s, i) => {
+      const color = s.color || palette[i % palette.length];
+      return {
+        type: "line", name: s.name, data: s.data, smooth: s.smooth !== false,
+        showSymbol: false, lineStyle: { width: 3, color }, itemStyle: { color },
+        areaStyle: single ? {
+          color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1,
+                   colorStops: [{ offset: 0, color: color + "55" }, { offset: 1, color: color + "00" }] },
+        } : undefined,
+      };
+    }),
   });
-
-  window.addEventListener("resize", () => chart.resize());
   return chart;
 }
 
@@ -36,3 +76,17 @@ function initCharts(root = document) {
     el.dataset.chartReady = "1";
   });
 }
+
+// One shared resize handler instead of one per chart.
+window.addEventListener("resize", () => {
+  document.querySelectorAll("[data-chart-ready]").forEach((el) => echarts.getInstanceByDom(el)?.resize());
+});
+
+// Redraw when the system switches between light and dark so axis/tooltip colours stay readable.
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  document.querySelectorAll("[data-chart-ready]").forEach((el) => {
+    echarts.getInstanceByDom(el)?.dispose();
+    delete el.dataset.chartReady;
+  });
+  initCharts();
+});

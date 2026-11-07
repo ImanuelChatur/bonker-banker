@@ -3,32 +3,33 @@
 
 {% block content %}
 <div class="card">
-  <h1 class="text-2xl font-bold mb-2">Upload a statement</h1>
-  <p class="text-muted mb-4">PDF bank statements are parsed in your browser session's server, categorized, and turned into a monthly summary.</p>
-  <form id="upload-form" hx-post="/upload" hx-encoding="multipart/form-data" hx-target="#result" hx-indicator="#spinner">
-    <label id="drop" class="block text-center cursor-pointer rounded-lg p-10"
-           style="border:2px dashed var(--border)">
-      <span id="drop-label">Drop a PDF here, or click to choose</span>
-      <input id="file" name="file" type="file" accept="application/pdf,.pdf" hidden required>
+  <h1 class="text-2xl font-bold mb-1">Upload statements</h1>
+  <p class="text-muted mb-5">
+    Drop one or more bank statement PDFs. We read the transactions, sort them into categories, break down your
+    spending and flag anything unusual, all in one go.
+  </p>
+
+  <form id="upload-form" hx-post="/upload" hx-encoding="multipart/form-data" hx-target="#result"
+        hx-indicator="#spinner">
+    <label class="dropzone" id="drop">
+      <span class="dropzone-icon" aria-hidden="true">📄</span>
+      <span class="dropzone-title">Drop PDFs here, or click to choose</span>
+      <span class="text-muted text-sm">Up to {{ max_files }} text-based statements, 15 MB each. Unfamiliar layouts may use an
+        AI fallback when a key is configured.</span>
+      <input id="file" name="files" type="file" accept="application/pdf,.pdf" multiple required>
     </label>
-    <button class="btn-primary mt-4" type="submit">Parse statement</button>
-    <span id="spinner" class="htmx-indicator text-muted ml-3">Parsing...</span>
+    <ul id="drop-files" class="picked-files" aria-label="Selected files"></ul>
+    <div class="form-actions">
+      <button id="submit-btn" class="btn-primary" type="submit">Parse statements</button>
+      <button id="clear-btn" class="btn-secondary" type="button" hidden>Clear</button>
+      <span id="spinner" class="spinner htmx-indicator" role="status">Parsing…</span>
+    </div>
   </form>
 </div>
-<div id="result" class="mt-6"></div>
+<div id="result" class="mt-6" aria-live="polite"></div>
 {% endblock %}
 
 {% block scripts %}
-<script>
-  // Drag-and-drop onto the label; the file lands in the form's <input type=file>.
-  const drop = document.getElementById("drop"), input = document.getElementById("file"),
-        label = document.getElementById("drop-label");
-  const show = () => { label.textContent = input.files[0] ? input.files[0].name : "Drop a PDF here, or click to choose"; };
-  input.addEventListener("change", show);
-  ["dragover", "dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => {
-    e.preventDefault();
-    drop.style.background = ev === "dragover" ? "#fff7ed" : "";
-    if (ev === "drop" && e.dataTransfer.files[0]) { input.files = e.dataTransfer.files; show(); }
-  }));
-</script>
+<script>window.BB_MAX_FILES = {{ max_files }};</script>
+<script src="{{ url_for('static', filename='js/upload_page.js') }}"></script>
 {% endblock %}
