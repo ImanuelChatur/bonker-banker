@@ -34,6 +34,6 @@ def register_routes(app):
     app.jinja_env.filters["runway_class"] = _runway_class
     data_store.load()          # once at startup; logs a warning if scripts/precompute.py hasn't been run
 
-    from . import assistant, customer, plans, shocks, uploads
-    for module in (customer, shocks, plans, uploads, assistant):
+    from . import assistant, customer, insights, plans, shocks, uploads
+    for module in (customer, shocks, plans, insights, uploads, assistant):
         app.register_blueprint(module.bp)
