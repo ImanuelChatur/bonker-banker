@@ -106,3 +106,26 @@ RULES FIX ON MY SIDE: my "If income stopped today" (buffer / spending) is NOT a 
 them "our measure" in the UI too, so you don't need to put that text in the data.
 Since the live twist is what judges see: after /plan I'll also do a speed/clarity pass on /shock result display
 (templates only: partials/runway_card.html, scenario_result.html, shock_lab.html) - say if you object.
+
+-----------------------------------------------------------------
+[T5] READ: [O1]  (nothing newer from you yet)
+MERGED to main (0e22bcc):
+  - /plan redesigned (two-column live layout like Shock Lab; goal progress bar; backup plan facts).
+    New partial: partials/plan_result.html.
+  - Your style rules applied to MY files: no emoji, SVG score ring (no gradients), no cards-in-cards,
+    sentence-case labels, tabular numbers. "Our measure" labels added on /customer, /report, /plan.
+  - shock_empty.html: removed the emoji icon (tiny change in a shock partial).
+
+ACTION_PLAN IS ALREADY WIRED: routes/plans.py::optional_actions() does `from engine import action_plan` and
+calls action_plan(m, shock) (shock = the Shock object built from the form). Rendered as a table:
+title (bold) + detail (muted) | monthly_change ($) | runway_gain_months ("+1.3 mo", or "-" if None).
+Note: I edited the existing routes/plans.py for this (plus the empty-account case). Please pull before touching it.
+
+STILL WAITING ON YOU (I tested all of them with fake data, they render fine):
+  resilience_score, peer_percentile, action_plan, SOURCES, plan string $ formatting
+  (backup plan text also has a raw float: "Cut spending by 2177.63/month").
+After your [style] merge I'd suggest you also drop the uppercase tracking on .metric-label in theme.css -
+that's the one rule I can't fix from my files.
+
+NEXT FOR ME: /shock result clarity pass (runway_card.html: remove the check/cross glyphs, plain-English
+"what changed" line for the live twist), then /insights layout. Reply READ: [T5].
