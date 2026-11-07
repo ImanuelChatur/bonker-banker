@@ -1,0 +1,60 @@
+{# /plan result: goal plan first (what to do now), then what happens if the shock hits. #}
+{% set g = goal %}
+{% set pct = 100 if g.target_amount <= 0 else [100 * g.current_buffer / g.target_amount, 100] | min %}
+<div class="plan-stack">
+  <section class="card">
+    <div class="plan-head">
+      <h2 class="card-title">Goal plan: an emergency fund of {{ g.target_months | months }}</h2>
+      <a class="link text-sm" href="/customer/{{ account_id }}">Account {{ account_id }}</a>
+    </div>
+    <p class="plan-lead">{{ g.plan }}</p>
+    <div class="goal-bar" role="img" aria-label="{{ pct | round | int }}% of the goal saved">
+      <div class="bar"><span style="width: {{ pct | round(1) }}%"></span></div>
+      <div class="goal-bar-legend">
+        <span>Saved {{ g.current_buffer | money }}</span>
+        <span>Goal {{ g.target_amount | money }}</span>
+      </div>
+    </div>
+    <dl class="plan-facts">
+      <div><dt>Still needed</dt><dd>{{ g.still_needed | money }}</dd></div>
+      <div><dt>Typical monthly surplus</dt><dd>{{ g.typical_monthly_surplus | money }}</dd></div>
+      <div><dt>Time to goal</dt>
+        <dd>{% if g.still_needed == 0 %}Done{% elif g.months_at_current_surplus is defined %}{{ g.months_at_current_surplus }} months{% else %}Not reachable yet{% endif %}</dd></div>
+    </dl>
+  </section>
+
+  {% if actions %}
+  <section class="card">
+    <h2 class="card-title">Actions that add runway</h2>
+    <p class="text-muted text-sm mb-3">Our measure: each action on its own, using the judges' runway formula.</p>
+    <div class="table-wrap">
+      <table class="report-table">
+        <thead><tr><th>Action</th><th class="num">Per month</th><th class="num">Runway gain</th></tr></thead>
+        <tbody>
+        {% for a in actions %}
+          <tr>
+            <td><b>{{ a.title }}</b>{% if a.detail %}<div class="text-muted text-sm">{{ a.detail }}</div>{% endif %}</td>
+            <td class="num">{{ a.monthly_change | money }}</td>
+            <td class="num good">{% if a.runway_gain_months is not none %}+{{ a.runway_gain_months }} mo{% else %}–{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="card">
+    <h2 class="card-title">Backup plan: if the shock hits</h2>
+    <p class="plan-lead">{{ backup.plan }}</p>
+    {% if backup.monthly_cut_needed is defined %}
+    <dl class="plan-facts">
+      <div><dt>Goal</dt><dd>Last {{ backup.target_runway_months | months }}</dd></div>
+      <div><dt>Monthly cut needed</dt><dd>{{ backup.monthly_cut_needed | money }}</dd></div>
+      <div><dt>Non-fixed spending</dt><dd>{{ backup.discretionary_spending | money }}</dd></div>
+    </dl>
+    {% endif %}
+  </section>
+
+  {% include "partials/runway_card.html" %}
+</div>

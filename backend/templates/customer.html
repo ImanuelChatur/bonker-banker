@@ -18,7 +18,7 @@
 </div>
 {% else %}
 {% set rclass = runway | runway_class %}
-<div class="reveal">
+<div class="reveal dash">
 
   {# ---------- Headline: runway + what it means ---------- #}
   <section class="card dash-hero">
@@ -30,16 +30,16 @@
       </div>
       <p class="verdict {{ rclass }}">
         {% if runway is string %}
-          ✓ Income covers typical spending, so the buffer isn't draining.
+          Income covers typical spending, so the buffer isn't draining.
           Saving about {{ surplus | money }} a month.
         {% elif runway == 0 %}
-          ✗ No buffer left to absorb anything.
+          No buffer left to absorb anything.
         {% else %}
           Spending runs {{ (-surplus) | money }} a month above income, so the buffer lasts {{ runway | runway_num }} months.
         {% endif %}
       </p>
       <div class="dash-actions">
-        <a class="btn-primary" href="/shock?preset=job_loss&account_id={{ account_id }}">⚡ What if I lose my job?</a>
+        <a class="btn-primary" href="/shock?preset=job_loss&account_id={{ account_id }}">What if I lose my job?</a>
         <a class="btn-secondary" href="/plan?account_id={{ account_id }}">Make a plan</a>
         <a class="btn-secondary" href="/report/{{ account_id }}">Runway report</a>
       </div>
@@ -48,15 +48,23 @@
     <div class="dash-hero-side">
       {% if score %}
         {% set sclass = 'good' if score.score >= 70 else 'warn' if score.score >= 40 else 'bad' %}
-        <div class="score-ring {{ sclass }}" style="--pct: {{ score.score }}">
-          <span class="score-num">{{ score.score }}</span>
-          <span class="score-label">resilience{{ ' · ' ~ score.grade if score.grade }}</span>
+        <div class="score-ring {{ sclass }}">
+          <svg viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="score-track" cx="18" cy="18" r="15.9" pathLength="100"></circle>
+            <circle class="score-fill" cx="18" cy="18" r="15.9" pathLength="100"
+                    stroke-dasharray="{{ score.score }} 100"></circle>
+          </svg>
+          <div class="score-text">
+            <span class="score-num">{{ score.score }}</span>
+            <span class="score-label">Resilience{{ ' · ' ~ score.grade if score.grade }}</span>
+          </div>
         </div>
+        <p class="our-measure">Our measure, not the judges' formula</p>
       {% endif %}
       <div class="stat">
         <div class="metric-label">If income stopped today</div>
         <div class="stat-value {{ no_income_runway | runway_class }}">{{ no_income_runway | runway_num }} months</div>
-        <div class="text-muted text-sm">buffer ÷ typical spending</div>
+        <div class="text-muted text-sm">Buffer ÷ typical spending · our measure</div>
       </div>
     </div>
   </section>
@@ -64,7 +72,8 @@
   {# ---------- Score breakdown + peers (shown once the engine provides them) ---------- #}
   {% if score and score.parts %}
   <section class="card">
-    <h2 class="card-title">What drives the score</h2>
+    <h2 class="card-title">What drives the resilience score</h2>
+    <p class="text-muted text-sm mb-3">Our measure. Built on the judges' numbers (I, S, F, B, runway).</p>
     <ul class="score-parts">
       {% for p in score.parts %}
       <li>
@@ -92,6 +101,7 @@
     <section class="card">
       {% if peer %}
         <h2 class="card-title">Compared with {{ '{:,}'.format(peer.n) if peer.n else 'other' }} customers</h2>
+        <p class="text-muted text-sm mb-3">Our measure: share of dataset accounts this one beats.</p>
         {% for label, pct in [("Runway", peer.runway_pct), ("Resilience score", peer.score_pct)] if pct is not none %}
         <div class="peer-row">
           <div class="score-part-head"><span>{{ label }}</span><b>better than {{ pct }}%</b></div>
