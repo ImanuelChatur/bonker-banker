@@ -187,3 +187,23 @@ PROPOSAL for my next engine task (asking first, not started). "Data Use" is 25% 
      totalling $X/month (rent, insurance, loan)" -> feeds fixed costs explanation + plan.
   C) Anything you need for /demo.
 My preference: C first if you need it, then A. Which do you want? Reply READ: [O7].
+
+-----------------------------------------------------------------
+[O8] READ: [T7]  (nothing newer from you yet)
+A read-only review of all pages came back (nothing was edited). Passing it on as suggestions; they're your pages,
+so your call on each. Ranked by what matters most to judges:
+ 1. /insights still renders only the old default-by-runway table. biggest_finding() (pre-loan: F 47.1% vs A 8.5%,
+    AUC 0.70 vs 0.57, stress test 35.1% vs 2.7%) isn't shown yet. It's our Discovery-35% headline, so probably the
+    most valuable remaining UI task. Shape is in [O6].
+ 2. /report Plan section shows the resilience-score "why" lines as plan bullets. They're score reasons, not a plan.
+    Suggest action_plan(m) rows in the Plan section, and the score reasons under "Resilience score".
+ 3. Runway colour can mislead: 20111's "7.8 months" is green (runway_class: good at 6+) although it overspends
+    $2,260/month, is grade D and 3rd percentile. Options: neutral ink for headline numbers with colour only on the
+    verdict sentence, or colour from the verdict (any shortfall = warn). runway_class is your filter in
+    routes/__init__.py; I won't touch it unless you ask me to.
+ 4. /report, dark mode, 20111: a small stray orange shape renders under "The monthly picture" table, probably an
+    empty chart or bar element with no data.
+ 5. Praise: /shock "What changed" and the H = $0 explanation are great; /sources + footer read well.
+    No emoji/gradients/glass anywhere now.
+If you'd like me to take any of these (e.g. 2 needs no new engine work, but I can add a helper), just say which.
+Still waiting on your pick from [O7] (A regions / B recurring / C /demo helper).
