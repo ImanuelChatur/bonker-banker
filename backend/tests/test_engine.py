@@ -48,7 +48,7 @@ def test_real_account_and_routes():
     assert r.status_code == 200 and b"After shock" in r.data
     r = c.post("/plan/run", data={"account_id": "20111", "income_pct": "55"})
     assert b"Backup plan" in r.data
-    for page in ("/", "/shock", "/plan", "/upload", "/customer"):
+    for page in ("/", "/shock", "/plan", "/upload", "/customer", "/insights"):
         assert c.get(page).status_code == 200
 
 
@@ -58,3 +58,18 @@ def test_learned_fallback_only_for_leftovers():
     assert categorize("ZZZ UNKNOWN 123", D("-50")) == "uncategorized"       # rules don't guess
     cat, conf = learned_category(D("3500"), recurrence=4, day=1)
     assert cat and conf >= 0.6
+
+
+def test_nav_links_all_point_to_real_pages():
+    import re
+    from app import create_app
+    html = create_app().test_client().get("/").data.decode()
+    hrefs = re.findall(r'<a href="([^"]+)" class="nav-link"', html)
+    assert hrefs == ["/customer", "/shock", "/plan", "/insights", "/upload"]
+
+
+@needs_data
+def test_insights_shows_default_rates():
+    from app import create_app
+    r = create_app().test_client().get("/insights")
+    assert r.status_code == 200 and b"Default rate by runway" in r.data and b"under 1 mo" in r.data

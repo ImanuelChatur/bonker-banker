@@ -11,6 +11,7 @@ Run from the repo root: `flask --app backend/app.py run --debug` (or `python bac
 | POST | `/shock/run` | HTMX partial: runway before/after, survives-the-duration check, projection chart |
 | GET | `/plan` | Plan form |
 | POST | `/plan/run` | HTMX partial: runway + goal plan + backup plan |
+| GET | `/insights` | Population view: loan default rate by runway bucket across the whole dataset |
 | POST | `/assistant/twist` | Gemini turns a twist card into shock settings, then runs it (needs `GEMINI_API_KEY`) |
 | GET/POST | `/upload` | Upload a statement PDF; preview transactions, monthly summary and metrics |
 

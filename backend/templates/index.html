@@ -13,6 +13,21 @@
 </div>
 
 <div class="card">
+  <h2 class="card-title">Get started</h2>
+  <form action="/customer" method="get" class="flex flex-wrap gap-3 mb-4">
+    <input name="account_id" required placeholder="account_id, e.g. 20111"
+           class="border rounded px-2 py-1" style="border-color:var(--border)">
+    <button class="btn-primary" type="submit">Look up customer</button>
+  </form>
+  <div class="flex flex-wrap gap-3">
+    <a href="/shock" class="btn-primary inline-block">Shock Lab</a>
+    <a href="/plan" class="btn-primary inline-block">Make a plan</a>
+    <a href="/insights" class="btn-primary inline-block">Insights</a>
+    <a href="/upload" class="btn-primary inline-block">Upload a statement</a>
+  </div>
+</div>
+
+<div class="card">
   <h2 class="card-title">Runway test chart (fake data)</h2>
   <!-- charts.js draws this automatically from the data-chart attribute -->
   <div class="chart" data-chart='{

@@ -1,8 +1,9 @@
 from .base import StatementParser
+from .scotiabank import ScotiabankParser
 from .tangerine import TangerineParser
 
 # Order matters: first parser whose detect() matches wins; generic is the fallback.
-PARSERS = [TangerineParser]
+PARSERS = [TangerineParser, ScotiabankParser]
 
 
 def pick_parser(text: str) -> StatementParser:

@@ -37,10 +37,53 @@ SIMPLE_LINES = [
 ]
 
 
+# Scotiabank-style: year-less dates, unsigned amounts + balance, merchant on the next line, a period line
+# without a year on its first date, a sidebar interleaved between rows on page 2, and a merchant that
+# repeats on several pages. All names and numbers are fake.
+SCOTIA_LINES = [
+    "FAKE BANK PRIVATE",
+    "SBSAV16000_1234567_007 E D 11111 22222",
+    "Sep 10 Opening Balance 1,000.00",
+    "Sep 11 Point of sale purchase 10.00 990.00",
+    "Apos Rabba Fine Food Oakville ONCA",
+    "Sep 12 Deposit 200.00 1,190.00",
+    "12345678 Free Interac E-Transfer",
+    "Page 1 of 3",
+    "---PAGE---",
+    "Sep 13 Point of sale purchase 5.50 1,184.50",
+    "Opos Doordashoshawa +16505551234ONCA",
+    "Sep 14 Point of sale purchase 7.90 1,176.60",
+    "Apos Rabba Fine Food Oakville ONCA",
+    "MR TEST PERSON",
+    "Your account number:",
+    "Questions?",
+    "Call 1 800 4-SCOTIA (1",
+    "800 555-0100)",
+    "For online account access:",
+    "YourPreferredPackageaccountsummary www.scotiabank.com",
+    "Opening Balance on September 10, 2026 $1,000.00",
+    "Here's what happened in your account this statement period",
+    "September 10 to October 9, 2026 12345678",
+    "Sep 15 Withdrawal 20.00 1,156.60",
+    "99999999 Free Interac E-Transfer",
+    "Page 2 of 3",
+    "---PAGE---",
+    "Oct 1 Point of sale purchase 3.00 1,153.60",
+    "Apos Rabba Fine Food Oakville ONCA",
+    "Oct 2 Point of sale purchase 4.00 1,149.60",
+    "Oct 9 Closing Balance $1,149.60",
+    "Page 3 of 3",
+]
+
+
 def make_pdf(path: Path, lines: list[str]) -> None:
     c = canvas.Canvas(str(path), pagesize=letter)
     y = 750
     for ln in lines:
+        if ln == "---PAGE---":
+            c.showPage()
+            y = 750
+            continue
         c.drawString(50, y, ln)
         y -= 18
     c.save()
@@ -50,6 +93,7 @@ def main() -> None:
     FIXTURES.mkdir(exist_ok=True)
     make_pdf(FIXTURES / "tangerine_sample.pdf", TANGERINE_LINES)
     make_pdf(FIXTURES / "simple_sample.pdf", SIMPLE_LINES)
+    make_pdf(FIXTURES / "scotia_sample.pdf", SCOTIA_LINES)
 
 
 if __name__ == "__main__":
