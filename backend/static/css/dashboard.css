@@ -105,3 +105,10 @@
 .plan-facts dt { font-size: 0.875rem; color: var(--muted); }
 .plan-facts dd { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .report-table th.num, .report-table td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ---------- Runway card: "what changed" + worked formula (live twist) ---------- */
+.explain { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1rem 2rem;
+           border-block: 1px solid var(--border); padding-block: 1rem; margin-block: 1rem; }
+.explain-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.4rem; }
+.explain-list { list-style: disc; padding-inline-start: 1.1rem; display: grid; gap: 0.25rem; font-variant-numeric: tabular-nums; }
+.explain-formula { font-variant-numeric: tabular-nums; line-height: 1.7; margin-bottom: 0.4rem; }

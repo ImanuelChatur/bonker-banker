@@ -20,17 +20,56 @@
     {% set s = res.survives_duration %}
     <div class="verdict {{ 'good' if s.makes_it else 'bad' }}">
       {% if s.makes_it %}
-        ✓ Makes it through {{ s.months }} months of EI with {{ s.buffer_at_end | money }} left.
+        Makes it through {{ s.months }} months of EI with {{ s.buffer_at_end | money }} left.
       {% else %}
-        ✗ Doesn't make it through {{ s.months }} months: runs out at month {{ after.runway | runway_num }}, short {{ s.shortfall | money }}.
+        Doesn't make it through {{ s.months }} months: runs out at month {{ after.runway | runway_num }}, short {{ s.shortfall | money }}.
       {% endif %}
     </div>
   {% elif after.runway is string %}
-    <div class="verdict good">✓ Income still covers spending, so the buffer never drains.</div>
+    <div class="verdict good">Income still covers spending, so the buffer never drains.</div>
   {% elif after.runway == 0 %}
-    <div class="verdict bad">✗ The one-off cost wipes out the buffer immediately.</div>
+    <div class="verdict bad">The one-off cost wipes out the buffer immediately.</div>
   {% else %}
     <div class="verdict {{ after.runway | runway_class }}">Buffer runs out in {{ after.runway | runway_num }} months at this pace.</div>
+  {% endif %}
+
+  {# ---------- For the live twist: what changed, and the judges' formula with real numbers ---------- #}
+  {% if shock is defined and m is defined %}
+  <div class="explain">
+    <div>
+      <h3 class="explain-title">What changed</h3>
+      <ul class="explain-list">
+        {% if shock.income_factor != 1 %}
+          <li>Income {{ before.income | money }} → {{ after.income | money }} a month
+            ({{ (shock.income_factor * 100) | round | int }}% of usual{{ ', for ' ~ shock.duration_months ~ ' months' if shock.duration_months }})</li>
+        {% endif %}
+        {% if shock.household_bills_pct %}
+          <li>Household bills {{ '+' if shock.household_bills_pct > 0 }}{{ (shock.household_bills_pct * 100) | round | int }}%:
+            {% if m.household_bills > 0 %}{{ '+' if shock.household_bills_pct > 0 }}{{ (shock.household_bills_pct * m.household_bills) | money }} a month on {{ m.household_bills | money }}
+            {% else %}no effect, this account's median household bills (H) are $0{% endif %}</li>
+        {% endif %}
+        {% if shock.extra_monthly_spending %}<li>Extra spending {{ shock.extra_monthly_spending | money }} a month</li>{% endif %}
+        {% if after.one_off_cost %}
+          <li>One-off cost {{ after.one_off_cost | money }}{{ ' (' ~ ('%g' % shock.one_off_months_of_spending) ~ (' month' if shock.one_off_months_of_spending == 1 else ' months') ~ ' of spending)' if shock.one_off_months_of_spending }}</li>
+        {% endif %}
+        {% if shock.income_factor == 1 and not shock.household_bills_pct and not shock.extra_monthly_spending and not after.one_off_cost %}
+          <li>Nothing yet: this is the customer's usual month.</li>
+        {% endif %}
+      </ul>
+    </div>
+    <div>
+      <h3 class="explain-title">How the runway is worked out</h3>
+      <p class="explain-formula">
+        (B − one-off) ÷ (S − I)<br>
+        = ({{ before.buffer | money }} − {{ after.one_off_cost | money }}) ÷ ({{ after.spending | money }} − {{ after.income | money }})<br>
+        {% if after.buffer_left <= 0 %}= buffer gone, <b>0 months</b>
+        {% elif after.monthly_gap <= 0 %}= no monthly shortfall, <b>no runway limit</b>
+        {% else %}= {{ after.buffer_left | money }} ÷ {{ after.monthly_gap | money }} = <b>{{ after.runway | runway_num }} months</b>{% endif %}
+      </p>
+      <p class="text-muted text-sm">Datathon definitions: B = average daily balance over the last 6 months,
+        S and I = median monthly money out and in. Capped at 120 months.</p>
+    </div>
+  </div>
   {% endif %}
 
   <div class="stat-grid">
