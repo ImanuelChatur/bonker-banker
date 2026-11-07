@@ -47,6 +47,13 @@
     {% block content %}{% endblock %}
   </main>
 
+  <footer class="site-footer">
+    <div class="max-w-6xl mx-auto px-4">
+      Data: PKDD'99 Financial dataset (CTU Prague), via the Tangerine datathon pack.
+      EI rate: Government of Canada. <a href="/sources">All sources and definitions</a>
+    </div>
+  </footer>
+
   <!-- Our own scripts -->
   <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>

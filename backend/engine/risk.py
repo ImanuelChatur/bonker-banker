@@ -32,6 +32,7 @@ def population() -> list[dict]:
         rows = data_store.account_rows(aid)
         m = metrics_from_rows(rows, aid, loan)
         out.append({"account_id": aid, "runway": _months(m), "buffer": m.buffer,
+                    "income": m.income, "spending": m.spending, "bills": m.household_bills,
                     "score": resilience_score(m, rows)["score"],
                     "has_loan": loan is not None,
                     "defaulted": int(loan["defaulted"]) if loan is not None else None})
@@ -45,6 +46,8 @@ def warm_up() -> None:
     def _go():
         try:
             population()
+            from .findings import pre_loan_table
+            pre_loan_table()
         except Exception:               # data not processed yet: pages show their own message
             pass
     threading.Thread(target=_go, daemon=True, name="warm-population").start()

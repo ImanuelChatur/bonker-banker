@@ -297,3 +297,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible { outline: non
 .step h3 { font-weight: 700; margin-block: 0.25rem 0.2rem; }
 .step p { color: var(--muted); }
 .step-num { color: var(--brand-strong); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ============================================================ footer */
+.site-footer { border-top: 1px solid var(--border); margin-top: 3rem; padding: 1.25rem 0 2rem; color: var(--muted); font-size: 0.875rem; }
+.site-footer a { color: var(--brand-strong); text-decoration: underline; text-underline-offset: 3px; }
