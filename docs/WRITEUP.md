@@ -22,7 +22,7 @@ Bonker Banker answers one question for any customer: **if something goes wrong, 
 
 ## Biggest finding
 
-**Our resilience score, measured before a loan was granted, picks out the borrowers who later defaulted.**
+**Judged only on the months before the loan was granted, borrowers with an F resilience grade went on to default 47.1% of the time, against 8.5% for grade A (5.5 times as often).**
 
 We scored each of the 615 borrowers with at least six months of history using **only the months before their loan
 started**, the way a lender would have to (67 loans with less history are left out). Then we checked loans.csv:

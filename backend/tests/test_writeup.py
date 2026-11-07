@@ -21,6 +21,7 @@ def test_quoted_numbers_match_the_engine():
     g = {b["band"][0]: b for b in f["default_by_grade"]}
     for grade in "ABCDF":
         assert f"| {g[grade]['loans']} | {g[grade]['rate']:.1f}% |" in WRITEUP
+    assert f["headline"] in WRITEUP                          # same sentence as the /insights page
     assert f"{f['auc_score']:.2f}" in WRITEUP and f"{f['auc_runway']:.2f}" in WRITEUP
     assert f"{f['n_loans']} borrowers" in WRITEUP and f"{f['n_excluded']} loans" in WRITEUP
     for row in f["stress"]:
