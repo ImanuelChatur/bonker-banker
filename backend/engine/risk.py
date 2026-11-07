@@ -11,6 +11,7 @@ from statistics import median
 from services import data_store
 
 from .metrics import metrics_from_rows
+from .resilience import resilience_score
 from .runway import RUNWAY_CAP, runway
 
 BUCKETS = [(0, 1, "under 1 mo"), (1, 3, "1 to 3 mo"), (3, 6, "3 to 6 mo"), (6, 12, "6 to 12 mo"),
@@ -28,11 +29,25 @@ def population() -> list[dict]:
     out = []
     for aid in data_store.account_ids():
         loan = data_store.account_loan(aid)
-        m = metrics_from_rows(data_store.account_rows(aid), aid, loan)
+        rows = data_store.account_rows(aid)
+        m = metrics_from_rows(rows, aid, loan)
         out.append({"account_id": aid, "runway": _months(m), "buffer": m.buffer,
+                    "score": resilience_score(m, rows)["score"],
                     "has_loan": loan is not None,
                     "defaulted": int(loan["defaulted"]) if loan is not None else None})
     return out
+
+
+def warm_up() -> None:
+    """Compute the population table in the background so the first customer page isn't slow."""
+    import threading
+
+    def _go():
+        try:
+            population()
+        except Exception:               # data not processed yet: pages show their own message
+            pass
+    threading.Thread(target=_go, daemon=True, name="warm-population").start()
 
 
 def default_rate_by_runway() -> list[dict]:

@@ -32,7 +32,9 @@ def register_routes(app):
     app.jinja_env.filters["months"] = _months
     app.jinja_env.filters["runway_num"] = _runway_num
     app.jinja_env.filters["runway_class"] = _runway_class
-    data_store.load()          # once at startup; logs a warning if scripts/precompute.py hasn't been run
+    if data_store.load():      # once at startup; logs a warning if scripts/precompute.py hasn't been run
+        from engine import risk
+        risk.warm_up()         # builds the peer-comparison table in the background (about 4 seconds)
 
     from . import assistant, customer, insights, plans, report, shocks, uploads
     for module in (customer, shocks, plans, insights, uploads, assistant, report):
