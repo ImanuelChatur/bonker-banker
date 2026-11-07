@@ -2,22 +2,48 @@
 {% block title %}Plan · Bonker Banker{% endblock %}
 
 {% block content %}
-<div class="card">
-  <h1 class="text-2xl font-bold mb-4">Plan</h1>
-  <form hx-post="/plan/run" hx-target="#result" class="space-y-4">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <label class="block"><span class="metric-label">Account ID</span>
-        <input name="account_id" required value="{{ account_id }}" class="border rounded px-2 py-1 w-full" style="border-color:var(--border)"></label>
-      <label class="block"><span class="metric-label">Emergency fund goal (months of spending)</span>
-        <input name="goal_months" type="number" step="any" value="3" class="border rounded px-2 py-1 w-full" style="border-color:var(--border)"></label>
-      <label class="block"><span class="metric-label">Backup plan: survive this many months</span>
-        <input name="target_runway" type="number" step="any" value="6" class="border rounded px-2 py-1 w-full" style="border-color:var(--border)"></label>
-    </div>
-    <p class="text-muted">Shock to plan for (default: job loss with EI at 55%):</p>
-    {% set f = {"income_pct": 55, "duration_months": 6} %}
-    {% include "partials/shock_fields.html" %}
-    <button class="btn-primary" type="submit">Make plan</button>
-  </form>
+<div class="lab-grid">
+  <section class="card lab-controls">
+    <h1 class="text-2xl font-bold mb-1">Make a plan</h1>
+    <p class="text-muted mb-5">Set a savings goal and a shock to prepare for. The plan updates as you type.</p>
+
+    <form id="plan-form" hx-post="/plan/run" hx-target="#result"
+          hx-trigger="load, input delay:400ms, change" hx-sync="this:replace" hx-indicator="#result">
+      <label class="block mb-4">
+        <span class="metric-label">Account ID</span>
+        <input name="account_id" value="{{ account_id }}" class="input input-lg"
+               placeholder="e.g. 20111" inputmode="numeric" autocomplete="off">
+      </label>
+
+      <div class="grid grid-cols-2 gap-3 mb-5">
+        <label class="block"><span class="metric-label">Emergency fund goal (months of spending)</span>
+          <input name="goal_months" type="number" step="0.5" min="0.5" max="24" value="3" class="input"></label>
+        <label class="block"><span class="metric-label">If the shock hits, last this many months</span>
+          <input name="target_runway" type="number" step="1" min="1" max="60" value="6" class="input"></label>
+      </div>
+
+      <fieldset class="lab-group">
+        <legend class="font-semibold">Shock to prepare for</legend>
+        <p class="text-muted text-sm mb-3">Default: job loss with EI at 55% of income for 6 months.</p>
+        <div class="grid grid-cols-2 gap-3">
+          {% for name, label, value in [
+            ("income_pct", "Income after shock (% of usual)", 55),
+            ("duration_months", "Lasts (months, 0 = ongoing)", 6),
+            ("bills_pct", "Household bills change (%)", 0),
+            ("extra_spending", "Extra spending ($/month)", 0),
+            ("one_off_cost", "One-off cost ($)", 0),
+            ("one_off_months", "One-off cost (months of spending)", 0)
+          ] %}
+          <label class="block"><span class="metric-label">{{ label }}</span>
+            <input name="{{ name }}" type="number" step="any" value="{{ value }}" class="input"></label>
+          {% endfor %}
+        </div>
+      </fieldset>
+    </form>
+  </section>
+
+  <section id="result" class="lab-result" aria-live="polite">
+    {% include "partials/shock_empty.html" %}
+  </section>
 </div>
-<div id="result" class="mt-6"></div>
 {% endblock %}
