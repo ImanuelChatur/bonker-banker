@@ -1,30 +1,128 @@
 {% extends "base.html" %}
-{% block title %}Customer · Bonker Banker{% endblock %}
+{% block title %}{{ ('Account ' ~ account_id ~ ' · ') if m }}Customer · Bonker Banker{% endblock %}
 
 {% block content %}
-<div class="card">
-  <h1 class="text-2xl font-bold mb-4">Customer</h1>
-  <form action="/customer" method="get" class="flex gap-3">
-    <input name="account_id" required placeholder="account_id e.g. 20111" value="{{ account_id or '' }}"
-           class="border rounded px-2 py-1" style="border-color:var(--border)">
-    <button class="btn-primary" type="submit">Look up</button>
-  </form>
-</div>
+<form action="/customer" method="get" class="dash-lookup">
+  <input name="account_id" required inputmode="numeric" placeholder="Account ID, e.g. 20111"
+         value="{{ account_id or '' }}" class="input" aria-label="Account ID">
+  <button class="btn-primary" type="submit">Look up</button>
+</form>
 
-{% if m %}
-<div class="mt-6">
-  {% include "partials/metric_cards.html" %}
+{% if not m %}
+<div class="card">
+  <h1 class="card-title">Look up a customer</h1>
+  <p class="text-muted">Enter an account ID, or try a demo:
+    <a class="link" href="/customer/20176">steady saver</a> ·
+    <a class="link" href="/customer/20111">typical household</a> ·
+    <a class="link" href="/customer/21817">living on the edge</a>.</p>
 </div>
-<div class="card mt-6">
-  <h2 class="card-title">Runway: {{ runway | months }}</h2>
-  <p class="text-muted mb-3">{{ m.months_of_history }} months of history.
-    <a href="/shock?account_id={{ account_id }}">Open in Shock Lab</a> ·
-    <a href="/plan?account_id={{ account_id }}">Make a plan</a></p>
-  <div class="chart" data-chart='{{ history | tojson }}'></div>
-</div>
-<div class="mt-6">
+{% else %}
+{% set rclass = runway | runway_class %}
+<div class="reveal">
+
+  {# ---------- Headline: runway + what it means ---------- #}
+  <section class="card dash-hero">
+    <div class="dash-hero-main">
+      <p class="metric-label">Account {{ account_id }} · {{ m.months_of_history }} months of history</p>
+      <div class="dash-runway">
+        <span class="runway-big {{ rclass }}">{{ runway | runway_num }}</span>
+        <span class="runway-unit">months of runway{{ ' · no shortfall' if runway is string }}</span>
+      </div>
+      <p class="verdict {{ rclass }}">
+        {% if runway is string %}
+          ✓ Income covers typical spending, so the buffer isn't draining.
+          Saving about {{ surplus | money }} a month.
+        {% elif runway == 0 %}
+          ✗ No buffer left to absorb anything.
+        {% else %}
+          Spending runs {{ (-surplus) | money }} a month above income, so the buffer lasts {{ runway | runway_num }} months.
+        {% endif %}
+      </p>
+      <div class="dash-actions">
+        <a class="btn-primary" href="/shock?preset=job_loss&account_id={{ account_id }}">⚡ What if I lose my job?</a>
+        <a class="btn-secondary" href="/plan?account_id={{ account_id }}">Make a plan</a>
+        <a class="btn-secondary" href="/report/{{ account_id }}">Runway report</a>
+      </div>
+    </div>
+
+    <div class="dash-hero-side">
+      {% if score %}
+        {% set sclass = 'good' if score.score >= 70 else 'warn' if score.score >= 40 else 'bad' %}
+        <div class="score-ring {{ sclass }}" style="--pct: {{ score.score }}">
+          <span class="score-num">{{ score.score }}</span>
+          <span class="score-label">resilience{{ ' · ' ~ score.grade if score.grade }}</span>
+        </div>
+      {% endif %}
+      <div class="stat">
+        <div class="metric-label">If income stopped today</div>
+        <div class="stat-value {{ no_income_runway | runway_class }}">{{ no_income_runway | runway_num }} months</div>
+        <div class="text-muted text-sm">buffer ÷ typical spending</div>
+      </div>
+    </div>
+  </section>
+
+  {# ---------- Score breakdown + peers (shown once the engine provides them) ---------- #}
+  {% if score and score.parts %}
+  <section class="card">
+    <h2 class="card-title">What drives the score</h2>
+    <ul class="score-parts">
+      {% for p in score.parts %}
+      <li>
+        <div class="score-part-head"><span>{{ p.name }}</span>
+          <b>{{ p.points }}{% if p.max %}<span class="text-muted"> / {{ p.max }}</span>{% endif %}</b></div>
+        {% if p.max %}<div class="bar"><span style="width: {{ (100 * p.points / p.max) | round }}%"></span></div>{% endif %}
+        {% if p.why %}<p class="text-muted text-sm">{{ p.why }}</p>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  <div class="dash-grid">
+    <section class="card">
+      <h2 class="card-title">Where the money goes</h2>
+      {% if mix['items'] %}
+        <div class="chart chart-sm" data-chart='{{ mix | tojson }}'></div>
+      {% else %}
+        <p class="text-muted">No spending recorded.</p>
+      {% endif %}
+      <p class="text-muted text-sm">Average per month over the last {{ mix.months }} months.</p>
+    </section>
+
+    <section class="card">
+      {% if peer %}
+        <h2 class="card-title">Compared with {{ '{:,}'.format(peer.n) if peer.n else 'other' }} customers</h2>
+        {% for label, pct in [("Runway", peer.runway_pct), ("Resilience score", peer.score_pct)] if pct is not none %}
+        <div class="peer-row">
+          <div class="score-part-head"><span>{{ label }}</span><b>better than {{ pct }}%</b></div>
+          <div class="bar peer"><span style="width: {{ pct }}%"></span></div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <h2 class="card-title">Monthly picture</h2>
+      {% endif %}
+      <div class="stat-grid">
+        <div class="stat"><div class="metric-label">Income</div><div class="stat-value">{{ m.income | money }}</div></div>
+        <div class="stat"><div class="metric-label">Spending</div><div class="stat-value">{{ m.spending | money }}</div></div>
+        <div class="stat"><div class="metric-label">{{ 'Surplus' if surplus >= 0 else 'Shortfall' }}</div>
+          <div class="stat-value {{ 'good' if surplus >= 0 else 'bad' }}">{{ surplus | abs | money }}</div></div>
+        <div class="stat"><div class="metric-label">Buffer</div><div class="stat-value">{{ m.buffer | money }}</div></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2 class="card-title">Balance history</h2>
+    <div class="chart" data-chart='{{ history | tojson }}'></div>
+  </section>
+
   {% set backup = none %}
   {% include "partials/plan_panel.html" %}
+
+  <details class="card dash-details">
+    <summary class="card-title">All metrics (I, S, F, H, B, P)</summary>
+    <div class="mt-4">{% include "partials/metric_cards.html" %}</div>
+  </details>
 </div>
 {% endif %}
 {% endblock %}

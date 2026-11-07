@@ -68,11 +68,37 @@ function renderLineChart(el, { labels, series, yName = "" }) {
   return chart;
 }
 
+// Donut chart: { kind: "donut", items: [{ name, value }], center?: "label" }
+function renderDonutChart(el, { items, center = "" }) {
+  const chart = echarts.init(el);
+  const t = themeColors();
+  const cs = getComputedStyle(document.documentElement);
+  const palette = ["--c1", "--c2", "--c3", "--c4", "--c5", "--c6"].map((v, i) =>
+    cs.getPropertyValue(v).trim() || [BB_COLORS.brand, "#2563eb", BB_COLORS.good, "#7c3aed", "#db2777", "#0891b2"][i]);
+  chart.setOption({
+    color: palette,
+    textStyle: { fontFamily: "inherit" },
+    tooltip: {
+      trigger: "item", backgroundColor: t.surface, borderColor: t.border, textStyle: { color: t.ink },
+      valueFormatter: (v) => "$" + Number(v).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "/mo",
+    },
+    legend: { bottom: 0, icon: "circle", textStyle: { color: t.muted } },
+    title: center ? { text: center, left: "center", top: "38%", textStyle: { color: t.ink, fontSize: 15, fontWeight: 700 } } : undefined,
+    series: [{
+      type: "pie", radius: ["52%", "74%"], center: ["50%", "44%"], avoidLabelOverlap: true,
+      itemStyle: { borderColor: t.surface, borderWidth: 3, borderRadius: 6 },
+      label: { show: false }, data: items,
+    }],
+  });
+  return chart;
+}
+
 // Draw every chart on the page that has a data-chart attribute.
 function initCharts(root = document) {
   root.querySelectorAll("[data-chart]").forEach((el) => {
     if (el.dataset.chartReady) return; // don't draw twice
-    renderLineChart(el, JSON.parse(el.dataset.chart));
+    const cfg = JSON.parse(el.dataset.chart);
+    (cfg.kind === "donut" ? renderDonutChart : renderLineChart)(el, cfg);
     el.dataset.chartReady = "1";
   });
 }

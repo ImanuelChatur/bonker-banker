@@ -1,0 +1,91 @@
+/* Bonker Banker: customer dashboard and runway report (ClaudeTwo).
+   Builds on theme.css tokens, so it follows light/dark mode. */
+
+.dash-lookup { display: flex; gap: 0.6rem; max-inline-size: 26rem; margin-bottom: 1.25rem; }
+.dash-lookup .input { flex: 1; }
+.link { color: var(--brand-strong); font-weight: 600; }
+.link:hover { text-decoration: underline; }
+
+/* ---------- Headline card ---------- */
+.dash-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: center;
+}
+.dash-runway { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; margin-block: 0.25rem 0.75rem; }
+.dash-runway .runway-big { font-size: clamp(3rem, 8vw, 4.5rem); font-weight: 800; line-height: 1; }
+.dash-hero .verdict { padding: 0.7rem 0.9rem; border-radius: 0.75rem; max-inline-size: 38rem; }
+.dash-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.1rem; }
+.dash-actions a { text-decoration: none; display: inline-block; }
+.dash-hero-side { display: grid; gap: 1rem; justify-items: center; min-inline-size: 12rem; }
+.dash-hero-side .stat { inline-size: 100%; padding: 0.8rem 1rem; border-radius: 0.75rem; text-align: center; }
+.stat-value.good { color: var(--good); }
+.stat-value.warn { color: var(--warn); }
+.stat-value.bad  { color: var(--bad); }
+
+/* ---------- Resilience score ring ---------- */
+.score-ring {
+  --ring-color: var(--muted);
+  inline-size: 9rem; block-size: 9rem; border-radius: 50%;
+  display: grid; place-content: center; text-align: center;
+  background:
+    radial-gradient(closest-side, var(--surface) 78%, transparent 79%),
+    conic-gradient(var(--ring-color) calc(var(--pct) * 1%), var(--surface-2) 0);
+}
+.score-ring.good { --ring-color: var(--good); }
+.score-ring.warn { --ring-color: var(--warn); }
+.score-ring.bad  { --ring-color: var(--bad); }
+.score-num { font-size: 2.4rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.score-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.score-parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem 1.5rem; }
+.score-part-head { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; margin-bottom: 0.35rem; }
+.bar { block-size: 0.5rem; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.bar > span { display: block; block-size: 100%; border-radius: inherit; background: var(--brand); }
+.bar.peer > span { background: var(--c2, #2563eb); }
+.peer-row { margin-bottom: 1rem; }
+
+/* ---------- Two-up grid ---------- */
+.dash-grid > .card { margin: 0; }
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1.5rem; }
+.dash-grid .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.chart-sm { height: 260px; }
+.dash-details summary { cursor: pointer; margin: 0; }
+
+@media (max-width: 760px) {
+  .dash-hero { grid-template-columns: 1fr; }
+  .dash-lookup { max-inline-size: none; }
+}
+
+/* ---------- Runway Report (/report/<id>) ---------- */
+.report {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: clamp(1.25rem, 4vw, 2.5rem); max-inline-size: 52rem; margin-inline: auto;
+}
+.report-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; align-items: start;
+               border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; }
+.report-title { font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; }
+.report-tools { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.report-tools a { text-decoration: none; }
+.report-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1rem; padding-block: 1.5rem; }
+.report-big .runway-big { font-size: 2.75rem; font-weight: 800; line-height: 1.1; }
+.report-section { border-top: 1px solid var(--border); padding-block: 1.25rem; }
+.report-section .card-title { margin-bottom: 0.75rem; }
+.table-wrap { overflow-x: auto; }
+.report-table { inline-size: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.report-table th, .report-table td { padding: 0.5rem 0.4rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.report-table tr > td:last-child { text-align: right; }
+.report-scenarios tr > td:last-child { text-align: left; }
+.report-table th { font-weight: 500; color: var(--muted); }
+.report-table thead th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.report-list { list-style: disc; padding-inline-start: 1.25rem; margin-top: 0.75rem; display: grid; gap: 0.3rem; }
+.report-foot { border-top: 1px solid var(--border); padding-top: 1rem; }
+
+@media print {
+  .nav, .no-print { display: none !important; }
+  body { background: #fff; }
+  main { padding: 0 !important; max-width: none !important; }
+  .report { border: none; padding: 0; max-inline-size: none; }
+  .report-section { break-inside: avoid; }
+}
