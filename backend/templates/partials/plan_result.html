@@ -34,7 +34,7 @@
         {% for a in actions %}
           <tr>
             <td><b>{{ a.title }}</b>{% if a.detail %}<div class="text-muted text-sm">{{ a.detail }}</div>{% endif %}</td>
-            <td class="num">{{ a.monthly_change | money }}</td>
+            <td class="num">{% if a.monthly_change %}{{ a.monthly_change | money }}{% else %}One-time{% endif %}</td>
             <td class="num good">{% if a.runway_gain_months is not none %}+{{ a.runway_gain_months }} mo{% else %}–{% endif %}</td>
           </tr>
         {% endfor %}
