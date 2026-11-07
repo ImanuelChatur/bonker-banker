@@ -536,3 +536,16 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   .btn-primary { border: 1px solid ButtonText; }
   .data-table tr.row-flagged td:first-child { box-shadow: inset 3px 0 0 Highlight; }
 }
+
+/* ============================================================ landing: demos + steps */
+.hero-demos { margin-top: 1rem; font-size: 0.9rem; color: var(--muted); }
+.hero-demos a { color: var(--brand-strong); font-weight: 600; text-decoration: none; }
+.hero-demos a:hover { text-decoration: underline; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem; margin-top: 2rem; }
+.step { padding: 1rem 1.25rem; border-inline-start: 3px solid rgb(249 115 22 / 0.35); }
+.step h3 { font-weight: 700; margin-block: 0.5rem 0.2rem; }
+.step p { color: var(--muted); font-size: 0.9rem; }
+.step-num {
+  display: inline-grid; place-items: center; inline-size: 1.8rem; block-size: 1.8rem;
+  border-radius: 999px; background: rgb(249 115 22 / 0.12); color: var(--brand-strong); font-weight: 700;
+}
