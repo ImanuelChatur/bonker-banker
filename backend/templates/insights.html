@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Insights · Bonker Banker{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1 class="text-2xl font-bold mb-1">Insights</h1>
+  <p class="text-muted">How runway relates to loan default across every account in the dataset.</p>
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+  {% for label, value in [
+    ("Accounts", "{:,}".format(o.accounts)),
+    ("Accounts with a loan", "{:,}".format(o.loans)),
+    ("Loans in default", (o.default_rate | string) ~ "%"),
+    ("Median runway", "120+ months" if o.median_runway >= 120 else o.median_runway | months)
+  ] %}
+  <div class="card">
+    <div class="metric-label">{{ label }}</div>
+    <div class="metric-value">{{ value }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card mt-6">
+  <h2 class="card-title">Default rate by runway</h2>
+  <div class="chart" data-chart='{{ chart | tojson }}'></div>
+  <div class="overflow-x-auto mt-4">
+    <table class="w-full text-sm border-collapse">
+      <thead><tr class="text-left" style="border-bottom:1px solid var(--border)">
+        <th class="py-2 pr-4">Runway</th><th class="py-2 px-4 text-right">Loans</th>
+        <th class="py-2 px-4 text-right">Defaults</th><th class="py-2 pl-4 text-right">Default rate</th></tr></thead>
+      <tbody>
+      {% for r in rows %}
+        <tr style="border-bottom:1px solid var(--border)">
+          <td class="py-1.5 pr-4">{{ r.bucket }}</td>
+          <td class="py-1.5 px-4 text-right tabular-nums">{{ r.loans }}</td>
+          <td class="py-1.5 px-4 text-right tabular-nums">{{ r.defaults }}</td>
+          <td class="py-1.5 pl-4 text-right tabular-nums">{{ (r.rate | string ~ "%") if r.rate is not none else "n/a" }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="text-muted text-sm mt-4">
+    Runway uses each account's latest 6 months, which may come after a default. Read this as an
+    association between low runway and default, not a forecast. Small buckets are noisy.
+  </p>
+</div>
+{% endblock %}

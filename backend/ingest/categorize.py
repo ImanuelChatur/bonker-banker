@@ -19,12 +19,16 @@ OUT_CATEGORIES = ["household_bills", "insurance", "loan_payments", "bank_fees",
 RULES: list[tuple[str, str, str | None]] = [
     ("loan_payments", r"\bloan\b|mortgage|line of credit|\bloc\b|student aid|auto finance|leasing", "out"),
     ("insurance", r"insur|intact|manulife|sun ?life|state farm|allstate", "out"),
-    ("household_bills", r"hydro|electric|enbridge|gas bill|water|rogers|\bbell\b|telus|fido|koodo|"
-                        r"shaw|videotron|internet|utility|property tax|\brent\b|bill payment", "out"),
+    ("household_bills", r"\bhydro|\belectric|enbridge|gas bill|\bwater\b|\brogers|\bbell\b|telus|\bfido\b|"
+                        r"koodo|\bshaw\b|videotron|freedom mobile|virgin (?:plus|mobile)|public mobile|"
+                        r"\bchatr\b|lucky mobile|internet|utility|property tax|\brent\b|bill payment", "out"),
+    ("transfers_in", r"error correction|\brefund|reversal|chargeback|\bbenefit\b|canada child|\bccb\b|"
+                     r"gst/?hst credit|trillium|\bei payment", "in"),
     ("pension_in", r"pension|\bcpp\b|\boas\b|old age|retirement", "in"),
     ("interest_in", r"interest (?:paid|earned|credit)|credit interest|interest$", "in"),
     ("bank_fees", r"\bfee\b|service charge|penalty interest|overdraft|\bnsf\b|interest charge", "out"),
-    ("cash_deposits", r"cash deposit|atm deposit|branch deposit|deposit cash", "in"),
+    ("cash_deposits", r"cash deposit|atm deposit|branch deposit|deposit cash|\bmb-dep\b|mobile deposit|"
+                      r"cheque deposit", "in"),
     ("cash_withdrawals_genuine", r"\batm\b|cash withdrawal|withdrawal cash|\babm\b", "out"),
     # Transfers: wires, credit memos, e-transfers, payroll deposits and similar.
     ("transfers", r"wire|credit memo|transfer|interac|e-?transfer|zelle|payroll|salary|direct dep|"

@@ -42,7 +42,10 @@ PAGE_BREAK = "<<PAGE>>"      # inserted by pdf_reader between pages
 NOISE_RE = re.compile(
     r"your account number|questions\?|call\s+1[\s-]*8\d\d|for online account access|"
     r"www\.|https?://|page\s+\d+\s*(?:of\s*\d+)?|preferred package|account summary|"
-    r"statement period|^-{3,}|^[|\s-]+$", re.I)
+    r"statement period|^-{3,}|^[|\s-]+$|continued on next page|\(continued\)|"
+    r"what happened in your account|^date\s+transactions|^amounts?\b|total (?:withdrawals|deposits)|"
+    r"^(?:MR|MS|MRS|MX)\s+[A-Z]+(?:\s+[A-Z]+){0,2}$",     # all-caps salutation line, e.g. "MR DERIN"
+    re.I)
 # Everything from the first boilerplate marker to the end of the description is dropped,
 # together with a preceding "MR/MS NAME" salutation.
 CUT_RE = re.compile(
@@ -56,7 +59,7 @@ MAX_CONTINUATION_LEN = 60
 def clean_desc(desc: str) -> str:
     d = CUT_RE.sub("", desc)
     d = re.sub(r"(?:^|\s)[|\-_=]{2,}(?=\s|$)|\s\|(?=\s|$)", " ", d)   # table borders / separators
-    d = re.sub(r"\b\d{8,}\b", "", d)                                   # long reference numbers
+    d = re.sub(r"(?<!\d)\+?\d{8,}", "", d)        # phone / reference numbers, even when glued to a word
     d = re.sub(r"\s+", " ", d).strip(" |-")
     return d or desc.strip()
 
@@ -139,12 +142,30 @@ def parse_leading_date(line: str, ps: date | None, pe: date | None):
 def _find_period(text: str) -> tuple[date | None, date | None]:
     one = (r"(\d{1,2}/\d{1,2}/\d{2,4}|\d{4}-\d{2}-\d{2}|" + MON + r"\s+\d{1,2},?\s+\d{4}"
            r"|\d{1,2}\s+" + MON + r"\s+\d{4})")
-    mt = re.search(one + r"\s*(?:-|–|to|through|thru)\s*" + one, text, re.I)
-    if not mt:
-        return None, None
-    a = parse_leading_date(mt.group(1), None, None)
-    b = parse_leading_date(mt.group(2), None, None)
-    return (a[0] if a else None), (b[0] if b else None)
+    sep = r"\s*(?:-|–|to|through|thru)\s*"
+    mt = re.search(one + sep + one, text, re.I)
+    if mt:
+        a = parse_leading_date(mt.group(1), None, None)
+        b = parse_leading_date(mt.group(2), None, None)
+        return (a[0] if a else None), (b[0] if b else None)
+
+    # "September 10 to October 9, 2026": the first date has no year, borrow the second one's.
+    mt = re.search(rf"\b({MON}\s+\d{{1,2}}){sep}({MON}\s+\d{{1,2}},?\s+\d{{4}})", text, re.I)
+    if mt:
+        end = parse_leading_date(mt.group(2), None, None)
+        if end:
+            start = parse_leading_date(f"{mt.group(1)}, {end[0].year}", None, None)
+            if start and start[0] > end[0]:                      # e.g. "Dec 10 to Jan 9, 2026"
+                start = parse_leading_date(f"{mt.group(1)}, {end[0].year - 1}", None, None)
+            if start:
+                return start[0], end[0]
+
+    # "Opening Balance on <date>" ... "Closing Balance on <date>"
+    a = re.search(r"opening balance on\s+" + one, text, re.I)
+    b = re.search(r"closing balance on\s+" + one, text, re.I)
+    pa = parse_leading_date(a.group(1), None, None) if a else None
+    pb = parse_leading_date(b.group(1), None, None) if b else None
+    return (pa[0] if pa else None), (pb[0] if pb else None)
 
 
 def _find_account(text: str) -> str:
@@ -218,7 +239,9 @@ def parse_text(text: str, source: str = "<text>") -> Statement:
 
         parsed = parse_leading_date(raw, st.period_start, st.period_end)
         # A dated line with no amounts starts a row whose amounts arrive on a later line.
-        if pending and not parsed and not SKIP_RE.match(raw):
+        if pending and not parsed and (SKIP_RE.match(raw) or NOISE_RE.search(raw)):
+            pending = None                           # boilerplate ends a half-built row
+        elif pending and not parsed:
             if _amounts_from_tail(toks_all)[0]:
                 parsed = (pending[0], pending[1] + " " + raw)
                 pending = None
@@ -229,8 +252,9 @@ def parse_text(text: str, source: str = "<text>") -> Statement:
             pending = None
         if not parsed or SKIP_RE.match(raw):
             # continuation of the previous description (wrapped line, no amounts)
-            if (last and not SKIP_RE.match(raw) and not NOISE_RE.search(raw)
-                    and cont_lines < MAX_CONTINUATION_LINES and len(raw) <= MAX_CONTINUATION_LEN
+            if last and (SKIP_RE.match(raw) or NOISE_RE.search(raw)):
+                last = None                          # boilerplate (sidebar, footer) closes the row
+            elif (last and cont_lines < MAX_CONTINUATION_LINES and len(raw) <= MAX_CONTINUATION_LEN
                     and not _amounts_from_tail(toks_all)[0]):
                 last.description = clean_desc(last.description + " " + raw)
                 last.raw += " | " + raw
@@ -281,7 +305,11 @@ def parse_text(text: str, source: str = "<text>") -> Statement:
         f = st.transactions[0]
         if f.balance is not None:
             st.opening_balance = f.balance - f.amount
-    if not st.transactions:
+    if st.transactions:                              # last resort: span of the transactions themselves
+        dates = [t.date for t in st.transactions]
+        st.period_start = st.period_start or min(dates)
+        st.period_end = st.period_end or max(dates)
+    else:
         st.warnings.append("No transactions recognised.")
     return st
 
