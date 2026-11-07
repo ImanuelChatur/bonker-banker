@@ -1,129 +1,80 @@
-"""The "biggest finding" for /insights, measured without peeking at the future.
+"""The "biggest finding" for /insights: what runway says about who defaults, and who a shock would break.
 
-risk.default_rate_by_runway() uses each account's LAST six months, which can come after a default, so part of
-that pattern is the default itself. Here every loan is judged only on the months BEFORE it was granted, the
-way a lender would have to. Loans with under six months of prior history are left out.
-
-Also: a population stress test (apply one shock to every account and count who runs out).
+Descriptive statistics over all 4,500 accounts and 682 loans. Runway uses the judges' formula. The caveats travel
+with the numbers so the page can't show one without the other.
 """
 from __future__ import annotations
 
 from functools import lru_cache
 
-from services import data_store
-
-from .metrics import metrics_from_rows
-from .resilience import resilience_score, runway_months
+from .risk import BUCKETS, default_rate_by_runway, population
 from .runway import RUNWAY_CAP, runway
 
-GRADE_BANDS = [("A", 80, 101), ("B", 65, 80), ("C", 50, 65), ("D", 35, 50), ("F", 0, 35)]
-RUNWAY_BANDS = [("Under 3 months", 0, 3), ("3 to 12 months", 3, 12), ("12+ months", 12, RUNWAY_CAP),
-                ("No shortfall", RUNWAY_CAP, RUNWAY_CAP + 1)]
-MIN_HISTORY = 6
+GRADE_BANDS = [(80, 101, "A (80+)"), (65, 80, "B (65-79)"), (50, 65, "C (50-64)"), (35, 50, "D (35-49)"), (0, 35, "F (under 35)")]
+
+SHOCKS = [  # (name, income factor, bills increase, one-off as months of spending) -- the README's twist cards
+    ("Job loss, EI at 55%", 0.55, 0.0, 0.0),
+    ("Household bills +15%", 1.0, 0.15, 0.0),
+    ("Repair = 1 month of spending", 1.0, 0.0, 1.0),
+    ("Job loss (EI 55%) + bills +15%", 0.55, 0.15, 0.0),
+]
 
 
-def _auc(pos: list[float], neg: list[float]) -> float:
-    """Chance a random non-defaulter scores higher than a random defaulter (0.5 = no signal)."""
-    if not pos or not neg:
-        return 0.5
-    wins = sum((n > p) + 0.5 * (n == p) for p in pos for n in neg)
-    return wins / (len(pos) * len(neg))
+def _rate(group: list[dict]) -> dict:
+    n, d = len(group), sum(r["defaulted"] for r in group)
+    return {"loans": n, "defaults": d, "rate": round(100 * d / n, 1) if n else None}
 
 
-@lru_cache(maxsize=1)
-def pre_loan_table() -> list[dict]:
-    """One row per loan: score, parts and runway measured on the months before the loan started."""
-    out = []
-    for aid in data_store.account_ids():
-        loan = data_store.account_loan(aid)
-        if loan is None:
-            continue
-        start = str(loan["loan_start"])[:7]
-        pre = [r for r in data_store.account_rows(aid) if r["month"] < start]
-        if len(pre) < MIN_HISTORY:
-            continue
-        m = metrics_from_rows(pre, aid, None)
-        s = resilience_score(m, pre)
-        out.append({"account_id": aid, "runway": runway_months(m), "score": s["score"],
-                    "parts": {p["name"]: p["points"] / p["max"] for p in s["parts"]},
-                    "defaulted": int(loan["defaulted"])})
+def default_rate_by_grade() -> list[dict]:
+    loans = [r for r in population() if r["has_loan"]]
+    return [{"band": label, **_rate([r for r in loans if lo <= r["score"] < hi])} for lo, hi, label in GRADE_BANDS]
+
+
+def _months_after(r: dict, income_factor: float, bills_pct: float, one_off_months: float) -> float:
+    rw = runway(r["buffer"], r["income"] * income_factor, r["spending"] + bills_pct * r["bills"],
+                one_off_months * r["spending"])
+    return RUNWAY_CAP if isinstance(rw, str) else float(rw)
+
+
+def stress_test(within_months: float = 6.0) -> list[dict]:
+    """Share of all accounts whose buffer runs out within `within_months` under each twist card."""
+    pop = population()
+    base_short = sum(r["runway"] < within_months for r in pop)
+    out = [{"name": "No shock (today)", "short": base_short, "share_pct": round(100 * base_short / len(pop), 1)}]
+    for name, inc, bills, one_off in SHOCKS:
+        short = sum(_months_after(r, inc, bills, one_off) < within_months for r in pop)
+        out.append({"name": name, "short": short, "share_pct": round(100 * short / len(pop), 1)})
     return out
 
 
-def _band_rates(rows: list[dict], key: str, bands) -> list[dict]:
-    res = []
-    for label, lo, hi in bands:
-        grp = [r for r in rows if lo <= r[key] < hi]
-        d = sum(r["defaulted"] for r in grp)
-        res.append({"label": label, "loans": len(grp), "defaults": d,
-                    "rate": round(100 * d / len(grp), 1) if grp else None})
-    return res
-
-
-def loan_default_finding() -> dict:
-    """
-    {"headline": str, "n_loans": int, "n_excluded": int, "overall_rate": float,
-     "by_grade": [{"label","loans","defaults","rate"}], "by_runway": [...same...],
-     "auc_score": float, "auc_runway": float, "signals": [{"name","auc"}] (strongest first),
-     "method": str, "caveats": [str]}
-    Rates are percentages with one decimal.
-    """
-    rows = pre_loan_table()
-    total_loans = sum(1 for aid in data_store.account_ids() if data_store.account_loan(aid) is not None)
-    d = [r for r in rows if r["defaulted"]]
-    ok = [r for r in rows if not r["defaulted"]]
-
-    by_grade = _band_rates(rows, "score", GRADE_BANDS)
-    by_runway = _band_rates(rows, "runway", RUNWAY_BANDS)
-    auc_score = round(_auc([r["score"] for r in d], [r["score"] for r in ok]), 3)
-    auc_runway = round(_auc([r["runway"] for r in d], [r["runway"] for r in ok]), 3)
-
-    names = sorted({k for r in rows for k in r["parts"]})
-    signals = sorted(({"name": n, "auc": round(_auc([r["parts"].get(n, 0) for r in d],
-                                                     [r["parts"].get(n, 0) for r in ok]), 3)} for n in names),
-                     key=lambda s: -s["auc"])
-
-    a = next(b for b in by_grade if b["label"] == "A")
-    f = next(b for b in by_grade if b["label"] == "F")
-    overall = round(100 * len(d) / len(rows), 1) if rows else None
-    if f["rate"] is not None and a["rate"]:
-        headline = (f"Judged only on the months before the loan was granted, customers with an F resilience grade went "
-                    f"on to default {f['rate']:g}% of the time, against {a['rate']:g}% for grade A "
-                    f"({f['rate'] / a['rate']:.1f} times as often).")
-    else:
-        headline = "Not enough loans with prior history to compare grades."
-
+@lru_cache(maxsize=1)
+def biggest_finding() -> dict:
+    by_runway = default_rate_by_runway()
+    low = [b for b in by_runway if b["bucket"] in ("under 1 mo", "1 to 3 mo")]
+    high = next(b for b in by_runway if b["bucket"] == "12+ mo")
+    low_loans, low_defaults = sum(b["loans"] for b in low), sum(b["defaults"] for b in low)
+    low_rate = round(100 * low_defaults / low_loans, 1) if low_loans else None
+    ratio = round(low_rate / high["rate"], 1) if low_rate and high["rate"] else None
+    stress = stress_test()
+    job = next(s for s in stress if s["name"].startswith("Job loss, EI"))
+    pop = population()
     return {
-        "headline": headline, "n_loans": len(rows), "n_excluded": total_loans - len(rows), "overall_rate": overall,
-        "by_grade": by_grade, "by_runway": by_runway, "auc_score": auc_score, "auc_runway": auc_runway,
-        "signals": signals,
-        "method": (f"Each loan's account was scored using only the monthly rows before the loan start date "
-                   f"(at least {MIN_HISTORY} months). Default = loan status B or D in loans.csv."),
+        "headline": (f"Borrowers with under 3 months of runway defaulted {low_rate:g}% of the time, "
+                     f"about {ratio:g}x the {high['rate']:g}% rate of those with 12+ months."
+                     if ratio else "Not enough loans in the low-runway group to compare."),
+        "subhead": (f"A job loss on EI would leave {job['share_pct']:g}% of all accounts out of savings within 6 months, "
+                    f"up from {stress[0]['share_pct']:g}% today."),
+        "low_runway": {"loans": low_loans, "defaults": low_defaults, "rate": low_rate},
+        "high_runway": {"loans": high["loans"], "defaults": high["defaults"], "rate": high["rate"]},
+        "ratio": ratio,
+        "default_by_runway": by_runway,
+        "default_by_grade": default_rate_by_grade(),
+        "stress": stress,
+        "n_accounts": len(pop),
+        "n_loans": sum(r["has_loan"] for r in pop),
         "caveats": [
-            f"Small groups: grade F has {f['loans']} loans, so its rate could move by several points with a few cases.",
-            "Association, not proof of cause. The score was designed by us, then checked against defaults.",
-            f"AUC {auc_score:.2f} means the score ranks a random non-defaulter above a random defaulter "
-            f"{auc_score * 100:.0f}% of the time: useful, not decisive.",
-            "Historical, anonymized bank data (PKDD'99) presented in Canadian dollars by the datathon.",
+            "Association, not prediction: runway uses each account's latest 6 months, which can come after the default.",
+            f"The low-runway group is small ({low_loans} loans), so its rate is uncertain.",
+            "The resilience score is our own measure; the runway buckets use the judges' formula.",
         ],
     }
-
-
-def population_stress(income_factor: float = 0.55, bills_pct: float = 0.0, months: int = 6) -> dict:
-    """Apply one shock to every account. {"n","short_within":months,"share_short","share_no_shortfall_before",
-    "share_short_before"}: shares are percentages. Uses the judges' runway formula per account."""
-    from .risk import population
-    pop = population()
-    short_after = short_before = no_short_before = 0
-    for r in pop:
-        before = runway(r["buffer"], r["income"], r["spending"])
-        after = runway(r["buffer"], r["income"] * income_factor, r["spending"] + bills_pct * r["bills"])
-        to_m = lambda x: RUNWAY_CAP if isinstance(x, str) else x
-        no_short_before += isinstance(before, str)
-        short_before += to_m(before) < months
-        short_after += to_m(after) < months
-    n = len(pop)
-    pct = lambda k: round(100 * k / n, 1) if n else None
-    return {"n": n, "short_within": months, "income_factor": income_factor, "bills_pct": bills_pct,
-            "share_short": pct(short_after), "share_short_before": pct(short_before),
-            "share_no_shortfall_before": pct(no_short_before)}
