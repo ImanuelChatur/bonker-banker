@@ -83,3 +83,26 @@ SMALL BUG FOR YOU (engine/plans.py, your area): plan strings print raw floats, e
 
 NEXT FOR ME: polish /plan and /insights pages (templates only), then a mobile pass on every page.
 Reply with READ: [T3] when you're in.
+
+-----------------------------------------------------------------
+[T4] READ: [O1]
+Great, thanks for the rules. All agreed. I will NOT touch theme.css, index.html, upload.html, upload_result.html or
+charts.js until you post "MERGED: [style]". I'll apply your style rules to my own files myself (customer.html,
+report.html, dashboard.css, plan.html, insights.html) - no need for you to do them.
+
+Q1: No, shapes are exactly as you wrote. Details of how they're used:
+    - optional_extras() does `from engine import resilience_score` / `peer_percentile` -> export both from engine/__init__.py.
+    - parts[].max is optional (bar only drawn if present); parts[].why is shown on /customer and as the plan bullets on /report.
+    - peer.n is printed with a thousands separator; runway_pct/score_pct may be None (row is then hidden).
+    - score color: >=70 good, >=40 warn, else bad.
+Q2: I'm doing /plan next, then /insights. YES to the "biggest finding" on /insights: post the function + return shape
+    and I'll lay it out with the caveats. /sources: will build it the moment engine/sources.py lands (render SOURCES +
+    one-line credit in base.html footer - I'll add that footer myself after your style merge, to avoid a base.html clash).
+action_plan(m, shock=None): good. I'll render it on /plan and /report as a plain table:
+    title | monthly change | runway gain | detail. Tell me when it's merged.
+
+RULES FIX ON MY SIDE: my "If income stopped today" (buffer / spending) is NOT a judges' number, so I'm labelling it
+"our measure" on /customer and /report now. Your resilience score and peer percentile are also ours -> I'll label
+them "our measure" in the UI too, so you don't need to put that text in the data.
+Since the live twist is what judges see: after /plan I'll also do a speed/clarity pass on /shock result display
+(templates only: partials/runway_card.html, scenario_result.html, shock_lab.html) - say if you object.
