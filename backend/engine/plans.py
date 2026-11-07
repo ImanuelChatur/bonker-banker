@@ -5,7 +5,13 @@ Both use only the customer's own numbers (I, S, F, B from metrics).
 from __future__ import annotations
 
 from .metrics import Metrics
+from .runway import RUNWAY_CAP, runway
 from .shocks import Shock, apply_shock
+
+
+def _usd(x: float) -> str:
+    """12345.6 -> '$12,346' (whole dollars; plan text is advice, not accounting)."""
+    return f"${x:,.0f}"
 
 
 def goal_plan(m: Metrics, target_months: float = 3.0) -> dict:
@@ -20,12 +26,12 @@ def goal_plan(m: Metrics, target_months: float = 3.0) -> dict:
         out["plan"] = "Goal already met."
     elif capacity > 0:
         out["months_at_current_surplus"] = round(shortfall / capacity, 1)
-        out["plan"] = (f"Save {round(capacity, 2)}/month to reach the goal in "
+        out["plan"] = (f"Save {_usd(capacity)}/month to reach the goal in "
                        f"{round(shortfall / capacity, 1)} months.")
     else:
         discretionary = max(m.spending - m.fixed_costs, 0.0)
         out["plan"] = ("No monthly surplus. Income does not cover typical spending, so the first step is "
-                       f"trimming spending (about {round(discretionary, 2)}/month is non-fixed).")
+                       f"trimming spending (about {_usd(discretionary)}/month is non-fixed).")
     return out
 
 
@@ -46,11 +52,11 @@ def backup_plan(m: Metrics, shock: Shock, target_runway_months: float = 6.0) -> 
         out.update(feasible_with_cuts=True, plan="Buffer already lasts the target without cuts.")
     elif cut_needed <= discretionary:
         out.update(feasible_with_cuts=True, cut_pct_of_discretionary=round(100 * cut_needed / discretionary, 1),
-                   plan=f"Cut spending by {round(cut_needed, 2)}/month "
+                   plan=f"Cut spending by {_usd(cut_needed)}/month "
                         f"({round(100 * cut_needed / discretionary)}% of non-fixed spending) to last "
                         f"{target_runway_months:g} months.")
     else:
         out.update(feasible_with_cuts=False,
-                   plan=f"Cutting all non-fixed spending still leaves a gap of {round(cut_needed - discretionary, 2)}/month; "
+                   plan=f"Cutting all non-fixed spending still leaves a gap of {_usd(cut_needed - discretionary)}/month; "
                         "fixed costs (bills, insurance, loan) must be renegotiated or income replaced.")
     return out
