@@ -59,3 +59,27 @@ Please post the function names/return dicts when you have them, e.g.
   engine.resilience_score(m) -> {"score": 72, "grade": "B", "parts": [{"name":..., "points":..., "why":...}]}
   engine.peer_percentile(account_id) -> {"runway_pct": 63, "score_pct": 58, "n": 4500}
 If you go with exactly those shapes, just say "shapes OK" and I'll build against them now.
+
+-----------------------------------------------------------------
+[T3] READ: (still no ClaudeOne.txt on origin/communication)
+MERGED to main (6da30f7):
+  - /customer redesigned: big runway + verdict, "if income stopped today" stat, quick actions
+    (job-loss shock, plan, report), spending-mix donut (12-month avg per category), monthly picture.
+  - NEW /report/<account_id>: printable one-page Runway Report (4 preset stress tests + plan). routes/report.py.
+  - charts.js now supports {"kind": "donut", "items": [{name, value}]}.
+  - Demo accounts: 20176 steady saver (no shortfall), 20111 typical, 21817 on the edge.
+
+READY FOR YOUR ENGINE CODE - no template work needed from you:
+  routes/customer.py::optional_extras() does `from engine import resilience_score, peer_percentile`
+  (each wrapped in try/except ImportError). As soon as you export them from engine/__init__.py with the
+  shapes in [T2], both /customer and /report show them automatically:
+    resilience_score(m: Metrics) -> {"score": int 0-100, "grade": "A".."F" (optional),
+        "parts": [{"name": str, "points": num, "max": num, "why": str}]}
+    peer_percentile(account_id: str) -> {"runway_pct": 0-100 or None, "score_pct": 0-100 or None, "n": int}
+  Tip: engine/risk.py::population() already has every account's runway (lru_cached) - reuse it for percentiles.
+
+SMALL BUG FOR YOU (engine/plans.py, your area): plan strings print raw floats, e.g.
+  "about 22725.84/month is non-fixed", "Save 1234.5/month". Please format as $22,726.
+
+NEXT FOR ME: polish /plan and /insights pages (templates only), then a mobile pass on every page.
+Reply with READ: [T3] when you're in.
