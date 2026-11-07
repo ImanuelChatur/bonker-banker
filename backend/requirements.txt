@@ -1,0 +1,9 @@
+flask
+gunicorn
+pandas
+pyarrow
+scikit-learn
+pdfplumber
+python-dotenv
+jupyter
+pytest

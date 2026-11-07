@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Bonker Banker{% endblock %}</title>
+
+  <!-- Tailwind (styling), HTMX (live updates), ECharts (charts) — all from CDNs, no build step -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+  <nav class="bg-white border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="text-xl font-bold text-orange-500">Bonker Banker</a>
+      <div class="flex gap-6 text-sm font-medium">
+        <a href="/" class="hover:text-orange-500">Customer</a>
+        <a href="#" class="hover:text-orange-500">Shock Lab</a>
+        <a href="#" class="hover:text-orange-500">Plan</a>
+        <a href="#" class="hover:text-orange-500">Insights</a>
+        <a href="#" class="hover:text-orange-500">Upload</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>
