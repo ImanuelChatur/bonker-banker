@@ -1,49 +1,91 @@
 {% extends "base.html" %}
 {% block title %}Insights · Bonker Banker{% endblock %}
 
-{% block content %}
-<div class="card">
-  <h1 class="text-2xl font-bold mb-1">Insights</h1>
-  <p class="text-muted">How runway relates to loan default across every account in the dataset.</p>
-</div>
-
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-  {% for label, value in [
-    ("Accounts", "{:,}".format(o.accounts)),
-    ("Accounts with a loan", "{:,}".format(o.loans)),
-    ("Loans in default", (o.default_rate | string) ~ "%"),
-    ("Median runway", "120+ months" if o.median_runway >= 120 else o.median_runway | months)
-  ] %}
-  <div class="card">
-    <div class="metric-label">{{ label }}</div>
-    <div class="metric-value">{{ value }}</div>
-  </div>
+{% macro rate_rows(rows, key) %}
+  {% for r in rows %}
+  <tr>
+    <th scope="row">{{ r[key] }}</th>
+    <td class="num">{{ r.loans }}</td>
+    <td class="num">{{ r.defaults }}</td>
+    <td class="rate-cell">
+      {% if r.rate is not none %}
+        <span class="hbar"><span style="width: {{ (100 * r.rate / max_rate) | round(1) }}%"></span></span>
+        <b class="num">{{ r.rate }}%</b>
+      {% else %}<span class="text-muted">n/a</span>{% endif %}
+    </td>
+  </tr>
   {% endfor %}
-</div>
+{% endmacro %}
 
-<div class="card mt-6">
-  <h2 class="card-title">Default rate by runway</h2>
-  <div class="chart" data-chart='{{ chart | tojson }}'></div>
-  <div class="overflow-x-auto mt-4">
-    <table class="w-full text-sm border-collapse">
-      <thead><tr class="text-left" style="border-bottom:1px solid var(--border)">
-        <th class="py-2 pr-4">Runway</th><th class="py-2 px-4 text-right">Loans</th>
-        <th class="py-2 px-4 text-right">Defaults</th><th class="py-2 pl-4 text-right">Default rate</th></tr></thead>
-      <tbody>
-      {% for r in rows %}
-        <tr style="border-bottom:1px solid var(--border)">
-          <td class="py-1.5 pr-4">{{ r.bucket }}</td>
-          <td class="py-1.5 px-4 text-right tabular-nums">{{ r.loans }}</td>
-          <td class="py-1.5 px-4 text-right tabular-nums">{{ r.defaults }}</td>
-          <td class="py-1.5 pl-4 text-right tabular-nums">{{ (r.rate | string ~ "%") if r.rate is not none else "n/a" }}</td>
-        </tr>
+{% block content %}
+<article class="report insights">
+  <p class="text-muted text-sm">Insights · {{ '{:,}'.format(f.n_accounts) }} accounts, {{ f.n_loans }} loans</p>
+  <h1 class="insights-headline">{{ f.headline }}</h1>
+  <p class="insights-subhead">{{ f.subhead }}</p>
+
+  <section class="report-section">
+    <h2 class="card-title">Default rate by resilience grade</h2>
+    <p class="text-muted text-sm mb-3">Grade from our resilience score (our measure), computed on the months before each loan started.</p>
+    <div class="table-wrap">
+      <table class="report-table rate-table">
+        <thead><tr><th>Grade</th><th class="num">Loans</th><th class="num">Defaults</th><th>Default rate</th></tr></thead>
+        <tbody>{{ rate_rows(f.default_by_grade, 'band') }}</tbody>
+      </table>
+    </div>
+    <ul class="caveats">
+      {% for c in f.caveats %}<li>{{ c }}</li>{% endfor %}
+    </ul>
+  </section>
+
+  <section class="report-section insights-two">
+    <div>
+      <h2 class="card-title">Does the score add anything over runway?</h2>
+      <p>Ranking borrowers by our score separates defaulters with an AUC of <b>{{ '%.2f' | format(f.auc_score) }}</b>,
+        against <b>{{ '%.2f' | format(f.auc_runway) }}</b> for runway alone (0.5 = coin flip).</p>
+      <h3 class="explain-title mt-4">Strongest early warning signs</h3>
+      <ol class="signal-list">
+        {% for s in f.signals %}
+        <li><span>{{ s.name }}</span>
+          <span class="hbar"><span style="width: {{ (100 * ([s.auc - 0.5, 0] | max) / 0.25) | round(1) }}%"></span></span>
+          <b class="num">{{ '%.2f' | format(s.auc) }}</b></li>
+        {% endfor %}
+      </ol>
+      <p class="text-muted text-sm">AUC per score component. Bars start at 0.5 (no signal).</p>
+    </div>
+    <div>
+      <h2 class="card-title">Default rate by runway before the loan</h2>
+      <p class="text-muted text-sm mb-3">Judges' runway formula, same pre-loan months.</p>
+      <div class="table-wrap">
+        <table class="report-table rate-table">
+          <thead><tr><th>Runway</th><th class="num">Loans</th><th class="num">Defaults</th><th>Default rate</th></tr></thead>
+          <tbody>{{ rate_rows(f.default_by_runway, 'bucket') }}</tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="report-section">
+    <h2 class="card-title">If every customer took the same shock</h2>
+    <p class="text-muted text-sm mb-3">Share of all {{ '{:,}'.format(f.n_accounts) }} accounts whose savings run out within 6 months.</p>
+    {% set max_share = [f.stress | map(attribute='share_pct') | max, 1] | max %}
+    <ol class="stress-list">
+      {% for s in f.stress | sort(attribute='share_pct', reverse=true) %}
+      <li class="{{ 'is-today' if loop.last or s.name.startswith('No shock') }}">
+        <span>{{ s.name }}</span>
+        <span class="hbar"><span style="width: {{ (100 * s.share_pct / max_share) | round(1) }}%"></span></span>
+        <b class="num">{{ s.share_pct }}%</b>
+        <span class="text-muted text-sm num">{{ '{:,}'.format(s.short) }} accounts</span>
+      </li>
       {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  <p class="text-muted text-sm mt-4">
-    Runway uses each account's latest 6 months, which may come after a default. Read this as an
-    association between low runway and default, not a forecast. Small buckets are noisy.
-  </p>
-</div>
+    </ol>
+    <p class="text-muted text-sm">Bills +15% barely moves the total because many accounts have median household bills (H) of $0.</p>
+  </section>
+
+  <details class="report-section">
+    <summary class="card-title">Method</summary>
+    <p class="mt-2">{{ f.method }}</p>
+    <p class="text-muted text-sm mt-2">{{ f.n_excluded }} loans were left out because the account had fewer than
+      6 months of history before the loan started.</p>
+  </details>
+</article>
 {% endblock %}
