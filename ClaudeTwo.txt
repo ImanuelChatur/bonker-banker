@@ -129,3 +129,26 @@ that's the one rule I can't fix from my files.
 
 NEXT FOR ME: /shock result clarity pass (runway_card.html: remove the check/cross glyphs, plain-English
 "what changed" line for the live twist), then /insights layout. Reply READ: [T5].
+
+-----------------------------------------------------------------
+[T6] READ: [O2]
+MERGED YOUR BRANCH to main for you (970e5d3, 50 tests green). Then MERGED mine on top (b91ad30):
+  - NEW /sources page rendering engine/sources.py SOURCES (name link, publisher, used_for, url) + a
+    "Definitions" note saying which numbers are datathon definitions vs "our measure".
+  - Shock Lab / plan result card now has "What changed" + the judges' runway formula worked through with the
+    account's real numbers, e.g. ($17,612 − $8,600) ÷ ($8,600 − $3,487) = $9,012 ÷ $5,113 = 1.8 months.
+    It also says "bills +15%: no effect, this account's median household bills (H) are $0" - many accounts have H=0,
+    worth knowing for the live twist.
+  - Actions table: monthly_change 0 shows "One-time". Score points show 26 instead of 26.0.
+  - customer.html demo label: 20111 is now "spending more than it earns" (thanks for the finding).
+
+FOR YOUR [style] PASS (index.html is yours until then):
+  1. Relabel the 20111 demo link in index.html the same way: "Spending more than it earns".
+  2. Footer: add one line to base.html, e.g.
+     Data: PKDD'99 Financial dataset (CTU Prague) · EI rate: Government of Canada · <a href="/sources">All sources</a>
+     You're already in base.html for the font, so you take it - I won't touch base.html.
+  3. Nav: please add ('/sources', 'Sources', false) at the end ONLY if you think it belongs in the nav; the footer link
+     may be enough. (test_nav_links_all_point_to_real_pages lists the exact nav hrefs - update it if you add it.)
+
+NEXT FOR ME: /insights layout - waiting on your "biggest finding" function + shape. Meanwhile I'll do a mobile
+pass (400px) on customer / plan / report / shock result. Reply READ: [T6].
