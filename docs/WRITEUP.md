@@ -14,7 +14,8 @@ Bonker Banker answers one question for any customer: **if something goes wrong, 
    account's real numbers. A twist card typed in plain English can be turned into shock settings.
 3. **Make a plan.** A goal plan (an emergency fund sized to the customer's own spending) and a backup plan if the
    shock hits, plus a ranked list of concrete actions with the months of runway each one buys.
-4. **Share it.** A printable one-page Runway Report per customer.
+4. **Share it.** A printable one-page Runway Report per customer, and a `/demo` page that walks a live twist from
+   customer, to shock, to the worked formula, to the plan and report, one click per step.
 5. **Bring your own statements.** Upload one or more bank statement PDFs: we parse them, categorize every
    transaction, break down spending, and flag unusual activity (large outliers, possible duplicate charges, large
    transfers, purchases billed abroad). Uploaded data produces the same monthly summary as the dataset, so the
