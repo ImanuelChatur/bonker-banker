@@ -36,6 +36,6 @@ def register_routes(app):
         from engine import risk
         risk.warm_up()         # builds the peer-comparison table in the background (about 4 seconds)
 
-    from . import assistant, customer, insights, plans, report, shocks, sources, uploads
-    for module in (customer, shocks, plans, insights, uploads, assistant, report, sources):
+    from . import assistant, customer, demo, insights, plans, report, shocks, sources, uploads
+    for module in (customer, shocks, plans, insights, uploads, assistant, report, sources, demo):
         app.register_blueprint(module.bp)

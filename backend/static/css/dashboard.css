@@ -144,3 +144,17 @@
   .stress-list li > .text-muted { display: none; }
   .signal-list li { grid-template-columns: 7.5rem 1fr 2.5rem; }
 }
+
+/* ---------- /demo walkthrough ---------- */
+.demo-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1.5rem; }
+.demo-head .dash-lookup { margin: 0; }
+.demo-steps { display: grid; gap: 1.5rem; margin-bottom: 1.5rem; list-style: none; padding: 0; }
+.demo-steps > li, .demo-steps > li.card { margin: 0; }
+.demo-num { display: inline-grid; place-items: center; inline-size: 1.75rem; block-size: 1.75rem; margin-right: 0.6rem;
+            border: 1.5px solid var(--brand); color: var(--brand-strong); border-radius: 999px; font-size: 0.9rem; }
+.demo-step-title { margin-bottom: 0.75rem; }
+.demo-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1rem 1.5rem; }
+.demo-facts > div { display: grid; gap: 0.15rem; font-variant-numeric: tabular-nums; }
+.demo-facts b { font-size: 1.2rem; }
+.demo-facts .demo-big { font-size: 2rem; line-height: 1.1; }
+.demo-big small { font-size: 0.9rem; font-weight: 500; color: var(--muted); }
