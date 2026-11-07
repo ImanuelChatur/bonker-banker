@@ -1,0 +1,5 @@
+﻿# Datasets are too big for GitHub: never commit them.
+# Put the provided CSVs in data/raw/ then run: python scripts/precompute.py
+*.csv
+*.parquet
+

@@ -1,0 +1,1657 @@
+{
+"in|11|0|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 923
+},
+"in|10|0|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 529
+},
+"in|9|0|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 501
+},
+"in|10|1|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 129
+},
+"in|9|1|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 168
+},
+"in|13|3|0": {
+"category": "transfers_in",
+"confidence": 0.548,
+"n": 9412
+},
+"in|14|3|0": {
+"category": "pension_in",
+"confidence": 0.629,
+"n": 10049
+},
+"in|9|0|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 591
+},
+"in|10|0|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 618
+},
+"in|11|0|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 987
+},
+"in|14|3|1": {
+"category": "pension_in",
+"confidence": 0.625,
+"n": 21995
+},
+"in|15|0|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 2456
+},
+"in|15|3|1": {
+"category": "cash_deposits",
+"confidence": 0.929,
+"n": 15904
+},
+"in|8|0|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 164
+},
+"in|16|3|1": {
+"category": "cash_deposits",
+"confidence": 0.87,
+"n": 25193
+},
+"in|13|3|1": {
+"category": "transfers_in",
+"confidence": 0.559,
+"n": 22070
+},
+"in|17|3|1": {
+"category": "transfers_in",
+"confidence": 0.735,
+"n": 7663
+},
+"in|17|0|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 4805
+},
+"in|15|0|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 2372
+},
+"in|11|0|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 970
+},
+"in|16|0|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 2891
+},
+"in|9|0|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 535
+},
+"in|8|1|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 77
+},
+"in|8|0|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 192
+},
+"in|10|0|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 574
+},
+"in|9|1|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 199
+},
+"in|14|0|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 1982
+},
+"in|11|1|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 295
+},
+"in|9|1|3": {
+"category": "interest_in",
+"confidence": 0.927,
+"n": 2897
+},
+"in|17|0|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 4455
+},
+"in|9|0|3": {
+"category": "interest_in",
+"confidence": 0.958,
+"n": 11453
+},
+"in|8|1|3": {
+"category": "interest_in",
+"confidence": 0.995,
+"n": 18284
+},
+"in|11|0|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 807
+},
+"in|10|0|3": {
+"category": "cash_deposits",
+"confidence": 0.975,
+"n": 528
+},
+"in|16|0|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 2751
+},
+"in|15|0|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 2284
+},
+"in|10|1|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 154
+},
+"in|8|0|3": {
+"category": "interest_in",
+"confidence": 0.996,
+"n": 36466
+},
+"in|5|0|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 2829
+},
+"in|4|0|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 1368
+},
+"in|3|2|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 41
+},
+"in|3|0|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 780
+},
+"in|2|0|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 281
+},
+"in|7|0|3": {
+"category": "interest_in",
+"confidence": 0.998,
+"n": 33695
+},
+"in|6|0|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 14367
+},
+"in|13|0|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 1148
+},
+"in|12|0|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 963
+},
+"out|17|0|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 2371
+},
+"in|7|1|3": {
+"category": "interest_in",
+"confidence": 0.998,
+"n": 27922
+},
+"in|14|0|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 1925
+},
+"in|14|0|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 1899
+},
+"in|8|0|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 162
+},
+"in|15|0|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 2160
+},
+"in|8|1|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 77
+},
+"in|17|0|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 4174
+},
+"out|16|1|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.974,
+"n": 999
+},
+"in|13|0|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 1246
+},
+"in|16|3|0": {
+"category": "cash_deposits",
+"confidence": 0.847,
+"n": 11894
+},
+"in|15|3|0": {
+"category": "cash_deposits",
+"confidence": 0.852,
+"n": 8365
+},
+"out|12|0|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.941,
+"n": 4851
+},
+"in|12|0|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 994
+},
+"out|15|0|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.98,
+"n": 7505
+},
+"in|16|0|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 2677
+},
+"in|17|3|0": {
+"category": "transfers_in",
+"confidence": 0.741,
+"n": 3264
+},
+"out|15|3|0": {
+"category": "household_bills",
+"confidence": 0.919,
+"n": 2579
+},
+"out|11|2|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.922,
+"n": 722
+},
+"in|8|1|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 118
+},
+"in|9|1|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 193
+},
+"in|16|0|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 2881
+},
+"in|11|1|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 282
+},
+"in|14|0|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 2166
+},
+"out|14|1|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.95,
+"n": 3935
+},
+"out|17|0|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 2864
+},
+"out|16|0|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.994,
+"n": 7782
+},
+"out|15|0|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.98,
+"n": 8831
+},
+"out|15|1|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.936,
+"n": 2668
+},
+"out|9|1|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.97,
+"n": 1014
+},
+"in|10|1|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 172
+},
+"in|10|3|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 526
+},
+"in|11|3|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 2357
+},
+"in|13|0|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 1249
+},
+"in|17|0|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 4905
+},
+"out|15|0|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.989,
+"n": 8802
+},
+"out|10|2|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.948,
+"n": 481
+},
+"out|17|0|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 2554
+},
+"in|7|1|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 66
+},
+"in|10|1|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 167
+},
+"out|13|0|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.955,
+"n": 7412
+},
+"out|18|0|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 578
+},
+"out|13|1|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.934,
+"n": 4206
+},
+"out|11|1|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.931,
+"n": 3127
+},
+"out|12|1|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.916,
+"n": 4594
+},
+"out|14|0|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.993,
+"n": 6180
+},
+"in|11|1|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 238
+},
+"out|11|0|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.957,
+"n": 3080
+},
+"in|7|2|3": {
+"category": "interest_in",
+"confidence": 0.998,
+"n": 4948
+},
+"in|4|1|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 919
+},
+"in|1|0|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 190
+},
+"in|4|3|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 54
+},
+"in|5|1|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 1087
+},
+"in|5|2|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 196
+},
+"in|6|1|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 16097
+},
+"in|3|1|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 265
+},
+"out|3|3|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 144033
+},
+"out|14|0|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.988,
+"n": 6431
+},
+"out|13|1|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.936,
+"n": 4219
+},
+"out|16|0|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.996,
+"n": 6205
+},
+"in|11|1|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 272
+},
+"out|14|1|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.954,
+"n": 3349
+},
+"out|13|0|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.959,
+"n": 6604
+},
+"in|13|1|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 235
+},
+"out|8|0|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.987,
+"n": 316
+},
+"out|13|2|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.864,
+"n": 780
+},
+"out|12|3|0": {
+"category": "household_bills",
+"confidence": 0.576,
+"n": 12997
+},
+"out|13|3|0": {
+"category": "household_bills",
+"confidence": 0.779,
+"n": 12485
+},
+"out|12|0|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.943,
+"n": 5475
+},
+"out|12|1|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.92,
+"n": 5600
+},
+"out|9|0|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.971,
+"n": 906
+},
+"out|14|3|1": {
+"category": "household_bills",
+"confidence": 0.714,
+"n": 26450
+},
+"out|14|0|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.987,
+"n": 7587
+},
+"out|10|0|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.959,
+"n": 1882
+},
+"out|13|2|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.812,
+"n": 940
+},
+"in|12|0|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 1095
+},
+"in|13|0|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 1352
+},
+"in|11|3|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 1444
+},
+"in|12|3|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 768
+},
+"out|16|1|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.96,
+"n": 1136
+},
+"out|18|0|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 774
+},
+"out|13|1|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.93,
+"n": 5053
+},
+"in|9|3|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 520
+},
+"in|12|3|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 1373
+},
+"in|10|3|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 790
+},
+"in|9|3|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 589
+},
+"out|14|0|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.994,
+"n": 7245
+},
+"out|13|1|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.943,
+"n": 4740
+},
+"in|12|0|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 1055
+},
+"out|17|1|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 197
+},
+"out|16|0|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.998,
+"n": 7234
+},
+"out|15|1|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.976,
+"n": 2537
+},
+"out|10|1|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.957,
+"n": 1968
+},
+"out|8|0|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.895,
+"n": 342
+},
+"out|13|0|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.954,
+"n": 6295
+},
+"out|16|1|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.998,
+"n": 1044
+},
+"out|15|1|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.988,
+"n": 2270
+},
+"out|16|0|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.999,
+"n": 6392
+},
+"out|15|0|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.994,
+"n": 7401
+},
+"out|14|1|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.975,
+"n": 2985
+},
+"in|0|0|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 99
+},
+"in|8|2|3": {
+"category": "interest_in",
+"confidence": 0.996,
+"n": 1495
+},
+"out|5|3|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 8472
+},
+"out|7|3|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 3282
+},
+"out|15|1|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.944,
+"n": 2203
+},
+"out|17|0|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 2253
+},
+"out|18|0|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 552
+},
+"out|11|1|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.941,
+"n": 2990
+},
+"out|9|0|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.964,
+"n": 885
+},
+"in|14|1|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 149
+},
+"out|13|0|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.962,
+"n": 7541
+},
+"in|13|1|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 262
+},
+"out|7|1|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.993,
+"n": 134
+},
+"in|14|1|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 195
+},
+"out|10|3|1": {
+"category": "transfers_out_other",
+"confidence": 0.539,
+"n": 10605
+},
+"out|12|3|1": {
+"category": "household_bills",
+"confidence": 0.603,
+"n": 33631
+},
+"out|11|0|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.954,
+"n": 3514
+},
+"in|7|0|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 67
+},
+"out|7|1|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 130
+},
+"out|9|0|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.983,
+"n": 982
+},
+"in|12|1|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 314
+},
+"out|10|1|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.964,
+"n": 2254
+},
+"out|14|1|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.979,
+"n": 3528
+},
+"out|11|0|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.959,
+"n": 3349
+},
+"out|13|2|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.911,
+"n": 812
+},
+"in|14|1|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 150
+},
+"out|14|2|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.921,
+"n": 458
+},
+"in|13|1|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 220
+},
+"out|9|1|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.964,
+"n": 897
+},
+"out|18|0|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 583
+},
+"in|12|1|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 306
+},
+"in|6|2|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 5495
+},
+"out|12|1|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.925,
+"n": 4655
+},
+"out|8|1|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.984,
+"n": 249
+},
+"out|14|2|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.827,
+"n": 578
+},
+"out|15|2|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.879,
+"n": 132
+},
+"out|10|1|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.964,
+"n": 1943
+},
+"out|11|0|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.954,
+"n": 3034
+},
+"out|17|1|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 183
+},
+"in|7|0|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 84
+},
+"out|11|3|0": {
+"category": "transfers_out_other",
+"confidence": 0.524,
+"n": 6108
+},
+"out|8|3|0": {
+"category": "transfers_out_other",
+"confidence": 0.577,
+"n": 2468
+},
+"in|12|1|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 314
+},
+"out|14|3|0": {
+"category": "household_bills",
+"confidence": 0.818,
+"n": 10003
+},
+"out|13|3|1": {
+"category": "household_bills",
+"confidence": 0.68,
+"n": 37272
+},
+"out|11|1|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.947,
+"n": 3499
+},
+"out|8|1|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.987,
+"n": 301
+},
+"out|8|2|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.983,
+"n": 60
+},
+"out|11|3|1": {
+"category": "transfers_out_other",
+"confidence": 0.483,
+"n": 16959
+},
+"out|12|2|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.868,
+"n": 1361
+},
+"out|7|0|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.943,
+"n": 174
+},
+"out|10|1|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.965,
+"n": 2220
+},
+"out|10|0|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.966,
+"n": 1846
+},
+"out|12|0|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.932,
+"n": 5378
+},
+"out|11|2|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.914,
+"n": 729
+},
+"in|15|1|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 73
+},
+"out|16|1|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.987,
+"n": 1156
+},
+"out|12|1|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.925,
+"n": 5391
+},
+"in|13|1|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 260
+},
+"out|8|0|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.988,
+"n": 327
+},
+"out|10|0|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.958,
+"n": 1625
+},
+"out|17|1|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 187
+},
+"out|7|1|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.91,
+"n": 133
+},
+"out|9|2|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.961,
+"n": 207
+},
+"in|15|1|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 98
+},
+"out|10|2|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.957,
+"n": 416
+},
+"out|7|0|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.755,
+"n": 212
+},
+"out|13|2|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.902,
+"n": 594
+},
+"in|1|1|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 68
+},
+"in|4|2|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 71
+},
+"in|6|3|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 870
+},
+"out|10|0|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.962,
+"n": 1572
+},
+"out|7|3|0": {
+"category": "transfers_out_other",
+"confidence": 0.64,
+"n": 1171
+},
+"out|9|1|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.961,
+"n": 900
+},
+"out|4|3|0": {
+"category": "insurance",
+"confidence": 0.567,
+"n": 496
+},
+"in|18|3|0": {
+"category": "transfers_in",
+"confidence": 1.0,
+"n": 241
+},
+"out|10|3|0": {
+"category": "transfers_out_other",
+"confidence": 0.431,
+"n": 4013
+},
+"out|12|2|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.888,
+"n": 1112
+},
+"out|9|3|0": {
+"category": "transfers_out_other",
+"confidence": 0.478,
+"n": 3187
+},
+"out|6|3|1": {
+"category": "transfers_out_other",
+"confidence": 0.498,
+"n": 2276
+},
+"in|18|3|1": {
+"category": "transfers_in",
+"confidence": 1.0,
+"n": 597
+},
+"out|5|3|1": {
+"category": "transfers_out_other",
+"confidence": 0.574,
+"n": 1706
+},
+"out|9|3|1": {
+"category": "transfers_out_other",
+"confidence": 0.455,
+"n": 7078
+},
+"out|8|3|1": {
+"category": "transfers_out_other",
+"confidence": 0.592,
+"n": 3817
+},
+"out|7|3|1": {
+"category": "transfers_out_other",
+"confidence": 0.431,
+"n": 2963
+},
+"out|8|0|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.983,
+"n": 350
+},
+"in|15|1|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 141
+},
+"out|15|3|1": {
+"category": "household_bills",
+"confidence": 0.892,
+"n": 6499
+},
+"out|11|1|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.944,
+"n": 3360
+},
+"out|7|0|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.99,
+"n": 203
+},
+"out|12|2|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.907,
+"n": 1241
+},
+"out|9|1|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.967,
+"n": 1009
+},
+"out|9|3|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.75,
+"n": 60
+},
+"out|12|2|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.912,
+"n": 976
+},
+"out|11|2|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.916,
+"n": 574
+},
+"out|12|0|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.929,
+"n": 4789
+},
+"out|8|1|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.975,
+"n": 280
+},
+"in|7|3|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 986
+},
+"out|0|0|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 70
+},
+"out|1|0|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 106
+},
+"out|7|0|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.984,
+"n": 188
+},
+"out|11|2|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.93,
+"n": 659
+},
+"out|10|2|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.961,
+"n": 441
+},
+"out|6|3|0": {
+"category": "transfers_out_other",
+"confidence": 0.506,
+"n": 960
+},
+"in|7|1|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 69
+},
+"out|-1|3|1": {
+"category": "insurance",
+"confidence": 0.517,
+"n": 149
+},
+"in|12|1|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 298
+},
+"out|14|2|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.908,
+"n": 565
+},
+"out|8|1|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.98,
+"n": 300
+},
+"out|15|2|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.93,
+"n": 115
+},
+"out|12|3|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.902,
+"n": 82
+},
+"in|14|1|3": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 115
+},
+"out|9|0|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.966,
+"n": 899
+},
+"in|-1|0|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 31
+},
+"in|9|2|3": {
+"category": "interest_in",
+"confidence": 0.967,
+"n": 183
+},
+"out|7|1|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.965,
+"n": 115
+},
+"out|3|3|0": {
+"category": "transfers_out_other",
+"confidence": 0.567,
+"n": 372
+},
+"out|9|2|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.959,
+"n": 219
+},
+"out|14|2|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.775,
+"n": 712
+},
+"out|10|2|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.903,
+"n": 465
+},
+"out|1|3|1": {
+"category": "insurance",
+"confidence": 0.602,
+"n": 279
+},
+"out|2|3|1": {
+"category": "insurance",
+"confidence": 0.512,
+"n": 332
+},
+"out|4|3|1": {
+"category": "transfers_out_other",
+"confidence": 0.585,
+"n": 718
+},
+"out|8|2|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.98,
+"n": 50
+},
+"out|10|3|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.912,
+"n": 34
+},
+"out|13|3|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.87,
+"n": 46
+},
+"out|9|2|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.981,
+"n": 260
+},
+"out|16|2|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.97,
+"n": 33
+},
+"out|15|2|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.96,
+"n": 99
+},
+"out|15|2|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.874,
+"n": 135
+},
+"out|9|2|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.95,
+"n": 239
+},
+"out|8|2|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 40
+},
+"in|2|1|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 79
+},
+"in|7|1|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 69
+},
+"out|17|1|1": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 242
+},
+"in|7|0|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 62
+},
+"out|11|3|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.986,
+"n": 74
+},
+"out|2|1|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 55
+},
+"in|8|3|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 88
+},
+"out|14|3|2": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.921,
+"n": 38
+},
+"out|12|3|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.932,
+"n": 59
+},
+"out|11|3|3": {
+"category": "cash_withdrawals_genuine",
+"confidence": 1.0,
+"n": 55
+},
+"in|8|3|3": {
+"category": "interest_in",
+"confidence": 0.997,
+"n": 348
+},
+"out|4|1|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 43
+},
+"out|1|3|0": {
+"category": "transfers_out_other",
+"confidence": 0.6,
+"n": 205
+},
+"out|0|3|0": {
+"category": "household_bills",
+"confidence": 1.0,
+"n": 61
+},
+"out|8|2|0": {
+"category": "cash_withdrawals_genuine",
+"confidence": 0.946,
+"n": 37
+},
+"out|5|3|0": {
+"category": "transfers_out_other",
+"confidence": 0.408,
+"n": 483
+},
+"out|0|3|1": {
+"category": "transfers_out_other",
+"confidence": 0.598,
+"n": 224
+},
+"out|3|3|1": {
+"category": "transfers_out_other",
+"confidence": 0.726,
+"n": 274
+},
+"in|17|1|1": {
+"category": "cash_deposits",
+"confidence": 0.806,
+"n": 186
+},
+"in|16|1|1": {
+"category": "cash_deposits",
+"confidence": 0.938,
+"n": 195
+},
+"in|8|3|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 63
+},
+"out|-1|0|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 48
+},
+"out|3|0|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 151
+},
+"out|3|1|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 59
+},
+"out|1|1|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 53
+},
+"out|-3|1|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 30
+},
+"out|2|0|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 165
+},
+"out|-1|1|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 33
+},
+"out|4|0|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 143
+},
+"out|5|0|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 104
+},
+"in|0|1|3": {
+"category": "interest_in",
+"confidence": 1.0,
+"n": 31
+},
+"in|15|1|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 103
+},
+"in|16|1|0": {
+"category": "cash_deposits",
+"confidence": 0.889,
+"n": 108
+},
+"in|9|3|3": {
+"category": "interest_in",
+"confidence": 0.948,
+"n": 96
+},
+"in|17|1|0": {
+"category": "cash_deposits",
+"confidence": 0.766,
+"n": 77
+},
+"out|0|1|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 55
+},
+"in|11|2|2": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 33
+},
+"out|2|3|0": {
+"category": "transfers_out_other",
+"confidence": 1.0,
+"n": 59
+},
+"in|16|2|0": {
+"category": "cash_deposits",
+"confidence": 0.86,
+"n": 592
+},
+"in|15|2|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 237
+},
+"in|17|2|0": {
+"category": "cash_deposits",
+"confidence": 0.796,
+"n": 519
+},
+"in|14|2|0": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 114
+},
+"in|18|2|0": {
+"category": "transfers_in",
+"confidence": 1.0,
+"n": 114
+},
+"in|17|2|1": {
+"category": "cash_deposits",
+"confidence": 0.761,
+"n": 966
+},
+"in|14|2|1": {
+"category": "cash_deposits",
+"confidence": 1.0,
+"n": 206
+},
+"in|16|2|1": {
+"category": "cash_deposits",
+"confidence": 0.869,
+"n": 1141
+},
+"in|18|2|1": {
+"category": "transfers_in",
+"confidence": 1.0,
+"n": 205
+},
+"in|15|2|1": {
+"category": "cash_deposits",
+"confidence": 0.99,
+"n": 525
+},
+"out|3|2|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 59
+},
+"out|6|0|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 90
+},
+"out|5|1|3": {
+"category": "bank_fees",
+"confidence": 1.0,
+"n": 42
+},
+"in|18|1|1": {
+"category": "transfers_in",
+"confidence": 1.0,
+"n": 42
+}
+}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Shock Lab · Bonker Banker{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1 class="text-2xl font-bold mb-4">Shock Lab</h1>
+  <form hx-post="/shock/run" hx-target="#result" class="space-y-4">
+    <label class="block">
+      <span class="metric-label">Account ID</span>
+      <input name="account_id" required value="{{ account_id }}" class="border rounded px-2 py-1"
+             style="border-color:var(--border)">
+    </label>
+    <div class="flex gap-3 text-sm">
+      Presets:
+      <a href="/shock?preset=job_loss&account_id={{ account_id }}">Job loss (EI 55%, 6 mo)</a>
+      <a href="/shock?preset=bills_up&account_id={{ account_id }}">Bills +15%</a>
+      <a href="/shock?preset=repair&account_id={{ account_id }}">Repair (1 month)</a>
+      <a href="/shock?preset=combo&account_id={{ account_id }}">Job loss + bills</a>
+    </div>
+    {% include "partials/shock_fields.html" %}
+    <button class="btn-primary" type="submit">Run shock</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2 class="card-title">Paste a twist card</h2>
+  <form hx-post="/assistant/twist" hx-target="#result" class="space-y-3">
+    <label class="block">
+      <span class="metric-label">Account ID</span>
+      <input name="account_id" required value="{{ account_id }}" class="border rounded px-2 py-1"
+             style="border-color:var(--border)">
+    </label>
+    <textarea name="twist" rows="3" required class="border rounded px-2 py-1 w-full" style="border-color:var(--border)"
+      placeholder="This customer was laid off. EI pays 55% of their usual income for 6 months."></textarea>
+    <button class="btn-primary" type="submit">Interpret and run</button>
+  </form>
+</div>
+
+<div id="result" class="mt-6"></div>
+{% endblock %}

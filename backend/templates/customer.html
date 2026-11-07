@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Customer · Bonker Banker{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1 class="text-2xl font-bold mb-4">Customer</h1>
+  <form action="/customer" method="get" class="flex gap-3">
+    <input name="account_id" required placeholder="account_id e.g. 20111" value="{{ account_id or '' }}"
+           class="border rounded px-2 py-1" style="border-color:var(--border)">
+    <button class="btn-primary" type="submit">Look up</button>
+  </form>
+</div>
+
+{% if m %}
+<div class="mt-6">
+  {% include "partials/metric_cards.html" %}
+</div>
+<div class="card mt-6">
+  <h2 class="card-title">Runway: {{ runway | months }}</h2>
+  <p class="text-muted mb-3">{{ m.months_of_history }} months of history.
+    <a href="/shock?account_id={{ account_id }}">Open in Shock Lab</a> ·
+    <a href="/plan?account_id={{ account_id }}">Make a plan</a></p>
+  <div class="chart" data-chart='{{ history | tojson }}'></div>
+</div>
+<div class="mt-6">
+  {% set backup = none %}
+  {% include "partials/plan_panel.html" %}
+</div>
+{% endif %}
+{% endblock %}

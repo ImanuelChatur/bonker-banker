@@ -1,0 +1,16 @@
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+  {% for name, label, default in [
+    ("income_pct", "Income after shock (% of usual)", f.get("income_pct", 100)),
+    ("duration_months", "Income change lasts (months, blank = ongoing)", f.get("duration_months", "")),
+    ("bills_pct", "Household bills change (%)", f.get("bills_pct", 0)),
+    ("extra_spending", "Extra spending ($/month)", 0),
+    ("one_off_cost", "One-off cost ($)", 0),
+    ("one_off_months", "One-off cost (months of spending)", f.get("one_off_months", 0))
+  ] %}
+  <label class="block">
+    <span class="metric-label">{{ label }}</span>
+    <input name="{{ name }}" type="number" step="any" value="{{ default }}"
+           class="border rounded px-2 py-1 w-full" style="border-color:var(--border)">
+  </label>
+  {% endfor %}
+</div>

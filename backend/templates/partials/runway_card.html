@@ -1,0 +1,27 @@
+<div class="card">
+  <h2 class="card-title">Runway</h2>
+  {% if twist %}<p class="text-muted mb-3">Twist: <em>{{ twist }}</em></p>{% endif %}
+  <div class="grid grid-cols-2 gap-4 mb-4">
+    <div>
+      <div class="metric-label">Before</div>
+      <div class="metric-value">{{ res.before.runway | months }}</div>
+    </div>
+    <div>
+      <div class="metric-label">After shock</div>
+      <div class="metric-value">{{ res.after.runway | months }}</div>
+    </div>
+  </div>
+  <p class="text-muted mb-3">
+    Income {{ res.after.income | money }}/mo · spending {{ res.after.spending | money }}/mo ·
+    monthly gap {{ res.after.monthly_gap | money }} · one-off cost {{ res.after.one_off_cost | money }} ·
+    buffer left {{ res.after.buffer_left | money }}
+  </p>
+  {% if res.survives_duration %}
+    {% set s = res.survives_duration %}
+    <p class="{{ 'status-ok' if s.makes_it else 'font-semibold' }}" {% if not s.makes_it %}style="color:var(--bad)"{% endif %}>
+      {% if s.makes_it %}Makes it through {{ s.months }} months (buffer at end {{ s.buffer_at_end | money }}).
+      {% else %}Does not make it through {{ s.months }} months: short by {{ s.shortfall | money }}.{% endif %}
+    </p>
+  {% endif %}
+  <div class="chart mt-4" data-chart='{{ chart | tojson }}'></div>
+</div>

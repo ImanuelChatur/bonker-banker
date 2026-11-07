@@ -1,0 +1,16 @@
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+  {% for label, value, hint in [
+    ("Typical monthly income (I)", m.income, "median money in"),
+    ("Typical spending (S)", m.spending, "median money out"),
+    ("Fixed costs (F)", m.fixed_costs, "bills + insurance + loans"),
+    ("Household bills (H)", m.household_bills, "median per month"),
+    ("Savings buffer (B)", m.buffer, "avg daily balance, last 6 months"),
+    ("Active loan payment (P)", m.loan_payment_active, "0 if no running loan")
+  ] %}
+  <div class="card">
+    <div class="metric-label">{{ label }}</div>
+    <div class="metric-value">{{ value | money }}</div>
+    <div class="text-muted text-sm">{{ hint }}</div>
+  </div>
+  {% endfor %}
+</div>
