@@ -1,0 +1,107 @@
+/* Bonker Banker — shared styles.
+   Tailwind handles one-off layout; reusable pieces and brand colors live here. */
+
+:root {
+  --brand: #f97316;          /* orange */
+  --brand-hover: #ea580c;
+  --ink: #1e293b;
+  --muted: #64748b;
+  --surface: #ffffff;
+  --page: #f8fafc;
+  --border: #e2e8f0;
+  --good: #059669;
+  --warn: #d97706;
+  --bad: #dc2626;
+  --radius: 1rem;
+}
+
+body {
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ---------- Nav ---------- */
+.nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.nav-brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--brand);
+}
+.nav-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.nav-link:hover,
+.nav-link.active {
+  color: var(--brand);
+}
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  padding: 2rem;
+}
+.card + .card {
+  margin-top: 1.5rem;
+}
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* ---------- Metric tiles (income, bills, buffer, runway) ---------- */
+.metric-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.metric-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+.metric-value.good { color: var(--good); }
+.metric-value.warn { color: var(--warn); }
+.metric-value.bad  { color: var(--bad); }
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+  background: var(--brand);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-primary:hover {
+  background: var(--brand-hover);
+}
+
+/* ---------- Text helpers ---------- */
+.text-muted { color: var(--muted); }
+.status-ok  { color: var(--good); font-weight: 600; }
+
+/* ---------- Charts ---------- */
+.chart {
+  height: 300px;
+  width: 100%;
+}
+
+/* ---------- HTMX: fade in swapped content ---------- */
+.htmx-added {
+  opacity: 0;
+}
+.htmx-settling {
+  opacity: 1;
+  transition: opacity 0.2s;
+}

@@ -11,7 +11,7 @@ def create_app():
     # HTMX test: returns a small HTML snippet that gets swapped into the page
     @app.route("/health")
     def health():
-        return '<span class="text-emerald-600 font-semibold">Flask is connected ✓</span>'
+        return '<span class="status-ok">Flask is connected ✓</span>'
 
     return app
 

@@ -1,36 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+<div class="card">
   <h1 class="text-3xl font-bold mb-1">Bonker Banker</h1>
-  <p class="text-slate-500 mb-6">Know your runway before life goes bonkers.</p>
+  <p class="text-muted mb-6">Know your runway before life goes bonkers.</p>
 
   <!-- HTMX test: clicking calls /health and swaps the reply into #status -->
-  <button
-    hx-get="/health"
-    hx-target="#status"
-    class="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg">
+  <button hx-get="/health" hx-target="#status" class="btn-primary">
     Test connection
   </button>
-  <span id="status" class="ml-3 text-slate-400">Not tested yet</span>
+  <span id="status" class="ml-3 text-muted">Not tested yet</span>
 </div>
 
-<!-- ECharts test: placeholder chart with fake numbers -->
-<div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mt-6">
-  <h2 class="text-lg font-semibold mb-4">Runway test chart (fake data)</h2>
-  <div id="test-chart" style="height: 300px;"></div>
+<div class="card">
+  <h2 class="card-title">Runway test chart (fake data)</h2>
+  <!-- charts.js draws this automatically from the data-chart attribute -->
+  <div class="chart" data-chart='{
+    "labels": ["Now", "M1", "M2", "M3", "M4", "M5", "M6"],
+    "yName": "Buffer ($)",
+    "series": [{ "name": "Buffer", "data": [8000, 6900, 5800, 4700, 3600, 2500, 1400] }]
+  }'></div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-  const chart = echarts.init(document.getElementById("test-chart"));
-  chart.setOption({
-    tooltip: { trigger: "axis" },
-    xAxis: { type: "category", data: ["Now", "M1", "M2", "M3", "M4", "M5", "M6"] },
-    yAxis: { type: "value", name: "Buffer ($)" },
-    series: [{ type: "line", smooth: true, data: [8000, 6900, 5800, 4700, 3600, 2500, 1400] }]
-  });
-  window.addEventListener("resize", () => chart.resize());
-</script>
 {% endblock %}
