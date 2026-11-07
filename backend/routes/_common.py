@@ -39,7 +39,8 @@ def _chart(m, res) -> dict:
     nonzero = [i for series in (before, after) for i, v in enumerate(series) if v > 0]
     n = min((max(nonzero) if nonzero else 0) + 2, len(before))   # stop shortly after the buffer hits zero
     return {"labels": ["Now"] + [f"M{i}" for i in range(1, n)], "yName": "Buffer ($)",
-            "series": [{"name": "Typical", "data": before[:n]}, {"name": "After shock", "data": after[:n]}]}
+            "series": [{"name": "Typical", "data": before[:n], "color": "#94a3b8", "smooth": False},
+                       {"name": "After shock", "data": after[:n], "color": "#dc2626", "smooth": False}]}
 
 
 def build_scenario(account_id: str, shock: Shock, goal_months: float = 3.0, target_runway: float = 6.0,

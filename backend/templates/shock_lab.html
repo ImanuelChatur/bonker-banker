@@ -1,40 +1,95 @@
 {% extends "base.html" %}
 {% block title %}Shock Lab · Bonker Banker{% endblock %}
 
+{% macro slider(name, label, min, max, step, value, fmt) %}
+<label class="slider-field">
+  <span class="slider-head">
+    <span class="metric-label">{{ label }}</span>
+    <output class="slider-value" data-for="{{ name }}" data-fmt="{{ fmt }}"></output>
+  </span>
+  <input type="range" class="slider" name="{{ name }}" id="{{ name }}"
+         min="{{ min }}" max="{{ max }}" step="{{ step }}" value="{{ value }}">
+</label>
+{% endmacro %}
+
 {% block content %}
-<div class="card">
-  <h1 class="text-2xl font-bold mb-4">Shock Lab</h1>
-  <form hx-post="/shock/run" hx-target="#result" class="space-y-4">
-    <label class="block">
-      <span class="metric-label">Account ID</span>
-      <input name="account_id" required value="{{ account_id }}" class="border rounded px-2 py-1"
-             style="border-color:var(--border)">
-    </label>
-    <div class="flex gap-3 text-sm">
-      Presets:
-      <a href="/shock?preset=job_loss&account_id={{ account_id }}">Job loss (EI 55%, 6 mo)</a>
-      <a href="/shock?preset=bills_up&account_id={{ account_id }}">Bills +15%</a>
-      <a href="/shock?preset=repair&account_id={{ account_id }}">Repair (1 month)</a>
-      <a href="/shock?preset=combo&account_id={{ account_id }}">Job loss + bills</a>
-    </div>
-    {% include "partials/shock_fields.html" %}
-    <button class="btn-primary" type="submit">Run shock</button>
-  </form>
+<div class="lab-grid">
+
+  <!-- ===== Left: controls ===== -->
+  <section class="card lab-controls">
+    <h1 class="text-2xl font-bold mb-1">Shock Lab</h1>
+    <p class="text-muted mb-5">Move a slider and the runway recalculates instantly.</p>
+
+    <!-- One form drives everything: any input change re-runs the shock (debounced). -->
+    <form id="shock-form"
+          hx-post="/shock/run" hx-target="#result"
+          hx-trigger="load, input delay:250ms, bbrun"
+          hx-sync="this:replace" hx-indicator="#result">
+
+      <label class="block mb-5">
+        <span class="metric-label">Account ID</span>
+        <input id="account-id" name="account_id" value="{{ account_id }}" class="input input-lg"
+               placeholder="e.g. 39507" inputmode="numeric" autocomplete="off">
+      </label>
+
+      <div class="mb-6">
+        <span class="metric-label">Twist presets</span>
+        <div class="preset-row">
+          {% for key, label in preset_labels %}
+          <button type="button" class="preset-btn {{ 'active' if key == active_preset }}"
+                  data-preset='{{ presets[key] | tojson }}'>{{ label }}</button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <fieldset class="lab-group" data-group="job">
+        <label class="toggle">
+          <input type="checkbox" name="job_loss" id="job_loss" value="1" {{ 'checked' if f.job_loss }}>
+          <span class="toggle-track"></span>
+          <span class="font-semibold">Job loss</span>
+        </label>
+        {{ slider("income_pct", "Income on EI (% of usual)", 0, 100, 5, f.income_pct, "pct") }}
+        {{ slider("duration_months", "EI lasts", 0, 24, 1, f.duration_months, "months") }}
+      </fieldset>
+
+      <fieldset class="lab-group">
+        <legend class="font-semibold">Costs</legend>
+        {{ slider("bills_pct", "Household bills increase", 0, 50, 1, f.bills_pct, "pct_up") }}
+        {{ slider("one_off_months", "Surprise repair (months of spending)", 0, 6, 0.5, f.one_off_months, "spend") }}
+        <div class="grid grid-cols-2 gap-3">
+          <label class="block">
+            <span class="metric-label">Extra one-off $</span>
+            <input type="number" name="one_off_cost" min="0" step="50" value="{{ f.one_off_cost }}" class="input">
+          </label>
+          <label class="block">
+            <span class="metric-label">Extra $ / month</span>
+            <input type="number" name="extra_spending" min="0" step="25" value="{{ f.extra_spending }}" class="input">
+          </label>
+        </div>
+      </fieldset>
+
+      <button type="button" id="reset-btn" class="btn-secondary w-full">Reset to no shock</button>
+    </form>
+
+    <!-- Twist card: plain English → settings. Uses the same account ID field. -->
+    <form class="twist-form" hx-post="/assistant/twist" hx-target="#result"
+          hx-include="#account-id" hx-indicator="#result">
+      <span class="metric-label">Or paste a twist card</span>
+      <textarea name="twist" rows="3" required class="input mt-1"
+        placeholder="They lose their job (EI at 55%) and their household bills go up 15% in the same month."></textarea>
+      <button class="btn-primary w-full mt-2" type="submit">Interpret and run</button>
+    </form>
+  </section>
+
+  <!-- ===== Right: live results ===== -->
+  <section id="result" class="lab-result">
+    {% include "partials/shock_empty.html" %}
+  </section>
 </div>
 
-<div class="card">
-  <h2 class="card-title">Paste a twist card</h2>
-  <form hx-post="/assistant/twist" hx-target="#result" class="space-y-3">
-    <label class="block">
-      <span class="metric-label">Account ID</span>
-      <input name="account_id" required value="{{ account_id }}" class="border rounded px-2 py-1"
-             style="border-color:var(--border)">
-    </label>
-    <textarea name="twist" rows="3" required class="border rounded px-2 py-1 w-full" style="border-color:var(--border)"
-      placeholder="This customer was laid off. EI pays 55% of their usual income for 6 months."></textarea>
-    <button class="btn-primary" type="submit">Interpret and run</button>
-  </form>
-</div>
+<script type="application/json" id="shock-defaults">{{ blank | tojson }}</script>
+{% endblock %}
 
-<div id="result" class="mt-6"></div>
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/shock_lab.js') }}"></script>
 {% endblock %}
