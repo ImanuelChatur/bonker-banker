@@ -1,1 +1,38 @@
-.idea
+# ===== Python =====
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ===== Node / Angular =====
+node_modules/
+frontend/dist/
+frontend/.angular/
+npm-debug.log*
+
+# ===== Data =====
+data/raw/
+# uncomment if processed files get large:
+# data/processed/
+
+# ===== Uploaded statements (never commit) =====
+uploads/
+*.pdf
+!backend/tests/fixtures/*.pdf
+
+# ===== Secrets =====
+.env
+.env.*
+!.env.example
+
+# ===== JetBrains =====
+.idea/
+*.iml
+
+# ===== OS / editors =====
+.DS_Store
+Thumbs.db
+.vscode/
