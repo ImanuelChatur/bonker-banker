@@ -1,25 +1,49 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="home-grid">
 <section class="hero">
-  <span class="hero-eyebrow">💸 Financial resilience, in plain numbers</span>
-  <h1>Know your runway <em>before life goes bonkers.</em></h1>
-  <p>See how many months your savings would last, stress-test a job loss or a surprise bill,
-     and get a plan. Or upload a bank statement and see where the money went.</p>
+  <h1>Know your runway before life goes bonkers.</h1>
+  <p>Pick any of the 4,500 accounts in the Tangerine dataset and see how many months its savings would last.
+     Then apply a job loss, higher bills or a surprise repair and watch the number change.
+     You can also upload your own bank statements to see where the money went.</p>
 
   <form action="/customer" method="get" class="hero-form">
     <input name="account_id" required placeholder="Account ID, e.g. 20111"
            inputmode="numeric" autocomplete="off" aria-label="Account ID">
     <button class="btn-primary" type="submit">Look up customer</button>
-    <a href="/upload" class="btn-secondary">Upload a statement</a>
   </form>
   <p class="hero-demos">
     Try a demo:
     <a href="/customer/20176">Steady saver</a> ·
-    <a href="/customer/20111">Typical household</a> ·
+    <a href="/customer/20111">Spending more than it earns</a> ·
     <a href="/customer/21817">Living on the edge</a>
   </p>
 </section>
+
+<nav class="home-links" aria-label="Pages">
+  <a class="home-link" href="/customer">
+    <span class="home-link-name">Customer</span>
+    <span class="home-link-desc">Income, bills, savings buffer and months of runway for one account.</span>
+  </a>
+  <a class="home-link" href="/shock">
+    <span class="home-link-name">Shock Lab</span>
+    <span class="home-link-desc">Job loss on EI, higher bills, a repair. Move a slider and the runway recalculates.</span>
+  </a>
+  <a class="home-link" href="/plan">
+    <span class="home-link-name">Plan</span>
+    <span class="home-link-desc">An emergency-fund goal, plus how much to cut if a shock hits.</span>
+  </a>
+  <a class="home-link" href="/insights">
+    <span class="home-link-name">Insights</span>
+    <span class="home-link-desc">How runway relates to loan default across every account.</span>
+  </a>
+  <a class="home-link" href="/upload">
+    <span class="home-link-name">Upload</span>
+    <span class="home-link-desc">Parse statements, break down spending and flag unusual purchases.</span>
+  </a>
+</nav>
+</div>
 
 <section class="steps" aria-label="How it works">
   <div class="step"><span class="step-num">1</span>
@@ -36,36 +60,8 @@
   </div>
 </section>
 
-<section class="feature-grid" aria-label="What you can do">
-  <a class="feature-card" href="/customer"><article>
-    <div class="feature-icon" aria-hidden="true">👤</div>
-    <h3>Customer</h3>
-    <p>Income, bills, savings buffer and months of runway for any account.</p>
-  </article></a>
-  <a class="feature-card" href="/shock"><article>
-    <div class="feature-icon" aria-hidden="true">⚡</div>
-    <h3>Shock Lab</h3>
-    <p>Job loss, higher bills, a repair. Move a slider and watch the runway change.</p>
-  </article></a>
-  <a class="feature-card" href="/plan"><article>
-    <div class="feature-icon" aria-hidden="true">🧭</div>
-    <h3>Plan</h3>
-    <p>An emergency-fund goal plus a backup plan if the shock hits.</p>
-  </article></a>
-  <a class="feature-card" href="/insights"><article>
-    <div class="feature-icon" aria-hidden="true">📈</div>
-    <h3>Insights</h3>
-    <p>How runway relates to loan default across the whole dataset.</p>
-  </article></a>
-  <a class="feature-card" href="/upload"><article>
-    <div class="feature-icon" aria-hidden="true">📄</div>
-    <h3>Upload</h3>
-    <p>Parse a statement, break down spending and flag unusual purchases.</p>
-  </article></a>
-</section>
-
 <p class="footer-note text-muted text-sm">
-  <!-- HTMX health check: runs on load and swaps the reply into the pill -->
-  <span class="status-pill" hx-get="/health" hx-trigger="load" hx-swap="innerHTML">Checking server…</span>
+  <!-- HTMX health check: runs on load and swaps the reply into this span -->
+  <span class="status-pill" hx-get="/health" hx-trigger="load" hx-swap="innerHTML">Checking server</span>
 </p>
 {% endblock %}

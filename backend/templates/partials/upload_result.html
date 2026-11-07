@@ -1,4 +1,4 @@
-{% set sev_icon = {"high": "⛔", "medium": "⚠", "low": "ℹ"} %}
+{% set sev_icon = {"high": "", "medium": "", "low": ""} %}
 <div class="reveal">
 
   <!-- ===== Files: one row per uploaded statement ===== -->
@@ -7,12 +7,12 @@
       <h2 class="card-title" style="margin:0">
         {{ ok_count }} of {{ entries | length }} statement{{ "s" if entries | length != 1 }} parsed
       </h2>
-      {% if failed %}<span class="badge badge-high">✕ {{ failed }} failed</span>{% endif %}
+      {% if failed %}<span class="badge badge-high">{{ failed }} failed</span>{% endif %}
     </div>
     <div class="file-list">
       {% for e in entries %}
       <div class="file-row">
-        {% if e.st %}<span class="badge badge-ok">✓ Parsed</span>{% else %}<span class="badge badge-high">✕ Failed</span>{% endif %}
+        {% if e.st %}<span class="badge badge-ok">Parsed</span>{% else %}<span class="badge badge-high">Failed</span>{% endif %}
         <div class="file-main">
           <div class="file-name">{{ e.name }}</div>
           {% if e.st %}
@@ -20,14 +20,14 @@
           <div class="chips">
             <span class="chip"><span class="chip-k">Bank</span> {{ st.bank }}</span>
             <span class="chip"><span class="chip-k">Account</span> {{ st.account }}</span>
-            <span class="chip"><span class="chip-k">Period</span> {{ st.period_start or "?" }} → {{ st.period_end or "?" }}</span>
+            <span class="chip"><span class="chip-k">Period</span> {{ st.period_start or "?" }} to {{ st.period_end or "?" }}</span>
             <span class="chip"><span class="chip-k">Opening</span> {{ st.opening_balance if st.opening_balance is not none else "?" }}</span>
             <span class="chip"><span class="chip-k">Closing</span> {{ st.closing_balance if st.closing_balance is not none else "?" }}</span>
             <span class="chip">{{ st.transactions | length }} transactions · {{ e.added }} new</span>
           </div>
           {% if st.warnings %}
           <details class="warn-details">
-            <summary>⚠ {{ st.warnings | length }} warning{{ "s" if st.warnings | length != 1 }}</summary>
+            <summary>{{ st.warnings | length }} warning{{ "s" if st.warnings | length != 1 }}</summary>
             <ul>{% for w in st.warnings %}<li>{{ w }}</li>{% endfor %}</ul>
           </details>
           {% endif %}
@@ -68,7 +68,7 @@
   <div class="card">
     <div class="flag-head">
       <h2 class="card-title" style="margin:0">Unusual activity</h2>
-      {% if flags %}<span class="badge badge-medium">⚠ {{ flags | length }} to review</span>{% endif %}
+      {% if flags %}<span class="badge badge-medium">{{ flags | length }} to review</span>{% endif %}
     </div>
     <p class="flag-note mt-1">
       Patterns worth a second look: unusually large purchases, possible duplicate charges, large transfers,
@@ -79,7 +79,7 @@
       {% for f in flags[:12] %}
       {% set t = merged[f.index] %}
       <div class="flag-item">
-        <span class="badge badge-{{ f.severity }}">{{ sev_icon[f.severity] }} {{ f.severity | capitalize }}</span>
+        <span class="badge badge-{{ f.severity }}">{{ f.severity | capitalize }}</span>
         <div>
           <div class="flag-title">{{ t.description }}</div>
           <div class="flag-meta">{{ t.date }}{% if multi %} · {{ t.source }}{% endif %}</div>
@@ -93,7 +93,7 @@
     <p class="text-muted text-sm mt-2">+ {{ flags | length - 12 }} more. Tick "Flagged only" in the table below to see them all.</p>
     {% endif %}
     {% else %}
-    <p class="flag-clear mt-3">✓ Nothing unusual found.</p>
+    <p class="flag-clear mt-3">Nothing unusual found.</p>
     {% endif %}
   </div>
 
@@ -166,7 +166,7 @@
             <td>{{ t.description }}</td>
             {% if multi %}<td class="text-muted">{{ t.source }}</td>{% endif %}
             <td>{{ cat }}{% if t.category_source == "learned" %} <small class="text-muted">(learned)</small>{% endif %}</td>
-            <td>{% if f %}<span class="badge badge-{{ f.severity }}" title="{{ f.reasons | join('; ') }}">{{ sev_icon[f.severity] }} {{ f.severity | capitalize }}</span>{% endif %}</td>
+            <td>{% if f %}<span class="badge badge-{{ f.severity }}" title="{{ f.reasons | join('; ') }}">{{ f.severity | capitalize }}</span>{% endif %}</td>
             <td class="num {{ 'amt-neg' if t.amount < 0 else 'amt-pos' }}">{{ "{:,.2f}".format(t.amount) }}</td>
           </tr>
         {% endfor %}
