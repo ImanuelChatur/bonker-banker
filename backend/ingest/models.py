@@ -18,6 +18,7 @@ class Transaction:
     category_source: str = "rule"        # "rule" (keywords) or "learned" (dataset priors)
     raw: str = ""
     seq: int = 0                          # position within the statement
+    source: str = ""                      # which statement file it came from (set when merging uploads)
 
     def key(self, account: str) -> str:
         """Stable id so re-uploading / overlapping statements don't duplicate rows."""

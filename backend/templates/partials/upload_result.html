@@ -1,80 +1,215 @@
-<div class="card">
-  <h2 class="card-title">Parsed: {{ st.source }}</h2>
-  <p class="text-muted">
-    Parser: <b>{{ st.bank }}</b> · Account: <b>{{ st.account }}</b> ·
-    Period: <b>{{ st.period_start or "?" }}</b> to <b>{{ st.period_end or "?" }}</b> ·
-    Opening {{ st.opening_balance if st.opening_balance is not none else "?" }} ·
-    Closing {{ st.closing_balance if st.closing_balance is not none else "?" }} ·
-    {{ st.transactions | length }} transactions ({{ added }} new)
-  </p>
-  {% if st.warnings %}
-  <ul class="mt-3 list-disc pl-5" style="color:var(--warn)">
-    {% for w in st.warnings %}<li>{{ w }}</li>{% endfor %}
-  </ul>
+{% set sev_icon = {"high": "⛔", "medium": "⚠", "low": "ℹ"} %}
+<div class="reveal">
+
+  <!-- ===== Files: one row per uploaded statement ===== -->
+  <div class="card">
+    <div class="flag-head">
+      <h2 class="card-title" style="margin:0">
+        {{ ok_count }} of {{ entries | length }} statement{{ "s" if entries | length != 1 }} parsed
+      </h2>
+      {% if failed %}<span class="badge badge-high">✕ {{ failed }} failed</span>{% endif %}
+    </div>
+    <div class="file-list">
+      {% for e in entries %}
+      <div class="file-row">
+        {% if e.st %}<span class="badge badge-ok">✓ Parsed</span>{% else %}<span class="badge badge-high">✕ Failed</span>{% endif %}
+        <div class="file-main">
+          <div class="file-name">{{ e.name }}</div>
+          {% if e.st %}
+          {% set st = e.st %}
+          <div class="chips">
+            <span class="chip"><span class="chip-k">Bank</span> {{ st.bank }}</span>
+            <span class="chip"><span class="chip-k">Account</span> {{ st.account }}</span>
+            <span class="chip"><span class="chip-k">Period</span> {{ st.period_start or "?" }} → {{ st.period_end or "?" }}</span>
+            <span class="chip"><span class="chip-k">Opening</span> {{ st.opening_balance if st.opening_balance is not none else "?" }}</span>
+            <span class="chip"><span class="chip-k">Closing</span> {{ st.closing_balance if st.closing_balance is not none else "?" }}</span>
+            <span class="chip">{{ st.transactions | length }} transactions · {{ e.added }} new</span>
+          </div>
+          {% if st.warnings %}
+          <details class="warn-details">
+            <summary>⚠ {{ st.warnings | length }} warning{{ "s" if st.warnings | length != 1 }}</summary>
+            <ul>{% for w in st.warnings %}<li>{{ w }}</li>{% endfor %}</ul>
+          </details>
+          {% endif %}
+          {% else %}
+          <div class="file-error">{{ e.error }}</div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if merged %}
+  {% if multi %}
+  <p class="combined-note">Everything below combines all {{ ok_count }} statements. Transactions that appear in more than one file are counted once.</p>
+  {% endif %}
+
+  <!-- ===== Headline numbers ===== -->
+  <div class="tiles">
+    <div class="tile"><div class="metric-label">Money in</div>
+      <div class="tile-value amt-pos">{{ "${:,.2f}".format(spend.money_in) }}</div></div>
+    <div class="tile"><div class="metric-label">Money out</div>
+      <div class="tile-value">{{ "${:,.2f}".format(spend.money_out) }}</div></div>
+    <div class="tile"><div class="metric-label">Everyday spending</div>
+      <div class="tile-value">{{ "${:,.2f}".format(spend.everyday) }}</div>
+      <div class="tile-sub">excludes {{ "${:,.0f}".format(spend.transfers_out) }} of transfers</div></div>
+    <div class="tile"><div class="metric-label">Daily average</div>
+      <div class="tile-value">{{ "${:,.2f}".format(spend.avg_daily) }}</div>
+      <div class="tile-sub">over {{ spend.days }} days</div></div>
+    {% if spend.largest %}
+    <div class="tile"><div class="metric-label">Largest expense</div>
+      <div class="tile-value">{{ "${:,.2f}".format(spend.largest.amount) }}</div>
+      <div class="tile-sub">{{ spend.largest.description[:34] }}</div></div>
+    {% endif %}
+  </div>
+
+  <!-- ===== Unusual activity ===== -->
+  <div class="card">
+    <div class="flag-head">
+      <h2 class="card-title" style="margin:0">Unusual activity</h2>
+      {% if flags %}<span class="badge badge-medium">⚠ {{ flags | length }} to review</span>{% endif %}
+    </div>
+    <p class="flag-note mt-1">
+      Patterns worth a second look: unusually large purchases, possible duplicate charges, large transfers,
+      and purchases billed abroad. These are heuristics, not confirmed fraud.
+    </p>
+    {% if flags %}
+    <div class="flag-list">
+      {% for f in flags[:12] %}
+      {% set t = merged[f.index] %}
+      <div class="flag-item">
+        <span class="badge badge-{{ f.severity }}">{{ sev_icon[f.severity] }} {{ f.severity | capitalize }}</span>
+        <div>
+          <div class="flag-title">{{ t.description }}</div>
+          <div class="flag-meta">{{ t.date }}{% if multi %} · {{ t.source }}{% endif %}</div>
+          <ul class="flag-reasons">{% for r in f.reasons %}<li>{{ r }}</li>{% endfor %}</ul>
+        </div>
+        <div class="flag-amt {{ 'amt-neg' if t.amount < 0 else 'amt-pos' }}">{{ "{:,.2f}".format(t.amount) }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% if flags | length > 12 %}
+    <p class="text-muted text-sm mt-2">+ {{ flags | length - 12 }} more. Tick "Flagged only" in the table below to see them all.</p>
+    {% endif %}
+    {% else %}
+    <p class="flag-clear mt-3">✓ Nothing unusual found.</p>
+    {% endif %}
+  </div>
+
+  <!-- ===== Spending breakdown ===== -->
+  <div class="card">
+    <h2 class="card-title">Spending breakdown</h2>
+    {% if spend.everyday %}
+    <div class="segbar" role="img" aria-label="Share of everyday spending by category">
+      {% for c in spend.categories %}
+      <span class="c{{ [loop.index, 8] | min }}" style="flex: {{ '%.2f' | format(c.share) }} 1 0"
+            title="{{ c.label }}: {{ '%.0f' | format(c.share) }}%"></span>
+      {% endfor %}
+    </div>
+    <div class="split">
+      <div>
+        <h3>By category</h3>
+        <div class="legend">
+          {% for c in spend.categories %}
+          <div class="legend-row">
+            <span class="dot c{{ [loop.index, 8] | min }}" aria-hidden="true"></span>
+            <span>{{ c.label }} <span class="text-muted">· {{ c.count }}</span></span>
+            <span class="legend-pct">{{ '%.0f' | format(c.share) }}%</span>
+            <span class="legend-amt">{{ "${:,.2f}".format(c.total) }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div>
+        <h3>Top merchants</h3>
+        {% for m in spend.merchants %}
+        <div class="bar-row">
+          <span class="bar-name">{{ m.name }}<small>{{ m.count }}×</small></span>
+          <span class="legend-amt">{{ "${:,.2f}".format(m.total) }}</span>
+          <div class="bar-track"><div class="bar-fill" style="width: {{ '%.1f' | format(m.bar) }}%"></div></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% if spend.transfers_out %}
+    <p class="text-muted text-sm mt-4">
+      Not counted as spending: {{ "${:,.2f}".format(spend.transfers_out) }} sent as transfers.
+    </p>
+    {% endif %}
+    {% else %}
+    <p class="text-muted">No spending found.</p>
+    {% endif %}
+  </div>
+
+  <!-- ===== Transactions ===== -->
+  <div class="card">
+    <h2 class="card-title">Transactions</h2>
+    <div class="toolbar">
+      <input id="tx-search" type="search" placeholder="Search description or category" aria-label="Search transactions">
+      <label class="check"><input id="tx-flagged" type="checkbox"> Flagged only</label>
+      <span id="tx-count" class="text-muted text-sm">{{ merged | length }} shown</span>
+    </div>
+    <p class="text-muted text-sm mb-3">Highlighted row = sign was guessed. "(learned)" = category from dataset priors, not keywords.</p>
+    <div class="table-wrap scroll-y">
+      <table id="tx-table" class="data-table">
+        <thead>
+          <tr><th>Date</th><th>Description</th>{% if multi %}<th>Statement</th>{% endif %}<th>Category</th><th>Flag</th><th class="num">Amount</th></tr>
+        </thead>
+        <tbody>
+        {% for t in merged %}
+          {% set f = flag_by_index.get(loop.index0) %}
+          {% set cat = labels.get(t.category, t.category.replace('_', ' ') | capitalize) %}
+          <tr class="{{ 'row-guess' if t.sign_inferred }} {{ 'row-flagged' if f }}"
+              data-text="{{ (t.description ~ ' ' ~ cat ~ ' ' ~ t.source) | lower }}" data-flagged="{{ 1 if f else 0 }}">
+            <td class="num" style="text-align:start">{{ t.date }}</td>
+            <td>{{ t.description }}</td>
+            {% if multi %}<td class="text-muted">{{ t.source }}</td>{% endif %}
+            <td>{{ cat }}{% if t.category_source == "learned" %} <small class="text-muted">(learned)</small>{% endif %}</td>
+            <td>{% if f %}<span class="badge badge-{{ f.severity }}" title="{{ f.reasons | join('; ') }}">{{ sev_icon[f.severity] }} {{ f.severity | capitalize }}</span>{% endif %}</td>
+            <td class="num {{ 'amt-neg' if t.amount < 0 else 'amt-pos' }}">{{ "{:,.2f}".format(t.amount) }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== Per account: monthly summary and resilience numbers ===== -->
+  {% for a in accounts %}
+  {% if a.summary %}
+  <div class="card">
+    <h2 class="card-title">Monthly summary{% if accounts | length > 1 %} · account {{ a.account }}{% endif %}</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Month</th>
+            {% for h in ["In", "Out", "Bills", "Insurance", "Loans", "End balance", "Avg balance"] %}<th class="num">{{ h }}</th>{% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+        {% for s in a.summary %}
+          <tr><td>{{ s.month }}</td>
+            {% for k in ["money_in", "money_out", "household_bills", "insurance", "loan_payments", "month_end_balance", "avg_daily_balance"] %}
+            <td class="num">{{ "{:,.2f}".format(s[k] | float) if s[k] is not none else "n/a" }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+  {% if a.m %}
+  <div>
+    <h2 class="card-title">Your numbers{% if accounts | length > 1 %} · account {{ a.account }}{% endif %}
+      <span class="text-muted text-sm">({{ a.m.months_of_history }} month{{ "s" if a.m.months_of_history != 1 }} in this ledger)</span></h2>
+    {% with m=a.m %}{% include "partials/metric_cards.html" %}{% endwith %}
+  </div>
+  <div class="card"><h2 class="card-title">Runway: {{ a.runway | months }}</h2>
+    <p class="text-muted">Upload more months for steadier medians.</p></div>
+  <div>{% with goal=a.goal, backup=none %}{% include "partials/plan_panel.html" %}{% endwith %}</div>
+  {% endif %}
+  {% endfor %}
   {% endif %}
 </div>
-
-<div class="card">
-  <h2 class="card-title">Transactions</h2>
-  <p class="text-muted text-sm mb-3">Yellow row = sign was guessed. "(learned)" = category from dataset priors, not keywords.</p>
-  <div class="overflow-x-auto">
-  <table class="w-full text-sm border-collapse">
-    <thead>
-      <tr class="text-left" style="border-bottom:1px solid var(--border)">
-        <th class="py-2 pr-4 whitespace-nowrap">Date</th>
-        <th class="py-2 pr-4">Description</th>
-        <th class="py-2 pr-4 text-right whitespace-nowrap">Amount</th>
-        <th class="py-2 whitespace-nowrap">Category</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for t in st.transactions %}
-      <tr style="border-bottom:1px solid var(--border);{% if t.sign_inferred %}background:#fff7d6{% endif %}">
-        <td class="py-1.5 pr-4 whitespace-nowrap">{{ t.date }}</td>
-        <td class="py-1.5 pr-4">{{ t.description }}</td>
-        <td class="py-1.5 pr-4 text-right whitespace-nowrap tabular-nums" style="color:{{ 'var(--bad)' if t.amount < 0 else 'var(--good)' }}">{{ "{:,.2f}".format(t.amount) }}</td>
-        <td class="py-1.5 whitespace-nowrap">{{ t.category }}{% if t.category_source == "learned" %} <small class="text-muted">(learned)</small>{% endif %}</td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  </div>
-</div>
-
-{% if summary %}
-<div class="card">
-  <h2 class="card-title">Monthly summary</h2>
-  <div class="overflow-x-auto">
-  <table class="w-full text-sm border-collapse">
-    <thead>
-      <tr style="border-bottom:1px solid var(--border)">
-        <th class="py-2 pr-4 text-left">Month</th>
-        {% for h in ["In", "Out", "Bills", "Insurance", "Loans", "End balance", "Avg balance"] %}
-        <th class="py-2 pl-4 text-right whitespace-nowrap">{{ h }}</th>
-        {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-    {% for s in summary %}
-      <tr style="border-bottom:1px solid var(--border)">
-        <td class="py-1.5 pr-4">{{ s.month }}</td>
-        {% for k in ["money_in", "money_out", "household_bills", "insurance", "loan_payments", "month_end_balance", "avg_daily_balance"] %}
-        <td class="py-1.5 pl-4 text-right whitespace-nowrap tabular-nums">{{ "{:,.2f}".format(s[k] | float) if s[k] is not none else "n/a" }}</td>
-        {% endfor %}
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  </div>
-</div>
-{% endif %}
-
-{% if m %}
-<div class="mt-6">
-  <h2 class="card-title">Your numbers from this ledger ({{ m.months_of_history }} month{{ "s" if m.months_of_history != 1 }})</h2>
-  {% include "partials/metric_cards.html" %}
-</div>
-<div class="card mt-6"><h2 class="card-title">Runway: {{ runway | months }}</h2>
-  <p class="text-muted">Upload more months for steadier medians.</p></div>
-<div class="mt-6">{% set backup = none %}{% include "partials/plan_panel.html" %}</div>
-{% endif %}

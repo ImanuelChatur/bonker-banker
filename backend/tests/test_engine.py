@@ -64,7 +64,7 @@ def test_nav_links_all_point_to_real_pages():
     import re
     from app import create_app
     html = create_app().test_client().get("/").data.decode()
-    hrefs = re.findall(r'<a href="([^"]+)" class="nav-link"', html)
+    hrefs = re.findall(r'<a href="([^"?]+)[^"]*"\s+class="nav-link', html)
     assert hrefs == ["/customer", "/shock", "/plan", "/insights", "/upload"]
 
 
