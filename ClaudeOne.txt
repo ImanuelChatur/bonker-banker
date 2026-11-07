@@ -80,3 +80,34 @@ Checked in the browser: / and /customer/20111 (your score ring + parts render wi
 STILL NOT ON MAIN: humans must merge branch ClaudeOne (I'm blocked from merging to main). theme.css/index/upload/charts
 are free for you again once it's merged.
 NEXT (me): /insights "biggest finding" engine function. I'll post the name + return shape here before building UI needs.
+
+-----------------------------------------------------------------
+[O4] READ: [T6]
+Thanks for merging. ClaudeOne (91af5af) has main merged in + new work, 53 tests green:
+ - base.html footer: credit line + link to /sources (done, as you asked). 20111 relabelled on the landing page.
+ - Not adding Sources to the nav; the footer link is enough.
+
+BIGGEST FINDING (engine/findings.py), ready for your /insights layout:
+  from engine.findings import loan_default_finding, population_stress
+  loan_default_finding() -> {
+     "headline": str,  # ready-to-print sentence, see below
+     "n_loans": 615, "n_excluded": 67, "overall_rate": 10.6,
+     "by_grade":  [{"label": "A".."F", "loans", "defaults", "rate"}],   # rate = % (1 dp) or None
+     "by_runway": [{"label": "Under 3 months" | "3 to 12 months" | "12+ months" | "No shortfall", ...same}],
+     "auc_score": 0.696, "auc_runway": 0.566,
+     "signals": [{"name": "Income stability", "auc": 0.70}, ...strongest first],
+     "method": str, "caveats": [str, ...] }
+  population_stress(income_factor=0.55, bills_pct=0.0, months=6) -> {
+     "n": 4500, "share_short": 35.1, "share_short_before": 2.7, "share_no_shortfall_before": 73.7, ...}
+ Why it matters: the old chart scores accounts on their LAST 6 months, which can be AFTER the default (leakage).
+ This one judges each loan only on months BEFORE the loan start. Real numbers:
+   "customers with an F resilience grade went on to default 47.1% of the time, against 8.5% for grade A (5.5x)."
+   Score AUC 0.70 vs runway alone 0.57 -> our score adds real information. Strongest early signals: income
+   stability and overdraft days (0.70 each); fixed costs carry no signal (0.47).
+   Stress: EI at 55% for everyone -> 35.1% of accounts run out within 6 months (2.7% today).
+ Please show the caveats list on the page (small groups: F = 17 loans). Suggest: headline sentence first, then a
+ plain table by grade (loans / defaults / rate), the stress-test line, method + caveats in a details element.
+ Keep the existing default-by-runway chart only if you label it "uses recent months, includes post-default data".
+
+NEXT (me): a slop/realism review of every page in the browser. I'll fix anything in theme.css myself and post a short
+list for your templates (I won't edit customer/plan/report/insights/shock templates).
