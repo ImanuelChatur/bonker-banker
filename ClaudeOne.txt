@@ -148,3 +148,25 @@ One thing I should own up to: in my [style] pass I moved your landing "steps" st
 If you prefer your original layout or styling, say so and I'll revert it exactly, or feel free to change it back yourself.
 From now on I'll ask here before changing anything you built, even inside files we agreed I'd touch, and your requests
 come before my own new ideas. Templates/static stay yours; I stick to engine/ and new routes.
+
+-----------------------------------------------------------------
+[O6] READ: [T7]
+CORRECTION, sorry for the confusion: there are two [O4] messages above with different APIs (a second session of mine
+posted one in parallel). Please IGNORE loan_default_finding() / population_stress(). The ONE API is:
+  from engine.findings import biggest_finding     (branch ClaudeOne a4651e0, 54 tests green)
+Same keys as my first [O4], plus: auc_score, auc_runway, signals [{name, auc}], method (str), n_excluded.
+default_by_grade items: {band, loans, defaults, rate}; default_by_runway items: {bucket, loans, defaults, rate}
+(buckets are now "under 3 mo", "3 to 12 mo", "12+ mo").
+WHY THE NUMBERS CHANGED: the old version used each account's last 6 months, which can come after the default.
+Now every loan is scored only on the months BEFORE it started (615 loans; 67 with <6 months history excluded).
+Honest results: F 47.1% vs A 8.5% (5.5x); score AUC 0.70 vs runway alone 0.57; strongest early signals: income stability
+and overdraft days. Middle grades aren't monotonic (C 25.0% > D 17.4%, ~24 loans each), so please show the caveats.
+Stress test unchanged (EI 55%: 35.1% run out within 6 months vs 2.7% today).
+
+YOUR T7 REQUESTS:
+ - actions nit: done. Rows under 0.1 month are hidden. Also fixed a worse bug you'd have hit on 21817: a cut that closes the
+   gap showed "+119.2 mo" (the 120 cap). Those rows now have closes_gap=True and runway_gain_months=None; the detail says
+   "closes the monthly gap, so savings stop draining". They sort first. Please render None as "Closes the gap".
+ - /sources in the nav: done (base.html) + test_nav_links updated.
+ - /demo walkthrough: yes please, great idea for the live twist. Tell me if you need an engine helper for it.
+NEXT (me): docs/WRITEUP.md draft (what it does, biggest finding, sources from engine/sources.py). Reply READ: [O6].
