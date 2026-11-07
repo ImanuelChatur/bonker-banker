@@ -1,39 +1,84 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card">
-  <h1 class="text-3xl font-bold mb-1">Bonker Banker</h1>
-  <p class="text-muted mb-6">Know your runway before life goes bonkers.</p>
-
-  <!-- HTMX test: clicking calls /health and swaps the reply into #status -->
-  <button hx-get="/health" hx-target="#status" class="btn-primary">
-    Test connection
-  </button>
-  <span id="status" class="ml-3 text-muted">Not tested yet</span>
-</div>
-
-<div class="card">
-  <h2 class="card-title">Get started</h2>
-  <form action="/customer" method="get" class="flex flex-wrap gap-3 mb-4">
-    <input name="account_id" required placeholder="account_id, e.g. 20111"
-           class="border rounded px-2 py-1" style="border-color:var(--border)">
-    <button class="btn-primary" type="submit">Look up customer</button>
-  </form>
-  <div class="flex flex-wrap gap-3">
-    <a href="/shock" class="btn-primary inline-block">Shock Lab</a>
-    <a href="/plan" class="btn-primary inline-block">Make a plan</a>
-    <a href="/insights" class="btn-primary inline-block">Insights</a>
-    <a href="/upload" class="btn-primary inline-block">Upload a statement</a>
+<section class="hero">
+  <div class="hero-text">
+    <p class="hero-kicker">Financial runway, in plain numbers</p>
+    <h1 class="hero-title">Know your runway<br>before life goes <span class="hero-accent">bonkers</span>.</h1>
+    <p class="hero-sub">
+      If your paycheque stopped tomorrow, how many months could you keep going?
+      Bonker Banker reads real account history, stress-tests it against job loss, rising bills and
+      surprise costs, and builds a plan to make the buffer last.
+    </p>
+    <form action="/customer" method="get" class="hero-search">
+      <input name="account_id" required inputmode="numeric" placeholder="Account ID, e.g. 20111"
+             class="input input-lg" aria-label="Account ID">
+      <button class="btn-primary" type="submit">See runway</button>
+    </form>
+    <p class="hero-demos">
+      Try a demo:
+      <a href="/customer/29716">Steady saver</a> ·
+      <a href="/customer/20111">Typical household</a> ·
+      <a href="/customer/21817">Living on the edge</a>
+    </p>
   </div>
-</div>
 
-<div class="card">
-  <h2 class="card-title">Runway test chart (fake data)</h2>
-  <!-- charts.js draws this automatically from the data-chart attribute -->
-  <div class="chart" data-chart='{
-    "labels": ["Now", "M1", "M2", "M3", "M4", "M5", "M6"],
-    "yName": "Buffer ($)",
-    "series": [{ "name": "Buffer", "data": [8000, 6900, 5800, 4700, 3600, 2500, 1400] }]
-  }'></div>
-</div>
+  {# A static example of the runway projection, so the idea lands before anyone types anything #}
+  <div class="hero-visual card">
+    <p class="metric-label">Example: buffer after a job loss</p>
+    <div class="chart" data-chart='{
+      "labels": ["Now", "M1", "M2", "M3", "M4", "M5", "M6", "M7"],
+      "yName": "Buffer ($)",
+      "series": [
+        { "name": "Job loss", "data": [8000, 6700, 5400, 4100, 2800, 1500, 200, 0] },
+        { "name": "Usual life", "data": [8000, 8400, 8800, 9200, 9600, 10000, 10400, 10800] }
+      ]
+    }'></div>
+    <p class="text-muted text-sm mt-2">Runway drops from <b class="good">no shortfall</b> to
+      <b class="bad">6.2 months</b>. The Shock Lab shows this for any account.</p>
+  </div>
+</section>
+
+<section class="steps">
+  <div class="step"><span class="step-num">1</span>
+    <h3>Know the customer</h3>
+    <p class="text-muted">Income, bills, flexible spending and buffer, learned from months of real transactions.</p>
+  </div>
+  <div class="step"><span class="step-num">2</span>
+    <h3>Shock it</h3>
+    <p class="text-muted">Job loss, bills going up, a car repair, or a mix. Watch the runway move as you drag the sliders.</p>
+  </div>
+  <div class="step"><span class="step-num">3</span>
+    <h3>Plan for it</h3>
+    <p class="text-muted">A goal plan to reach a target runway, plus a backup plan if the shock hits first.</p>
+  </div>
+</section>
+
+<section class="feature-grid">
+  <a href="/customer" class="feature-card">
+    <span class="feature-icon" aria-hidden="true">👤</span>
+    <h3>Customer</h3>
+    <p>Metrics, balance history and runway for any account.</p>
+  </a>
+  <a href="/shock" class="feature-card">
+    <span class="feature-icon" aria-hidden="true">⚡</span>
+    <h3>Shock Lab</h3>
+    <p>Stress-test a buffer with presets, sliders or a plain-English twist.</p>
+  </a>
+  <a href="/plan" class="feature-card">
+    <span class="feature-icon" aria-hidden="true">🧭</span>
+    <h3>Make a plan</h3>
+    <p>How much to save each month to reach the runway you want.</p>
+  </a>
+  <a href="/insights" class="feature-card">
+    <span class="feature-icon" aria-hidden="true">📊</span>
+    <h3>Insights</h3>
+    <p>Across the whole dataset: short runway goes with more loan defaults.</p>
+  </a>
+  <a href="/upload" class="feature-card">
+    <span class="feature-icon" aria-hidden="true">📄</span>
+    <h3>Upload a statement</h3>
+    <p>Drop in a Scotiabank or Tangerine PDF and get your own runway.</p>
+  </a>
+</section>
 {% endblock %}

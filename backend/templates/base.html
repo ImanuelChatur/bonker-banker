@@ -15,9 +15,9 @@
 </head>
 <body class="min-h-screen">
   <nav class="nav">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
       <a href="/" class="nav-brand">Bonker Banker</a>
-      <div class="flex gap-6">
+      <div class="nav-links">
         {# Highlights the current page; Customer/Shock Lab/Plan keep the current account_id #}
         {% set aid = account_id if account_id is defined and account_id else '' %}
         {% set q = ('?account_id=' ~ aid) if aid else '' %}
