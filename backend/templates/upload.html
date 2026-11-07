@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Upload · Bonker Banker{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1 class="text-2xl font-bold mb-2">Upload a statement</h1>
+  <p class="text-muted mb-4">PDF bank statements are parsed in your browser session's server, categorized, and turned into a monthly summary.</p>
+  <form id="upload-form" hx-post="/upload" hx-encoding="multipart/form-data" hx-target="#result" hx-indicator="#spinner">
+    <label id="drop" class="block text-center cursor-pointer rounded-lg p-10"
+           style="border:2px dashed var(--border)">
+      <span id="drop-label">Drop a PDF here, or click to choose</span>
+      <input id="file" name="file" type="file" accept="application/pdf,.pdf" hidden required>
+    </label>
+    <button class="btn-primary mt-4" type="submit">Parse statement</button>
+    <span id="spinner" class="htmx-indicator text-muted ml-3">Parsing...</span>
+  </form>
+</div>
+<div id="result" class="mt-6"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Drag-and-drop onto the label; the file lands in the form's <input type=file>.
+  const drop = document.getElementById("drop"), input = document.getElementById("file"),
+        label = document.getElementById("drop-label");
+  const show = () => { label.textContent = input.files[0] ? input.files[0].name : "Drop a PDF here, or click to choose"; };
+  input.addEventListener("change", show);
+  ["dragover", "dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => {
+    e.preventDefault();
+    drop.style.background = ev === "dragover" ? "#fff7ed" : "";
+    if (ev === "drop" && e.dataTransfer.files[0]) { input.files = e.dataTransfer.files; show(); }
+  }));
+</script>
+{% endblock %}

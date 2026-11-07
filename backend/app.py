@@ -13,6 +13,9 @@ def create_app():
     def health():
         return '<span class="status-ok">Flask is connected ✓</span>'
 
+    from routes import register_routes
+    register_routes(app)
+
     return app
 
 

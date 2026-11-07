@@ -1,0 +1,21 @@
+<div class="card">
+  <h2 class="card-title">Goal plan: emergency fund</h2>
+  <p class="mb-2">{{ goal.plan }}</p>
+  <p class="text-muted">
+    Target {{ goal.target_amount | money }} ({{ goal.target_months | months }} of spending) ·
+    current buffer {{ goal.current_buffer | money }} · still needed {{ goal.still_needed | money }} ·
+    typical monthly surplus {{ goal.typical_monthly_surplus | money }}
+  </p>
+</div>
+{% if backup %}
+<div class="card">
+  <h2 class="card-title">Backup plan: if the shock hits</h2>
+  <p>{{ backup.plan }}</p>
+  {% if backup.monthly_cut_needed is defined %}
+  <p class="text-muted mt-2">
+    Target {{ backup.target_runway_months | months }} · monthly cut needed {{ backup.monthly_cut_needed | money }} ·
+    non-fixed spending {{ backup.discretionary_spending | money }}
+  </p>
+  {% endif %}
+</div>
+{% endif %}

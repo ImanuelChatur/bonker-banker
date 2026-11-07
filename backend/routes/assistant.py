@@ -1,0 +1,43 @@
+"""/assistant/twist: turn a judge's twist card (plain English) into shock settings, then run it."""
+from flask import Blueprint, render_template, request
+
+from engine import Shock
+from services import llm
+
+from ._common import build_scenario, error_html, friendly_errors
+
+bp = Blueprint("assistant", __name__)
+
+SCHEMA = {"type": "OBJECT", "properties": {
+    "income_pct": {"type": "NUMBER"}, "bills_pct": {"type": "NUMBER"}, "extra_spending": {"type": "NUMBER"},
+    "one_off_cost": {"type": "NUMBER"}, "one_off_months": {"type": "NUMBER"}, "duration_months": {"type": "NUMBER"}}}
+
+PROMPT = (
+    "Convert this financial 'twist card' into shock settings. Return JSON with:\n"
+    "income_pct (100 = unchanged; EI at 55% pays 55), bills_pct (+15 = household bills up 15%),\n"
+    "extra_spending (extra dollars per month), one_off_cost (dollars), one_off_months (a one-off cost "
+    "sized as N months of the customer's typical spending), duration_months (how long the income change "
+    "lasts, 0 if permanent/not stated). Use 0 for anything not mentioned; income_pct defaults to 100.\n\n"
+    "TWIST CARD:\n")
+
+
+@bp.post("/assistant/twist")
+@friendly_errors(error_html)
+def twist():
+    account_id = request.form.get("account_id", "").strip()
+    text = request.form.get("twist", "").strip()[:1000]
+    if not text:
+        return error_html("Paste a twist card first."), 400
+    try:
+        s = llm.generate_json(PROMPT + text, SCHEMA)
+    except llm.LLMUnavailable as e:
+        return error_html(f"Assistant unavailable: {e}"), 503
+    shock = Shock(
+        income_factor=min(max(float(s.get("income_pct", 100)), 0), 200) / 100,
+        household_bills_pct=min(max(float(s.get("bills_pct", 0)), -50), 300) / 100,
+        extra_monthly_spending=max(float(s.get("extra_spending", 0)), 0),
+        one_off_cost=max(float(s.get("one_off_cost", 0)), 0),
+        one_off_months_of_spending=min(max(float(s.get("one_off_months", 0)), 0), 24),
+        duration_months=int(min(max(float(s.get("duration_months", 0)), 0), 120)) or None)
+    ctx = build_scenario(account_id, shock)
+    return render_template("partials/scenario_result.html", **ctx, show_plan=True, twist=text)
