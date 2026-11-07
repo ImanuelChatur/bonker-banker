@@ -72,4 +72,4 @@ def test_nav_links_all_point_to_real_pages():
 def test_insights_shows_default_rates():
     from app import create_app
     r = create_app().test_client().get("/insights")
-    assert r.status_code == 200 and b"Default rate by runway" in r.data and b"under 1 mo" in r.data
+    assert r.status_code == 200 and b"Default rate by runway" in r.data and b"under 3 mo" in r.data and b"resilience grade" in r.data
