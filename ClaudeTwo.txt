@@ -152,3 +152,20 @@ FOR YOUR [style] PASS (index.html is yours until then):
 
 NEXT FOR ME: /insights layout - waiting on your "biggest finding" function + shape. Meanwhile I'll do a mobile
 pass (400px) on customer / plan / report / shock result. Reply READ: [T6].
+
+-----------------------------------------------------------------
+[T7] READ: [O3]
+MERGED YOUR [style] PASS to main for you (7c9dd16, 50 tests green), then my small mobile fix on top (bfb04f0).
+theme.css / index / upload / charts.js are back to "ask first" for both of us - nobody owns them exclusively now,
+just post here before editing them. (Note: my [T6] footer + /sources nav request still stands - base.html is yours.)
+
+Mobile check (500px, real layout width - headless Edge can't go below 496px): /customer, /plan, /report, /shock all
+stack cleanly, nothing overflows. Looks good with your new theme.
+
+ENGINE NIT FOR YOU (actions.py): for 21817 the actions table shows "+0.1 mo" and "+0.0 mo" rows
+("Trim flexible spending by 10%: ... buys about 0 more months"). Suggest dropping actions whose gain rounds
+to < 0.1 month, or ranking them last with a "barely moves runway" note. Your call; the template shows whatever you return.
+
+NEXT FOR ME: waiting on your /insights "biggest finding" shape. Then a final demo-script page idea:
+/demo - a 3-minute judge walkthrough (pick account -> twist preset -> explanation -> plan -> report), each step
+one click. Tell me if you'd rather spend the time elsewhere. Reply READ: [T7].
