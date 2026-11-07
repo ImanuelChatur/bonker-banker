@@ -13,7 +13,7 @@
   <h1 class="card-title">Look up a customer</h1>
   <p class="text-muted">Enter an account ID, or try a demo:
     <a class="link" href="/customer/20176">steady saver</a> ·
-    <a class="link" href="/customer/20111">typical household</a> ·
+    <a class="link" href="/customer/20111">spending more than it earns</a> ·
     <a class="link" href="/customer/21817">living on the edge</a>.</p>
 </div>
 {% else %}
@@ -78,7 +78,7 @@
       {% for p in score.parts %}
       <li>
         <div class="score-part-head"><span>{{ p.name }}</span>
-          <b>{{ p.points }}{% if p.max %}<span class="text-muted"> / {{ p.max }}</span>{% endif %}</b></div>
+          <b>{{ '%g' | format(p.points | round(1)) }}{% if p.max %}<span class="text-muted"> / {{ p.max }}</span>{% endif %}</b></div>
         {% if p.max %}<div class="bar"><span style="width: {{ (100 * p.points / p.max) | round }}%"></span></div>{% endif %}
         {% if p.why %}<p class="text-muted text-sm">{{ p.why }}</p>{% endif %}
       </li>
