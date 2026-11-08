@@ -81,6 +81,37 @@
     <p class="text-muted text-sm">Bills +15% barely moves the total because many accounts have median household bills (H) of $0.</p>
   </section>
 
+  {% if regions %}
+  <section class="report-section">
+    <h2 class="card-title">Does where you live matter? Barely.</h2>
+    <p>{{ regions.headline }}</p>
+    <dl class="plan-facts">
+      <div><dt>Unemployment vs resilience score</dt><dd>{{ '%.2f' | format(regions.unemployment_vs_score) }}</dd></div>
+      <div><dt>Unemployment vs shortfall</dt><dd>{{ '%.2f' | format(regions.unemployment_vs_shortfall) }}</dd></div>
+      <div><dt>Average salary vs score</dt><dd>{{ '%.2f' | format(regions.salary_vs_score) }}</dd></div>
+      <div><dt>Unemployment vs default</dt><dd>{{ '%.2f' | format(regions.unemployment_vs_default) }}</dd></div>
+    </dl>
+    <details class="mt-3">
+      <summary class="text-sm link">By region ({{ regions.regions | length }} regions, {{ regions.districts }} districts)</summary>
+      <div class="table-wrap mt-2">
+        <table class="report-table">
+          <thead><tr><th>Region</th><th class="num">Accounts</th><th class="num">Mean score</th>
+            <th class="num">With a shortfall</th><th class="num">Loans</th><th class="num">Default rate</th><th class="num">Unemployment</th></tr></thead>
+          <tbody>
+          {% for r in regions.regions %}
+            <tr><th scope="row">{{ r.name }}</th><td class="num">{{ r.accounts }}</td><td class="num">{{ r.mean_score }}</td>
+              <td class="num">{{ r.share_shortfall_pct }}%</td><td class="num">{{ r.loans }}</td>
+              <td class="num">{{ (r.default_rate ~ '%') if r.default_rate is not none else 'n/a' }}</td>
+              <td class="num">{{ (r.unemployment_2023 ~ '%') if r.unemployment_2023 is not none else 'n/a' }}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <p class="text-muted text-sm mt-2">{{ regions.note }}</p>
+  </section>
+  {% endif %}
+
   <details class="report-section">
     <summary class="card-title">Method</summary>
     <p class="mt-2">{{ f.method }}</p>

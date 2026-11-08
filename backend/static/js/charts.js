@@ -69,8 +69,9 @@ function renderDonutChart(el, { items, center = "" }) {
   const chart = echarts.init(el);
   const t = themeColors();
   const cs = getComputedStyle(document.documentElement);
-  const palette = ["--c1", "--c2", "--c3", "--c4", "--c5", "--c6"].map((v, i) =>
-    cs.getPropertyValue(v).trim() || [BB_COLORS.brand, "#2563eb", BB_COLORS.good, "#7c3aed", "#db2777", "#0891b2"][i]);
+  // One accent, then neutrals: neighbouring slices never share a hue.
+  const palette = ["--c1", "--c2", "--c4", "--c6", "--c8", "--c3", "--c5"].map((v, i) =>
+    cs.getPropertyValue(v).trim() || [BB_COLORS.brand, "#14181f", "#566070", "#8b94a3", "#bcc3ce", "#e0764a", "#eaa88a"][i]);
   chart.setOption({
     color: palette,
     textStyle: { fontFamily: "inherit" },
@@ -81,7 +82,7 @@ function renderDonutChart(el, { items, center = "" }) {
     legend: { bottom: 0, icon: "circle", textStyle: { color: t.muted } },
     title: center ? { text: center, left: "center", top: "38%", textStyle: { color: t.ink, fontSize: 15, fontWeight: 700 } } : undefined,
     series: [{
-      type: "pie", radius: ["52%", "74%"], center: ["50%", "44%"], avoidLabelOverlap: true,
+      type: "pie", radius: ["52%", "74%"], center: ["50%", "44%"], avoidLabelOverlap: true, minAngle: 4,
       itemStyle: { borderColor: t.surface, borderWidth: 3, borderRadius: 6 },
       label: { show: false }, data: items,
     }],
