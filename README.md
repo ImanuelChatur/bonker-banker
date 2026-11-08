@@ -32,8 +32,8 @@ choice is remembered in the browser; a link can also set it with `?view=advisor`
 | **Upload** `/upload` | What do my own statements say? | Parse bank statement PDFs, categorize spending, flag unusual activity | – |
 | **Sources** `/sources` | Where does this come from? | Every outside source and definition | – |
 
-**Sign in.** When login is on (the hosted site), the sign-in page asks "I'm a customer" or "I'm an advisor", which
-opens the app in Simple or Advisor view. Anyone can create an account in under a minute.
+**Sign in.** When login is on (the hosted site), sign in with a username and password. Anyone can create an account
+in under a minute. Once in, **Simple / Advisor** at the top of every page switches the view.
 
 ## How it works
 

@@ -50,5 +50,8 @@ def gemini_key() -> str | None:
     return os.environ.get("GEMINI_API_KEY") or None
 
 
-def gemini_model() -> str:
-    return os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+def gemini_models() -> list[str]:
+    """Models to try in order. GEMINI_MODEL may list several, comma-separated; the next one is tried when one
+    is busy or retired. Pinned names, not "-latest" aliases, which can jump to a brand-new, overloaded model."""
+    raw = os.environ.get("GEMINI_MODEL") or "gemini-3.5-flash,gemini-3.5-flash-lite"
+    return [m.strip() for m in raw.split(",") if m.strip()]

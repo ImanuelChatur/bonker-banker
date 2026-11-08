@@ -12,7 +12,6 @@
   <form method="post" action="{{ url_for('auth.register') }}" class="space-y-4">
     <input type="hidden" name="csrf" value="{{ csrf_token() }}">
     <input type="hidden" name="next" value="{{ next }}">
-    {{ ui.role_choice(role) }}
     <label class="block">
       <span class="metric-label">Username</span>
       <input name="username" value="{{ username }}" required minlength="3" maxlength="32" pattern="[A-Za-z0-9_.\-]+"

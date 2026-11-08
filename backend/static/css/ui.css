@@ -176,16 +176,7 @@ html, body { overflow-x: clip; }
 .sample-ids { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
 .empty-state .sample-ids { justify-content: center; }
 
-/* Sign in / sign up: role choice that sets the view */
+/* Sign in / sign up */
 .auth-card { max-inline-size: 30rem; margin: var(--space-6) auto 0; }
-.role-choice { display: grid; gap: var(--space-2); border: 0; padding: 0; margin: 0; }
-.role-choice legend { margin-bottom: var(--space-2); }
-.role-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.1rem var(--space-3); align-items: baseline;
-             padding: var(--space-3) var(--space-4); border: 1px solid var(--border); border-radius: 0.6rem; cursor: pointer; }
-.role-card:has(input:checked) { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
-.role-card input { grid-row: span 2; accent-color: var(--ink); }
-.role-name { font-weight: 700; }
-.role-desc { grid-column: 2; font-size: var(--text-sm); color: var(--muted); }
 .auth-alt { margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--border); display: grid; gap: var(--space-2); }
 .auth-alt .btn-secondary { text-decoration: none; }
-.role-choice { margin-bottom: var(--space-3) !important; }
