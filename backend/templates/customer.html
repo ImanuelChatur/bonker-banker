@@ -155,7 +155,8 @@
     <div class="peer-grid">
     {% for key, label, fmt in [("buffer", "Savings", "money"), ("runway", "Runway", "months"),
                                ("fixed_cost_share", "Fixed costs as a share of income", "pct"),
-                               ("income_volatility", "Month-to-month income swings", "pct")] if mt[key] %}
+                               ("income_volatility", "Month-to-month income swings", "pct")]
+                               if mt[key] and mt[key].percentile is not none and mt[key].value is not none and mt[key].peer_median is not none %}
       {% set x = mt[key] %}
       <div class="peer-row">
         <div class="score-part-head">
@@ -202,7 +203,7 @@
       {% if p.district_name %}<div><dt>District</dt><dd>{{ p.district_name }}</dd></div>{% endif %}
       {% if p.district_unemployment_2023 is not none %}<div><dt>Local unemployment</dt>
         <dd>{{ p.district_unemployment_2023 }}%{{ ', ' ~ p.unemployment_trend if p.unemployment_trend }}</dd></div>{% endif %}
-      <div><dt>Card</dt><dd>{{ (p.card_type | capitalize) if p.card_type else 'None' }}</dd></div>
+      <div><dt>Card</dt><dd>{{ (p.card_type | capitalize) if p.card_type else 'No card' }}</dd></div>
     </dl>
     {% if p.true_fixed_costs is not none %}
     <details class="more" data-advisor-open>

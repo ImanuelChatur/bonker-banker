@@ -37,7 +37,7 @@
   <dl class="support">
     <div><dt>Before the shock</dt><dd class="{{ before.runway | runway_class }}">{{ ui.months(before.runway) | capitalize }}</dd></div>
     <div><dt>Monthly {{ ui.term("shortfall") }} after</dt>
-      <dd class="{{ 'bad' if after.monthly_gap > 0 else 'good' }}">{{ after.monthly_gap | money if after.monthly_gap > 0 else 'None' }}</dd></div>
+      <dd class="{{ 'bad' if after.monthly_gap > 0 else 'good' }}">{{ after.monthly_gap | money if after.monthly_gap > 0 else 'No shortfall' }}</dd></div>
     {% if after.one_off_cost %}
     <div><dt>One-off cost</dt><dd>{{ after.one_off_cost | money }}</dd></div>
     {% endif %}
