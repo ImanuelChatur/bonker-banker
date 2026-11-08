@@ -121,8 +121,6 @@
 /* ============================================================ misc */
 .skip-link { position: absolute; inset-inline-start: -999px; }
 .skip-link:focus { inset-inline-start: var(--space-4); inset-block-start: var(--space-2); z-index: 60; background: var(--surface); padding: var(--space-2) var(--space-3); border-radius: 0.4rem; box-shadow: var(--ring); }
-.card + .card { margin-top: var(--space-5); }
-.page > .card + .card { margin-top: 0; }
 
 /* Nav on a phone: brand on one row, links scroll sideways instead of wrapping into a tall block. */
 @media (max-width: 720px) {
@@ -157,3 +155,21 @@
 .home-link { grid-template-columns: 8.5rem minmax(0, 1fr); }
 @media (max-width: 560px) { .home-link { grid-template-columns: 1fr; } }
 .hero .sample-ids { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+.home-stat-big { color: var(--bad); }
+.chip-link b { font-family: inherit; font-weight: 700; }
+.more-options > summary { gap: var(--space-3); }
+.more-options-name { white-space: nowrap; }
+.more-options-hint { flex: 1; color: var(--muted); font-size: var(--text-sm); font-weight: 400; }
+
+/* Page grids: let content (charts, tables) shrink to the screen instead of pushing the page wider. */
+.page, .reveal, .insights-page, .plan-stack, .lab-grid, .home-grid { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1024px) { .lab-grid { grid-template-columns: 400px minmax(0, 1fr); } }
+@media (min-width: 960px) { .home-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+.nav > div > a.nav-brand { flex-shrink: 0; }
+.nav > div > div { min-inline-size: 0; }
+html, body { overflow-x: clip; }
+.mode-switch-phone { display: none; }
+@media (max-width: 720px) {
+  .mode-switch-phone { display: inline-flex; margin-inline-start: auto; }
+  .mode-switch-wide { display: none; }
+}

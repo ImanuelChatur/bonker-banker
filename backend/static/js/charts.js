@@ -29,7 +29,8 @@ function compactNumber(n) {
 function renderLineChart(el, { labels, series, yName = "" }) {
   const chart = echarts.init(el);
   const t = themeColors();
-  const palette = [BB_COLORS.brand, BB_COLORS.good, BB_COLORS.bad, BB_COLORS.muted];
+  // Colour carries meaning only: plain lines are neutral ink; series that mean "bad" pass their own colour.
+  const palette = [t.ink, "#8b94a3", BB_COLORS.brand, BB_COLORS.good];
   const single = series.length === 1;
 
   chart.setOption({
@@ -95,7 +96,7 @@ function renderHeatmap(el, { xLabels, yLabels, xName = "", yName = "", data, uni
   const chart = echarts.init(el);
   const t = themeColors();
   const cs = getComputedStyle(document.documentElement);
-  const hot = cs.getPropertyValue("--brand").trim() || BB_COLORS.brand;
+  const hot = cs.getPropertyValue("--bad").trim() || BB_COLORS.bad;   // more accounts out of savings = worse
   const cool = cs.getPropertyValue("--surface-2").trim() || "#f1f4f9";
   chart.setOption({
     textStyle: { fontFamily: "inherit", color: t.muted },
@@ -110,7 +111,9 @@ function renderHeatmap(el, { xLabels, yLabels, xName = "", yName = "", data, uni
              axisTick: { show: false }, axisLine: { show: false }, axisLabel: { color: t.muted } },
     visualMap: { min: 0, max: 100, show: false, inRange: { color: [cool, hot] } },
     series: [{
-      type: "heatmap", data,
+      type: "heatmap",
+      // Dark cells get white labels so the number stays readable.
+      data: data.map((d) => ({ value: d, label: { color: d[2] >= 55 ? "#fff" : t.ink } })),
       label: { show: true, formatter: (p) => p.value[2] + unit, color: t.ink, fontWeight: 700, fontSize: 15 },
       itemStyle: { borderColor: t.surface, borderWidth: 3, borderRadius: 6 },
       emphasis: { itemStyle: { borderColor: t.ink } },
