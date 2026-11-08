@@ -16,7 +16,9 @@ def _months(v) -> str:
 
 def _runway_num(v) -> str:
     """Big display number: 4.3 -> '4.3', 'no shortfall (120+)' -> '120+'."""
-    return f"{v:g}" if isinstance(v, (int, float)) else "120+"
+    if isinstance(v, (int, float)):
+        return "120+" if v >= 120 else f"{v:g}"   # 120 is the formula's cap, so show it as "120+"
+    return "120+"
 
 
 def _runway_class(v) -> str:

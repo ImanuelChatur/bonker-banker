@@ -195,3 +195,10 @@
 .check-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; margin-top: 0.75rem; cursor: pointer; }
 .check-row input { accent-color: var(--brand); inline-size: 1rem; block-size: 1rem; }
 .lab-group.is-off .check-row { opacity: 0.4; }
+
+/* ---------- /plan tabs ---------- */
+.plan-tabs { display: flex; gap: 0.25rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+.plan-tab { padding: 0.6rem 1rem; font-weight: 600; color: var(--muted); border-bottom: 2px solid transparent;
+            margin-bottom: -1px; background: none; cursor: pointer; }
+.plan-tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--brand); }
+.plan-tab:hover { color: var(--ink); }

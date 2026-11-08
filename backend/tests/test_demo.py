@@ -58,3 +58,20 @@ def test_precompute_includes_accounts_and_districts():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     assert {"monthly_summary", "loans", "accounts", "districts"} <= set(mod.FILES)
+
+
+@needs_data
+@pytest.mark.parametrize("account_id", ["20176", "20111", "21817", "55447"])
+def test_loan_check_gives_a_verdict(account_id):
+    from app import create_app
+    r = create_app().test_client().post("/plan/loan", data={"account_id": account_id, "amount": "10000",
+                                                             "months": "36", "rate_idx": "2"})
+    assert r.status_code == 200 and any(v in r.data for v in (b"Comfortable", b"Tight", b"Risky"))
+
+
+@needs_data
+def test_shock_lab_rate_hike_and_realistic_ei_are_explained():
+    from app import create_app
+    r = create_app().test_client().post("/shock/run", data={"account_id": "21817", "job_loss": "1", "income_pct": "55",
+                                                             "realistic_ei": "1", "rate_hike_pct": "1"})
+    assert b"$729 a week maximum" in r.data and b"no variable-rate debt" in r.data

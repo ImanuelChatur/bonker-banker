@@ -64,11 +64,11 @@
         <div class="grid grid-cols-2 gap-3">
           <label class="block">
             <span class="metric-label">Extra one-off $</span>
-            <input type="number" name="one_off_cost" min="0" step="50" value="{{ f.one_off_cost }}" class="input">
+            <input type="number" name="one_off_cost" min="0" step="any" value="{{ f.one_off_cost }}" class="input">
           </label>
           <label class="block">
             <span class="metric-label">Extra $ / month</span>
-            <input type="number" name="extra_spending" min="0" step="25" value="{{ f.extra_spending }}" class="input">
+            <input type="number" name="extra_spending" min="0" step="any" value="{{ f.extra_spending }}" class="input">
           </label>
         </div>
       </fieldset>
