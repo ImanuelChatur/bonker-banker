@@ -8,6 +8,7 @@ from services import data_store
 
 from ._common import error_html, friendly_errors, shock_from_form
 from .customer import optional_extras, spending_mix
+from .plans import optional_actions
 from .shocks import PRESET_LABELS, PRESETS
 
 bp = Blueprint("report", __name__)
@@ -32,4 +33,4 @@ def show(account_id):
                            runway=runway(m.buffer, m.income, m.spending),
                            no_income_runway=runway(m.buffer, 0.0, m.spending),
                            surplus=m.income - m.spending, mix=spending_mix(data_store.account_rows(account_id)),
-                           goal=goal_plan(m), scenarios=scenarios, **optional_extras(account_id, m))
+                           goal=goal_plan(m), scenarios=scenarios, actions=optional_actions(m, None), **optional_extras(account_id, m))

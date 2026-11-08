@@ -20,10 +20,11 @@ def _runway_num(v) -> str:
 
 
 def _runway_class(v) -> str:
-    """Colour for a runway value: good (6+ months or no shortfall), warn (1-6), bad (<1)."""
+    """Colour for a runway value, using the bands from /insights (pre-loan default rates 44% / 21% / 9%):
+    good = 12+ months or no shortfall, warn = 3 to 12 months, bad = under 3 months."""
     if not isinstance(v, (int, float)):
         return "good"
-    return "good" if v >= 6 else "warn" if v >= 1 else "bad"
+    return "good" if v >= 12 else "warn" if v >= 3 else "bad"
 
 
 def register_routes(app):
@@ -36,6 +37,6 @@ def register_routes(app):
         from engine import risk
         risk.warm_up()         # builds the peer-comparison table in the background (about 4 seconds)
 
-    from . import assistant, customer, insights, plans, report, shocks, sources, uploads
-    for module in (customer, shocks, plans, insights, uploads, assistant, report, sources):
+    from . import assistant, customer, demo, insights, plans, report, shocks, sources, uploads
+    for module in (customer, shocks, plans, insights, uploads, assistant, report, sources, demo):
         app.register_blueprint(module.bp)

@@ -89,12 +89,33 @@
     <p>{{ goal.plan }}</p>
     <p class="text-muted text-sm">Emergency fund target {{ goal.target_amount | money }}
       ({{ goal.target_months | months }} of spending) · still needed {{ goal.still_needed | money }}.</p>
-    {% if score and score.parts %}
-    <ul class="report-list">
-      {% for p in score.parts if p.why %}<li><b>{{ p.name }}:</b> {{ p.why }}</li>{% endfor %}
-    </ul>
+    {% if actions %}
+    <div class="table-wrap mt-3">
+      <table class="report-table">
+        <thead><tr><th>Action (our measure)</th><th class="num">Per month</th><th class="num">Runway gain</th></tr></thead>
+        <tbody>
+        {% for a in actions %}
+          <tr>
+            <td><b>{{ a.title }}</b>{% if a.detail %}<div class="text-muted text-sm">{{ a.detail }}</div>{% endif %}</td>
+            <td class="num">{% if a.monthly_change %}{{ a.monthly_change | money }}{% else %}One-time{% endif %}</td>
+            <td class="num good">{% if a.closes_gap %}Closes the gap{% elif a.runway_gain_months is not none %}+{{ a.runway_gain_months }} mo{% else %}–{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
     {% endif %}
   </section>
+
+  {% if score and score.parts %}
+  <section class="report-section">
+    <h2 class="card-title">Why the resilience score is {{ score.score }}</h2>
+    <p class="text-muted text-sm mb-2">Our measure, built on the datathon numbers.</p>
+    <ul class="report-list">
+      {% for p in score.parts if p.why %}<li><b>{{ p.name }}</b> ({{ '%g' | format(p.points | round(1)) }}{{ ' / ' ~ p.max if p.max }}): {{ p.why }}</li>{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
 
   <footer class="report-foot text-muted text-sm">
     Runway uses the datathon definitions: (B − one-off cost) ÷ (spending − income), capped at 120 months, where

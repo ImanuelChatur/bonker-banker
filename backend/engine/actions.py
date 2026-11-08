@@ -39,9 +39,15 @@ def action_plan(m: Metrics, shock: Shock | None = None) -> list[dict]:
         return [{"title": "Build the cushion", "monthly_change": round(surplus, 2),
                  "runway_gain_months": None, "detail": detail}]
 
-    def gain(new_spending: float, new_income: float | None = None, extra_buffer: float = 0.0) -> float:
+    def gain(new_spending: float, new_income: float | None = None, extra_buffer: float = 0.0) -> float | None:
+        """Months of runway gained, or None when the change closes the monthly gap (no shortfall at all)."""
         inc = income if new_income is None else new_income
+        if new_spending <= inc:
+            return None
         return round(_months(m, inc, new_spending, buffer=m.buffer + extra_buffer, one_off=one_off) - base, 1)
+
+    def effect(g: float | None) -> str:
+        return "closes the monthly gap, so savings stop draining" if g is None else f"buys about {g:g} more months"
 
     actions = []
     if flexible > 0:
@@ -49,25 +55,31 @@ def action_plan(m: Metrics, shock: Shock | None = None) -> list[dict]:
             cut = flexible * pct / 100
             g = gain(spending - cut)
             actions.append({"title": f"Trim flexible spending by {pct}%", "monthly_change": round(cut, 2),
-                            "runway_gain_months": g,
+                            "runway_gain_months": g, "closes_gap": g is None,
                             "detail": f"Cutting {_usd(cut)}/month from the {_usd(flexible)} that is not bills, "
-                                      f"insurance or loans buys about {g:g} more months."})
+                                      f"insurance or loans {effect(g)}."})
     if m.household_bills > 0:
         save = m.household_bills * 0.10
         g = gain(spending - save)
         actions.append({"title": "Renegotiate household bills by 10%", "monthly_change": round(save, 2),
-                        "runway_gain_months": g,
-                        "detail": f"Lower phone, internet or utility plans to save {_usd(save)}/month: "
-                                  f"about {g:g} more months."})
+                        "runway_gain_months": g, "closes_gap": g is None,
+                        "detail": f"Lower phone, internet or utility plans to save {_usd(save)}/month: it {effect(g)}."})
     extra = max(m.income * 0.10, 0.0)
     if extra > 0:
         g = gain(spending, income + extra)
         actions.append({"title": "Bring in 10% more income", "monthly_change": round(extra, 2),
-                        "runway_gain_months": g,
-                        "detail": f"An extra {_usd(extra)}/month (shifts, side work, benefits) adds about {g:g} months."})
+                        "runway_gain_months": g, "closes_gap": g is None,
+                        "detail": f"An extra {_usd(extra)}/month (shifts, side work, benefits) {effect(g)}."})
     g = gain(spending, extra_buffer=m.spending)
     actions.append({"title": "Add one month of spending to savings", "monthly_change": 0.0,
-                    "runway_gain_months": g,
-                    "detail": f"A one-time {_usd(m.spending)} top-up (tax refund, sale, gift) adds about {g:g} months."})
-    actions.sort(key=lambda a: -(a["runway_gain_months"] or 0))
-    return actions
+                    "runway_gain_months": g, "closes_gap": False,
+                    "detail": f"A one-time {_usd(m.spending)} top-up (tax refund, sale, gift) {effect(g)}."})
+
+    # Gap-closers first, then by months gained.
+    actions.sort(key=lambda a: (not a["closes_gap"], -(a["runway_gain_months"] or 0)))
+    useful = [a for a in actions if a["closes_gap"] or (a["runway_gain_months"] or 0) >= 0.1]
+    if useful:
+        return useful                       # hide rows that barely move the runway (ClaudeTwo's T7 request)
+    best = actions[0]
+    best["detail"] += " On its own this barely moves the runway; the gap needs income or a bigger change."
+    return [best]

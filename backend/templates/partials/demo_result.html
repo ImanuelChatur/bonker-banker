@@ -1,0 +1,36 @@
+<ol class="demo-steps">
+  <li>
+    <h2 class="card-title demo-step-title"><span class="demo-num">3</span>The new numbers, explained: {{ preset_label }}</h2>
+    {% include "partials/runway_card.html" %}
+  </li>
+
+  <li class="card">
+    <h2 class="card-title"><span class="demo-num">4</span>The plan</h2>
+    <p class="plan-lead"><b>If it hits:</b> {{ backup.plan }}</p>
+    <p class="text-muted"><b>Before it hits:</b> {{ goal.plan }}</p>
+    {% if actions %}
+    <div class="table-wrap mt-3">
+      <table class="report-table">
+        <thead><tr><th>Action (our measure)</th><th class="num">Per month</th><th class="num">Runway gain</th></tr></thead>
+        <tbody>
+        {% for a in actions %}
+          <tr>
+            <td><b>{{ a.title }}</b>{% if a.detail %}<div class="text-muted text-sm">{{ a.detail }}</div>{% endif %}</td>
+            <td class="num">{% if a.monthly_change %}{{ a.monthly_change | money }}{% else %}One-time{% endif %}</td>
+            <td class="num good">{% if a.closes_gap %}Closes the gap{% elif a.runway_gain_months is not none %}+{{ a.runway_gain_months }} mo{% else %}–{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </li>
+
+  <li class="card">
+    <h2 class="card-title"><span class="demo-num">5</span>Hand it over</h2>
+    <div class="dash-actions">
+      <a class="btn-primary" href="/report/{{ account_id }}" target="_blank" rel="noopener">Open the printable report</a>
+      <a class="btn-secondary" href="/plan?account_id={{ account_id }}">Tune the plan</a>
+    </div>
+  </li>
+</ol>

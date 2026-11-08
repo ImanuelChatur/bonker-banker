@@ -72,8 +72,11 @@ def test_plan_text_uses_dollars():
 def test_actions_rank_by_runway_gain_and_respect_shock():
     m = metrics_from_rows(rows(income=1000, spending=1100, bills=300, balance=4000), "x")
     acts = action_plan(m)
-    gains = [a["runway_gain_months"] for a in acts]
-    assert gains == sorted(gains, reverse=True) and all(g > 0 for g in gains)
+    closers = [a for a in acts if a["closes_gap"]]
+    assert acts[:len(closers)] == closers                           # gap-closing actions come first
+    assert all(a["runway_gain_months"] is None for a in closers)    # never a fake "+119 months"
+    gains = [a["runway_gain_months"] for a in acts if not a["closes_gap"]]
+    assert gains == sorted(gains, reverse=True) and all(g >= 0.1 for g in gains)
     assert all("$" in a["detail"] for a in acts)
     shocked = action_plan(m, Shock(income_factor=0.5))
     assert shocked[0]["runway_gain_months"] != acts[0]["runway_gain_months"]

@@ -34,7 +34,8 @@
           ('/shock', 'Shock Lab', true),
           ('/plan', 'Plan', true),
           ('/insights', 'Insights', false),
-          ('/upload', 'Upload', false)
+          ('/upload', 'Upload', false),
+          ('/sources', 'Sources', false)
         ] %}
         <a href="{{ href }}{{ q if keep_id }}"
            class="nav-link {{ 'active' if request.path.startswith(href) }}">{{ label }}</a>
@@ -46,6 +47,13 @@
   <main class="max-w-6xl mx-auto px-4 py-8">
     {% block content %}{% endblock %}
   </main>
+
+  <footer class="site-footer">
+    <div class="max-w-6xl mx-auto px-4">
+      Data: PKDD'99 Financial dataset (CTU Prague), via the Tangerine datathon pack.
+      EI rate: Government of Canada. <a href="/sources">All sources and definitions</a>
+    </div>
+  </footer>
 
   <!-- Our own scripts -->
   <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
