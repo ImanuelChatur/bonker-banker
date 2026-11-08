@@ -115,6 +115,29 @@
   </section>
   {% endif %}
 
+  {# ---------- Saved scenarios (only when there are some) ---------- #}
+  {% if saved_scenarios %}
+  <section class="card" id="saved">
+    <h2 class="card-title">Saved scenarios</h2>
+    <form action="/customer/{{ account_id }}/compare" method="get" class="saved-form">
+      <ul class="saved-list">
+        {% for sc in saved_scenarios %}
+        <li id="sc-{{ sc.id }}">
+          <label><input type="checkbox" name="ids" value="{{ sc.id }}" class="saved-pick">
+            <b>{{ sc.name }}</b> <span class="text-muted text-sm">{{ sc.summary }}</span></label>
+          <span class="saved-actions text-sm">
+            <a class="link" href="/shock?account_id={{ account_id }}&saved={{ sc.id }}">Open</a> ·
+            <button type="button" class="link-btn" hx-post="/scenarios/{{ sc.id }}/delete"
+                    hx-vals='{"account_id": "{{ account_id }}"}' hx-target="#sc-{{ sc.id }}" hx-swap="delete">Delete</button>
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+      <button class="btn-secondary mt-3" type="submit">Compare selected (up to 3)</button>
+    </form>
+  </section>
+  {% endif %}
+
   {# ---------- Everything else, folded away ---------- #}
   <section class="card">
     <h2 class="card-title">Details</h2>
@@ -168,6 +191,11 @@
 
 {% block scripts %}
 <script>
+  // Saved scenarios: allow at most 3 ticked.
+  document.querySelectorAll(".saved-pick").forEach((cb) => cb.addEventListener("change", () => {
+    const picked = document.querySelectorAll(".saved-pick:checked");
+    if (picked.length > 3) cb.checked = false;
+  }));
   // Charts inside a closed <details> are drawn at zero width; resize them when opened.
   document.querySelectorAll("details.more").forEach((d) => d.addEventListener("toggle", () => {
     if (d.open) d.querySelectorAll("[data-chart-ready]").forEach((el) => echarts.getInstanceByDom(el)?.resize());

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Compare scenarios · Account {{ account_id }} · Bonker Banker{% endblock %}
+
+{% block content %}
+<article class="report">
+  <p class="text-muted text-sm"><a class="link" href="/customer/{{ account_id }}#saved">Account {{ account_id }}</a></p>
+  <h1 class="report-title">Compare scenarios</h1>
+
+  {% if not cols %}
+    <p class="text-muted mt-4">Pick two or three saved scenarios on the customer page to compare them.</p>
+  {% else %}
+  <div class="compare-grid" style="--cols: {{ cols | length }}">
+    {% for c in cols %}
+      {% set a = c.res.after %}
+      <section class="compare-col">
+        <h2 class="card-title">{{ c.name }}</h2>
+        <p class="text-muted text-sm">{{ c.summary }}</p>
+        <div class="runway-big {{ a.runway | runway_class }}">{{ a.runway | runway_num }}</div>
+        <div class="runway-unit">months of runway</div>
+        <p class="compare-verdict">
+          {% if c.res.survives_duration %}
+            {% set d = c.res.survives_duration %}
+            {% if d.makes_it %}Gets through {{ d.months }} months with {{ d.buffer_at_end | money }} left.
+            {% else %}Short {{ d.shortfall | money }} before the {{ d.months }} months are up.{% endif %}
+          {% elif a.runway is string %}Still no shortfall.
+          {% elif a.runway == 0 %}Wipes out the savings.
+          {% else %}Savings last {{ a.runway | runway_num }} months.{% endif %}
+        </p>
+        <dl class="compare-facts">
+          <div><dt>Income</dt><dd>{{ a.income | money }}</dd></div>
+          <div><dt>Spending</dt><dd>{{ a.spending | money }}</dd></div>
+          <div><dt>{{ 'Shortfall' if a.monthly_gap > 0 else 'Surplus' }}</dt>
+            <dd class="{{ 'bad' if a.monthly_gap > 0 else 'good' }}">{{ a.monthly_gap | abs | money }}</dd></div>
+          <div><dt>One-off cost</dt><dd>{{ a.one_off_cost | money }}</dd></div>
+        </dl>
+        <a class="link text-sm" href="/shock?account_id={{ account_id }}&saved={{ c.id }}">Open in Shock Lab</a>
+      </section>
+    {% endfor %}
+  </div>
+  <p class="text-muted text-sm mt-4">Today, before any shock: {{ cols[0].res.before.runway | runway_num }} months of runway.</p>
+  {% endif %}
+</article>
+{% endblock %}

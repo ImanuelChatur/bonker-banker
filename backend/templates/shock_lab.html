@@ -76,6 +76,12 @@
       <button type="button" id="reset-btn" class="btn-secondary w-full">Reset to no shock</button>
     </form>
 
+    <form class="save-row" hx-post="/shock/save" hx-include="#shock-form" hx-target="#save-msg">
+      <input name="name" class="input" placeholder="Name this scenario" maxlength="60" aria-label="Scenario name">
+      <button class="btn-secondary" type="submit">Save</button>
+    </form>
+    <p id="save-msg" class="mt-1" aria-live="polite"></p>
+
     <!-- Twist card: plain English → settings. Uses the same account ID field. -->
     <form class="twist-form" hx-post="/assistant/twist" hx-target="#result"
           hx-include="#account-id" hx-indicator="#result">

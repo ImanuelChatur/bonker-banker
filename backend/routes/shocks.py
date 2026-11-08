@@ -25,8 +25,17 @@ PRESET_LABELS = [
 @bp.get("/shock")
 def page():
     preset = request.args.get("preset", "")
-    return render_template("shock_lab.html", account_id=request.args.get("account_id", "").strip(),
-                           f=PRESETS.get(preset, _BLANK), active_preset=preset,
+    account_id = request.args.get("account_id", "").strip()
+    f = PRESETS.get(preset, _BLANK)
+    saved_id = request.args.get("saved", "")
+    if saved_id.isdigit() and account_id:   # reopen a saved scenario
+        from services import saved
+        from .scenarios import shock_lab_fields
+        rows = saved.get([int(saved_id)], account_id)
+        if rows:
+            f = {**_BLANK, **shock_lab_fields(rows[0]["settings"])}
+    return render_template("shock_lab.html", account_id=account_id,
+                           f=f, active_preset=preset,
                            presets=PRESETS, preset_labels=PRESET_LABELS, blank=_BLANK)
 
 

@@ -12,3 +12,4 @@ Every change to one of them gets a line here: who, file, what, why.
 | ClaudeTwo | `app.py` (not on the list, logged anyway) | `/` passes `stat=home_stat()` from `routes/home.py`. | Home page headline from `engine.insights.headline()`. |
 | ClaudeTwo | `static/js/charts.js` (not on the list) | Added `kind: "donut"` and `kind: "heatmap"` renderers; line charts unchanged. | Spending mix and the stress-test heatmap. |
 | ClaudeTwo | `routes/__init__.py` | `runway_num`: numeric values >= 120 now print "120+" (was "120"). | The 120-month cap read as a real number next to "120+". |
+| ClaudeTwo | `routes/__init__.py` | Registered `scenarios` blueprint. | Saved scenarios (save / compare / delete). |

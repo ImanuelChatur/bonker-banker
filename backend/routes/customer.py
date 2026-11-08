@@ -72,4 +72,11 @@ def show(account_id):
                            no_income_runway=runway(m.buffer, 0.0, m.spending),
                            surplus=m.income - m.spending, mix=spending_mix(all_rows),
                            history=history, goal=goal_plan(m), account_id=account_id,
+                           saved_scenarios=_saved(account_id),
                            **optional_extras(account_id, m), **profile_and_peers(account_id))
+
+
+def _saved(account_id) -> list[dict]:
+    from services import saved
+    from .scenarios import describe
+    return [{**s, "summary": describe(s["settings"])} for s in saved.list_for(account_id)]
