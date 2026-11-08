@@ -50,26 +50,37 @@
         </label>
         {{ slider("income_pct", "Income on EI (% of usual)", 0, 100, 5, f.income_pct, "pct") }}
         {{ slider("duration_months", "EI lasts", 0, 24, 1, f.duration_months, "months") }}
+        <label class="check-row">
+          <input type="checkbox" name="realistic_ei" id="realistic_ei" value="1" {{ 'checked' if f.realistic_ei }}>
+          <span>Realistic EI: capped at $729 a week</span>
+        </label>
       </fieldset>
 
       <fieldset class="lab-group">
         <legend class="font-semibold">Costs</legend>
         {{ slider("bills_pct", "Household bills increase", 0, 50, 1, f.bills_pct, "pct_up") }}
         {{ slider("one_off_months", "Surprise repair (months of spending)", 0, 6, 0.5, f.one_off_months, "spend") }}
+        {{ slider("rate_hike_pct", "Interest rates up", 0, 3, 0.25, f.rate_hike_pct, "pts") }}
         <div class="grid grid-cols-2 gap-3">
           <label class="block">
             <span class="metric-label">Extra one-off $</span>
-            <input type="number" name="one_off_cost" min="0" step="50" value="{{ f.one_off_cost }}" class="input">
+            <input type="number" name="one_off_cost" min="0" step="any" value="{{ f.one_off_cost }}" class="input">
           </label>
           <label class="block">
             <span class="metric-label">Extra $ / month</span>
-            <input type="number" name="extra_spending" min="0" step="25" value="{{ f.extra_spending }}" class="input">
+            <input type="number" name="extra_spending" min="0" step="any" value="{{ f.extra_spending }}" class="input">
           </label>
         </div>
       </fieldset>
 
       <button type="button" id="reset-btn" class="btn-secondary w-full">Reset to no shock</button>
     </form>
+
+    <form class="save-row" hx-post="/shock/save" hx-include="#shock-form" hx-target="#save-msg">
+      <input name="name" class="input" placeholder="Name this scenario" maxlength="60" aria-label="Scenario name">
+      <button class="btn-secondary" type="submit">Save</button>
+    </form>
+    <p id="save-msg" class="mt-1" aria-live="polite"></p>
 
     <!-- Twist card: plain English → settings. Uses the same account ID field. -->
     <form class="twist-form" hx-post="/assistant/twist" hx-target="#result"

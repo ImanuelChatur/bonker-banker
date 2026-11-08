@@ -48,11 +48,16 @@
             {% if m.household_bills > 0 %}{{ '+' if shock.household_bills_pct > 0 }}{{ (shock.household_bills_pct * m.household_bills) | money }} a month on {{ m.household_bills | money }}
             {% else %}no effect, this account's median household bills (H) are $0{% endif %}</li>
         {% endif %}
+        {% if after.ei_capped %}<li>EI capped at the $729 a week maximum ($3,159 a month)</li>{% endif %}
+        {% if shock.rate_hike_pct %}
+          <li>Rates up {{ '%g' | format(shock.rate_hike_pct) }} points:
+            {% if after.rate_hike_extra %}+{{ after.rate_hike_extra | money }} a month in loan interest{% else %}no effect, no variable-rate debt on this account{% endif %}</li>
+        {% endif %}
         {% if shock.extra_monthly_spending %}<li>Extra spending {{ shock.extra_monthly_spending | money }} a month</li>{% endif %}
         {% if after.one_off_cost %}
           <li>One-off cost {{ after.one_off_cost | money }}{{ ' (' ~ ('%g' % shock.one_off_months_of_spending) ~ (' month' if shock.one_off_months_of_spending == 1 else ' months') ~ ' of spending)' if shock.one_off_months_of_spending }}</li>
         {% endif %}
-        {% if shock.income_factor == 1 and not shock.household_bills_pct and not shock.extra_monthly_spending and not after.one_off_cost %}
+        {% if shock.income_factor == 1 and not shock.household_bills_pct and not shock.extra_monthly_spending and not after.one_off_cost and not shock.rate_hike_pct %}
           <li>Nothing yet: this is the customer's usual month.</li>
         {% endif %}
       </ul>
@@ -71,20 +76,6 @@
     </div>
   </div>
   {% endif %}
-
-  <div class="stat-grid">
-    <div class="stat"><div class="metric-label">Income / mo</div><div class="stat-value">{{ after.income | money }}</div></div>
-    <div class="stat"><div class="metric-label">Spending / mo</div><div class="stat-value">{{ after.spending | money }}</div></div>
-    <div class="stat">
-      {% if after.monthly_gap > 0 %}
-        <div class="metric-label">Monthly shortfall</div><div class="stat-value bad">−{{ after.monthly_gap | money }}</div>
-      {% else %}
-        <div class="metric-label">Monthly surplus</div><div class="stat-value good">+{{ (-after.monthly_gap) | money }}</div>
-      {% endif %}
-    </div>
-    <div class="stat"><div class="metric-label">One-off cost</div><div class="stat-value">{{ after.one_off_cost | money }}</div></div>
-    <div class="stat"><div class="metric-label">Buffer left</div><div class="stat-value">{{ after.buffer_left | money }}</div></div>
-  </div>
 
   <div class="chart mt-4" data-chart='{{ chart | tojson }}'></div>
 </div>

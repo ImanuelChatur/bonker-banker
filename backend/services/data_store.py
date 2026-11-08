@@ -53,6 +53,22 @@ def account_loan(account_id) -> dict | None:
     return _state["loans"].get(str(account_id))
 
 
+def table(name: str) -> pd.DataFrame:
+    """Any other processed table (account_profile, stress_grid, at_risk, ...), read once and cached.
+
+    Raises DataNotReady if the script that builds it hasn't been run yet.
+    """
+    key = f"table:{name}"
+    with _lock:
+        if key not in _state:
+            path = config.DATA_PROCESSED / f"{name}.parquet"
+            if not path.exists():
+                raise DataNotReady(f"data/processed/{name}.parquet is missing. Run: python scripts/precompute.py "
+                                   "and python scripts/stress_test.py")
+            _state[key] = pd.read_parquet(path)
+        return _state[key]
+
+
 def account_ids() -> list[str]:
     _need()
     return sorted(_state["monthly"], key=int)

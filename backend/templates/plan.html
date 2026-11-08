@@ -2,29 +2,34 @@
 {% block title %}Plan · Bonker Banker{% endblock %}
 
 {% block content %}
-<div class="lab-grid">
+<div class="plan-tabs" role="tablist" aria-label="Plan">
+  <button type="button" role="tab" class="plan-tab" data-tab="savings" aria-selected="true">Savings plan</button>
+  <button type="button" role="tab" class="plan-tab" data-tab="loan" aria-selected="false">Can they afford a loan?</button>
+</div>
+
+{# ---------- Tab 1: savings plan (live) ---------- #}
+<div class="lab-grid" data-panel="savings">
   <section class="card lab-controls">
-    <h1 class="text-2xl font-bold mb-1">Make a plan</h1>
-    <p class="text-muted mb-5">Set a savings goal and a shock to prepare for. The plan updates as you type.</p>
+    <h1 class="text-2xl font-bold mb-1">Savings plan</h1>
+    <p class="text-muted mb-5">An emergency fund, and what to cut if a shock hits. Updates as you type.</p>
 
     <form id="plan-form" hx-post="/plan/run" hx-target="#result"
           hx-trigger="load, input delay:400ms, change" hx-sync="this:replace" hx-indicator="#result">
       <label class="block mb-4">
         <span class="metric-label">Account ID</span>
-        <input name="account_id" value="{{ account_id }}" class="input input-lg"
+        <input name="account_id" value="{{ account_id }}" class="input input-lg plan-account"
                placeholder="e.g. 20111" inputmode="numeric" autocomplete="off">
       </label>
 
-      <div class="grid grid-cols-2 gap-3 mb-5">
-        <label class="block"><span class="metric-label">Emergency fund goal (months of spending)</span>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="block"><span class="metric-label">Emergency fund (months of spending)</span>
           <input name="goal_months" type="number" step="0.5" min="0.5" max="24" value="3" class="input"></label>
-        <label class="block"><span class="metric-label">If the shock hits, last this many months</span>
+        <label class="block"><span class="metric-label">If the shock hits, last (months)</span>
           <input name="target_runway" type="number" step="1" min="1" max="60" value="6" class="input"></label>
       </div>
 
-      <fieldset class="lab-group">
-        <legend class="font-semibold">Shock to prepare for</legend>
-        <p class="text-muted text-sm mb-3">Default: job loss with EI at 55% of income for 6 months.</p>
+      <details class="more">
+        <summary>Shock: job loss, EI at 55% for 6 months</summary>
         <div class="grid grid-cols-2 gap-3">
           {% for name, label, value in [
             ("income_pct", "Income after shock (% of usual)", 55),
@@ -38,7 +43,7 @@
             <input name="{{ name }}" type="number" step="any" value="{{ value }}" class="input"></label>
           {% endfor %}
         </div>
-      </fieldset>
+      </details>
     </form>
   </section>
 
@@ -46,4 +51,70 @@
     {% include "partials/shock_empty.html" %}
   </section>
 </div>
+
+{# ---------- Tab 2: loan check ---------- #}
+<div class="lab-grid" data-panel="loan" hidden>
+  <section class="card lab-controls">
+    <h1 class="text-2xl font-bold mb-1">Can they afford a loan?</h1>
+    <p class="text-muted mb-5">What a new loan does to the runway, today and if a job loss hits.</p>
+
+    <form id="loan-form" hx-post="/plan/loan" hx-target="#loan-result"
+          hx-trigger="input delay:400ms, change" hx-sync="this:replace" hx-indicator="#loan-result">
+      <label class="block mb-4">
+        <span class="metric-label">Account ID</span>
+        <input name="account_id" value="{{ account_id }}" class="input input-lg plan-account"
+               placeholder="e.g. 20111" inputmode="numeric" autocomplete="off">
+      </label>
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <label class="block"><span class="metric-label">Amount ($)</span>
+          <input name="amount" type="number" min="0" step="any" value="10000" class="input"></label>
+        <label class="block"><span class="metric-label">Term (months)</span>
+          <input name="months" type="number" min="3" max="360" step="1" value="36" class="input"></label>
+      </div>
+      <label class="block">
+        <span class="metric-label">Rate</span>
+        <select name="rate_idx" class="input">
+          {% for i, r in loan_rates %}
+          <option value="{{ i }}" {{ 'selected' if i == default_rate_idx }}>{{ r.product }} · {{ r.rate_pct }}%</option>
+          {% endfor %}
+        </select>
+      </label>
+      <p class="text-muted text-sm mt-2">Canadian rates for new lending, {{ loan_rates[0][1].as_of if loan_rates }}.
+        Source: <a class="link" href="https://bankofcanada.ca/rates/banking-and-financial-statistics/interest-rates-for-new-and-existing-household-lending"
+        target="_blank" rel="noopener">Bank of Canada</a>.</p>
+    </form>
+  </section>
+
+  <section id="loan-result" class="lab-result" aria-live="polite">
+    {% include "partials/shock_empty.html" %}
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Tabs: show one panel, keep the account ID in both forms, remember the tab in the URL hash.
+  (function () {
+    const tabs = document.querySelectorAll(".plan-tab");
+    const loanForm = document.getElementById("loan-form");
+    function show(name) {
+      tabs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.tab === name)));
+      document.querySelectorAll("[data-panel]").forEach((p) => (p.hidden = p.dataset.panel !== name));
+      if (name === "loan") htmx.ajax("POST", "/plan/loan", { source: loanForm, target: "#loan-result" });
+      history.replaceState(null, "", name === "loan" ? "#loan" : location.pathname + location.search);
+      document.querySelectorAll("[data-panel]:not([hidden]) [data-chart-ready]")
+        .forEach((el) => echarts.getInstanceByDom(el)?.resize());
+    }
+    tabs.forEach((t) => t.addEventListener("click", () => show(t.dataset.tab)));
+    document.querySelectorAll(".plan-account").forEach((input) => input.addEventListener("input", () =>
+      document.querySelectorAll(".plan-account").forEach((o) => { if (o !== input) o.value = input.value; })));
+    document.body.addEventListener("htmx:afterSwap", () => document.querySelectorAll("details.more").forEach((d) => {
+      if (d.dataset.bbResize) return;
+      d.dataset.bbResize = "1";
+      d.addEventListener("toggle", () => d.open && d.querySelectorAll("[data-chart-ready]")
+        .forEach((el) => echarts.getInstanceByDom(el)?.resize()));
+    }));
+    if (location.hash === "#loan") window.addEventListener("load", () => show("loan"));
+  })();
+</script>
 {% endblock %}

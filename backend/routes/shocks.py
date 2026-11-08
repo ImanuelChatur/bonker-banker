@@ -7,7 +7,7 @@ bp = Blueprint("shocks", __name__)
 
 # Every preset sets ALL fields, so clicking one fully replaces the previous scenario.
 _BLANK = {"job_loss": False, "income_pct": 55, "duration_months": 6, "bills_pct": 0,
-          "one_off_months": 0, "one_off_cost": 0, "extra_spending": 0}
+          "one_off_months": 0, "one_off_cost": 0, "extra_spending": 0, "rate_hike_pct": 0, "realistic_ei": False}
 PRESETS = {  # the README's example twists, one click each
     "job_loss": {**_BLANK, "job_loss": True, "income_pct": 55, "duration_months": 6},
     "bills_up": {**_BLANK, "bills_pct": 15},
@@ -25,8 +25,17 @@ PRESET_LABELS = [
 @bp.get("/shock")
 def page():
     preset = request.args.get("preset", "")
-    return render_template("shock_lab.html", account_id=request.args.get("account_id", "").strip(),
-                           f=PRESETS.get(preset, _BLANK), active_preset=preset,
+    account_id = request.args.get("account_id", "").strip()
+    f = PRESETS.get(preset, _BLANK)
+    saved_id = request.args.get("saved", "")
+    if saved_id.isdigit() and account_id:   # reopen a saved scenario
+        from services import saved
+        from .scenarios import shock_lab_fields
+        rows = saved.get([int(saved_id)], account_id)
+        if rows:
+            f = {**_BLANK, **shock_lab_fields(rows[0]["settings"])}
+    return render_template("shock_lab.html", account_id=account_id,
+                           f=f, active_preset=preset,
                            presets=PRESETS, preset_labels=PRESET_LABELS, blank=_BLANK)
 
 

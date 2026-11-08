@@ -6,7 +6,8 @@ def create_app():
 
     @app.route("/")
     def index():
-        return render_template("index.html")
+        from routes.home import home_stat
+        return render_template("index.html", stat=home_stat())
 
     # HTMX test: returns a small HTML snippet that gets swapped into the page
     @app.route("/health")

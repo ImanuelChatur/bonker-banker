@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ ('Account ' ~ account_id ~ ' · ') if m }}Customer · Bonker Banker{% endblock %}
 
+{% macro sample(d) %}{% if d and d._placeholder %}<span class="sample-badge" title="Placeholder until the engine function lands">sample data</span>{% endif %}{% endmacro %}
+
 {% block content %}
 <form action="/customer" method="get" class="dash-lookup">
   <input name="account_id" required inputmode="numeric" placeholder="Account ID, e.g. 20111"
@@ -11,129 +13,193 @@
 {% if not m %}
 <div class="card">
   <h1 class="card-title">Look up a customer</h1>
-  <p class="text-muted">Enter an account ID, or try a demo:
-    <a class="link" href="/customer/20176">steady saver</a> ·
-    <a class="link" href="/customer/20111">spending more than it earns</a> ·
+  <p class="text-muted">Enter an account ID, or try
+    <a class="link" href="/customer/20176">steady saver</a>,
+    <a class="link" href="/customer/20111">spending more than it earns</a> or
     <a class="link" href="/customer/21817">living on the edge</a>.</p>
 </div>
 {% else %}
 {% set rclass = runway | runway_class %}
 <div class="reveal dash">
 
-  {# ---------- Headline: runway + what it means ---------- #}
+  {# ---------- Hero: one number, one verdict, one action ---------- #}
   <section class="card dash-hero">
     <div class="dash-hero-main">
-      <p class="metric-label">Account {{ account_id }} · {{ m.months_of_history }} months of history</p>
+      <p class="text-muted text-sm">Account {{ account_id }}</p>
       <div class="dash-runway">
         <span class="runway-big {{ rclass }}">{{ runway | runway_num }}</span>
         <span class="runway-unit">months of runway{{ ' · no shortfall' if runway is string }}</span>
       </div>
-      <p class="verdict {{ rclass }}">
-        {% if runway is string %}
-          Income covers typical spending, so the buffer isn't draining.
-          Saving about {{ surplus | money }} a month.
-        {% elif runway == 0 %}
-          No buffer left to absorb anything.
-        {% else %}
-          Spending runs {{ (-surplus) | money }} a month above income, so the buffer lasts {{ runway | runway_num }} months.
-        {% endif %}
+      <p class="dash-verdict">
+        {% if runway is string %}Income covers spending, so savings grow by about {{ surplus | money }} a month.
+        {% elif runway == 0 %}No savings left to absorb anything.
+        {% else %}Spending is {{ (-surplus) | money }} a month above income, so savings last {{ runway | runway_num }} months.{% endif %}
+        If income stopped today: {{ no_income_runway | runway_num }} {{ 'month' if no_income_runway == 1 else 'months' }}.
       </p>
+      {% if sim %}<p class="dash-sim" title="{{ sim.method }}">{{ sim.text }}</p>{% endif %}
       <div class="dash-actions">
-        <a class="btn-primary" href="/shock?preset=job_loss&account_id={{ account_id }}">What if I lose my job?</a>
-        <a class="btn-secondary" href="/plan?account_id={{ account_id }}">Make a plan</a>
-        <a class="btn-secondary" href="/report/{{ account_id }}">Runway report</a>
-        <a class="btn-secondary" href="/demo?account_id={{ account_id }}">Live twist demo</a>
+        <a class="btn-primary" href="/shock?preset=job_loss&account_id={{ account_id }}">What if they lose their job?</a>
+        <span class="dash-links text-sm">
+          <a class="link" href="/plan?account_id={{ account_id }}">Plan</a> ·
+          <a class="link" href="/report/{{ account_id }}">Report</a> ·
+          <a class="link" href="/demo?account_id={{ account_id }}">Live twist demo</a>
+        </span>
       </div>
     </div>
-
-    <div class="dash-hero-side">
-      {% if score %}
-        {% set sclass = 'good' if score.score >= 70 else 'warn' if score.score >= 40 else 'bad' %}
-        <div class="score-ring {{ sclass }}">
-          <svg viewBox="0 0 36 36" aria-hidden="true">
-            <circle class="score-track" cx="18" cy="18" r="15.9" pathLength="100"></circle>
-            <circle class="score-fill" cx="18" cy="18" r="15.9" pathLength="100"
-                    stroke-dasharray="{{ score.score }} 100"></circle>
-          </svg>
-          <div class="score-text">
-            <span class="score-num">{{ score.score }}</span>
-            <span class="score-label">Resilience{{ ' · ' ~ score.grade if score.grade }}</span>
-          </div>
+    {% if score %}
+      {% set sclass = 'good' if score.score >= 70 else 'warn' if score.score >= 40 else 'bad' %}
+      <div class="score-ring {{ sclass }}" title="Resilience score: our measure, not the judges' formula">
+        <svg viewBox="0 0 36 36" aria-hidden="true">
+          <circle class="score-track" cx="18" cy="18" r="15.9" pathLength="100"></circle>
+          <circle class="score-fill" cx="18" cy="18" r="15.9" pathLength="100" stroke-dasharray="{{ score.score }} 100"></circle>
+        </svg>
+        <div class="score-text">
+          <span class="score-num">{{ score.score }}</span>
+          <span class="score-label">Resilience{{ ' · ' ~ score.grade if score.grade }}</span>
         </div>
-        <p class="our-measure">Our measure, not the judges' formula</p>
-      {% endif %}
-      <div class="stat">
-        <div class="metric-label">If income stopped today</div>
-        <div class="stat-value {{ no_income_runway | runway_class }}">{{ no_income_runway | runway_num }} months</div>
-        <div class="text-muted text-sm">Buffer ÷ typical spending · our measure</div>
       </div>
-    </div>
+    {% endif %}
   </section>
 
-  {# ---------- Score breakdown + peers (shown once the engine provides them) ---------- #}
-  {% if score and score.parts %}
+  {# ---------- Vs people like you ---------- #}
+  {% if bench %}
+  {% set g = bench.group %}
   <section class="card">
-    <h2 class="card-title">What drives the resilience score</h2>
-    <p class="text-muted text-sm mb-3">Our measure. Built on the judges' numbers (I, S, F, B, runway).</p>
-    <ul class="score-parts">
-      {% for p in score.parts %}
-      <li>
-        <div class="score-part-head"><span>{{ p.name }}</span>
-          <b>{{ '%g' | format(p.points | round(1)) }}{% if p.max %}<span class="text-muted"> / {{ p.max }}</span>{% endif %}</b></div>
-        {% if p.max %}<div class="bar"><span style="width: {{ (100 * p.points / p.max) | round }}%"></span></div>{% endif %}
-        {% if p.why %}<p class="text-muted text-sm">{{ p.why }}</p>{% endif %}
-      </li>
-      {% endfor %}
-    </ul>
+    <h2 class="card-title">Compared with people like them {{ sample(bench) }}</h2>
+    <p class="text-muted text-sm mb-4">{{ '{:,}'.format(bench.peer_count) }} accounts with income of {{ g.income_band }}{{ ', aged ' ~ g.age_band if g.age_band }}.
+      Our measure.</p>
+    {% set mt = bench.metrics %}
+    <div class="peer-grid">
+    {% for key, label, fmt in [("buffer", "Savings", "money"), ("runway", "Runway", "months"),
+                               ("fixed_cost_share", "Fixed costs as a share of income", "pct"),
+                               ("income_volatility", "Month-to-month income swings", "pct")] if mt[key] %}
+      {% set x = mt[key] %}
+      <div class="peer-row">
+        <div class="score-part-head">
+          <span>{{ label }}</span>
+          <b>better than {{ x.percentile | round | int }}%</b>
+        </div>
+        <div class="bar peer"><span style="width: {{ x.percentile }}%"></span></div>
+        <p class="text-muted text-sm">
+          {% if fmt == 'money' %}{{ x.value | money }} vs a typical {{ x.peer_median | money }}
+          {% elif fmt == 'months' %}{{ '120+' if x.value >= 120 else x.value | runway_num }} vs a typical {{ '120+' if x.peer_median >= 120 else x.peer_median | runway_num }} months
+          {% else %}{{ (x.value * 100) | round | int }}% vs a typical {{ (x.peer_median * 100) | round | int }}%{% endif %}
+        </p>
+      </div>
+    {% endfor %}
+    </div>
   </section>
   {% endif %}
 
-  <div class="dash-grid">
-    <section class="card">
-      <h2 class="card-title">Where the money goes</h2>
-      {% if mix['items'] %}
-        <div class="chart chart-sm" data-chart='{{ mix | tojson }}'></div>
-      {% else %}
-        <p class="text-muted">No spending recorded.</p>
-      {% endif %}
-      <p class="text-muted text-sm">Average per month over the last {{ mix.months }} months.</p>
-    </section>
-
-    <section class="card">
-      {% if peer %}
-        <h2 class="card-title">Compared with {{ '{:,}'.format(peer.n) if peer.n else 'other' }} customers</h2>
-        <p class="text-muted text-sm mb-3">Our measure: share of dataset accounts this one beats.</p>
-        {% for label, pct in [("Runway", peer.runway_pct), ("Resilience score", peer.score_pct)] if pct is not none %}
-        <div class="peer-row">
-          <div class="score-part-head"><span>{{ label }}</span><b>better than {{ pct }}%</b></div>
-          <div class="bar peer"><span style="width: {{ pct }}%"></span></div>
-        </div>
-        {% endfor %}
-      {% else %}
-        <h2 class="card-title">Monthly picture</h2>
-      {% endif %}
-      <div class="stat-grid">
-        <div class="stat"><div class="metric-label">Income</div><div class="stat-value">{{ m.income | money }}</div></div>
-        <div class="stat"><div class="metric-label">Spending</div><div class="stat-value">{{ m.spending | money }}</div></div>
-        <div class="stat"><div class="metric-label">{{ 'Surplus' if surplus >= 0 else 'Shortfall' }}</div>
-          <div class="stat-value {{ 'good' if surplus >= 0 else 'bad' }}">{{ surplus | abs | money }}</div></div>
-        <div class="stat"><div class="metric-label">Buffer</div><div class="stat-value">{{ m.buffer | money }}</div></div>
-      </div>
-    </section>
-  </div>
-
+  {# ---------- Profile: compact facts ---------- #}
+  {% if profile %}
+  {% set p = profile %}
   <section class="card">
-    <h2 class="card-title">Balance history</h2>
-    <div class="chart" data-chart='{{ history | tojson }}'></div>
+    <h2 class="card-title">About this customer {{ sample(p) }}</h2>
+    <dl class="plan-facts">
+      {% if p.age_band %}<div><dt>Age</dt><dd>{{ p.age_band }}</dd></div>{% endif %}
+      {% if p.tenure_years is not none %}<div><dt>Customer for</dt><dd>{{ p.tenure_years | round | int }} years</dd></div>{% endif %}
+      {% if p.household_size %}<div><dt>People on the account</dt><dd>{{ p.household_size }}</dd></div>{% endif %}
+      {% if p.district_name %}<div><dt>District</dt><dd>{{ p.district_name }}</dd></div>{% endif %}
+      {% if p.district_unemployment_2023 is not none %}<div><dt>Local unemployment</dt>
+        <dd>{{ p.district_unemployment_2023 }}%{{ ', ' ~ p.unemployment_trend if p.unemployment_trend }}</dd></div>{% endif %}
+      <div><dt>Card</dt><dd>{{ (p.card_type | capitalize) if p.card_type else 'None' }}</dd></div>
+    </dl>
+    {% if p.true_fixed_costs is not none %}
+    <details class="more">
+      <summary>True fixed costs: {{ p.true_fixed_costs | money }} a month</summary>
+      <p>The judges' fixed costs (F) are {{ m.fixed_costs | money }}: median bills, insurance and loan payments.
+        Adding standing orders ({{ p.standing_orders_monthly | money }}){{ ' and leasing (' ~ (p.leasing_monthly | money) ~ ')' if p.leasing_monthly }}
+        that F doesn't already count gives {{ p.true_fixed_costs | money }}. Our measure; runway still uses F.</p>
+    </details>
+    {% endif %}
   </section>
+  {% endif %}
 
-  {% set backup = none %}
-  {% include "partials/plan_panel.html" %}
+  {# ---------- Saved scenarios (only when there are some) ---------- #}
+  {% if saved_scenarios %}
+  <section class="card" id="saved">
+    <h2 class="card-title">Saved scenarios</h2>
+    <form action="/customer/{{ account_id }}/compare" method="get" class="saved-form">
+      <ul class="saved-list">
+        {% for sc in saved_scenarios %}
+        <li id="sc-{{ sc.id }}">
+          <label><input type="checkbox" name="ids" value="{{ sc.id }}" class="saved-pick">
+            <b>{{ sc.name }}</b> <span class="text-muted text-sm">{{ sc.summary }}</span></label>
+          <span class="saved-actions text-sm">
+            <a class="link" href="/shock?account_id={{ account_id }}&saved={{ sc.id }}">Open</a> ·
+            <button type="button" class="link-btn" hx-post="/scenarios/{{ sc.id }}/delete"
+                    hx-vals='{"account_id": "{{ account_id }}"}' hx-target="#sc-{{ sc.id }}" hx-swap="delete">Delete</button>
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+      <button class="btn-secondary mt-3" type="submit">Compare selected (up to 3)</button>
+    </form>
+  </section>
+  {% endif %}
 
-  <details class="card dash-details">
-    <summary class="card-title">All metrics (I, S, F, H, B, P)</summary>
-    <div class="mt-4">{% include "partials/metric_cards.html" %}</div>
-  </details>
+  {# ---------- Everything else, folded away ---------- #}
+  <section class="card">
+    <h2 class="card-title">Details</h2>
+    {% if score and score.parts %}
+    <details class="more">
+      <summary>Why the resilience score is {{ score.score }}</summary>
+      <ul class="score-parts">
+        {% for p in score.parts %}
+        <li>
+          <div class="score-part-head"><span>{{ p.name }}</span>
+            <b>{{ '%g' | format(p.points | round(1)) }}{% if p.max %}<span class="text-muted"> / {{ p.max }}</span>{% endif %}</b></div>
+          {% if p.max %}<div class="bar"><span style="width: {{ (100 * p.points / p.max) | round }}%"></span></div>{% endif %}
+          {% if p.why %}<p class="text-muted text-sm">{{ p.why }}</p>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      <p class="text-muted text-sm">Our measure, built on the judges' numbers.</p>
+    </details>
+    {% endif %}
+    <details class="more">
+      <summary>Where the money goes</summary>
+      {% if mix['items'] %}<div class="chart chart-sm" data-chart='{{ mix | tojson }}'></div>{% endif %}
+      <p class="text-muted text-sm">Average per month over the last {{ mix.months }} months.</p>
+    </details>
+    <details class="more">
+      <summary>Balance history</summary>
+      <div class="chart" data-chart='{{ history | tojson }}'></div>
+    </details>
+    <details class="more">
+      <summary>Emergency fund plan</summary>
+      <p>{{ goal.plan }}</p>
+      <p class="text-muted text-sm">Target {{ goal.target_amount | money }} ({{ goal.target_months | months }} of spending) ·
+        saved {{ goal.current_buffer | money }} · still needed {{ goal.still_needed | money }}</p>
+    </details>
+    <details class="more">
+      <summary>The judges' numbers (I, S, F, H, B, P)</summary>
+      <dl class="plan-facts">
+        <div><dt>Income (I)</dt><dd>{{ m.income | money }}</dd></div>
+        <div><dt>Spending (S)</dt><dd>{{ m.spending | money }}</dd></div>
+        <div><dt>Fixed costs (F)</dt><dd>{{ m.fixed_costs | money }}</dd></div>
+        <div><dt>Household bills (H)</dt><dd>{{ m.household_bills | money }}</dd></div>
+        <div><dt>Savings buffer (B)</dt><dd>{{ m.buffer | money }}</dd></div>
+        <div><dt>Active loan payment (P)</dt><dd>{{ m.loan_payment_active | money }}</dd></div>
+      </dl>
+      <p class="text-muted text-sm mt-2">Medians over {{ m.months_of_history }} months; B is the average daily balance of the last 6.</p>
+    </details>
+  </section>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Saved scenarios: allow at most 3 ticked.
+  document.querySelectorAll(".saved-pick").forEach((cb) => cb.addEventListener("change", () => {
+    const picked = document.querySelectorAll(".saved-pick:checked");
+    if (picked.length > 3) cb.checked = false;
+  }));
+  // Charts inside a closed <details> are drawn at zero width; resize them when opened.
+  document.querySelectorAll("details.more").forEach((d) => d.addEventListener("toggle", () => {
+    if (d.open) d.querySelectorAll("[data-chart-ready]").forEach((el) => echarts.getInstanceByDom(el)?.resize());
+  }));
+</script>
 {% endblock %}

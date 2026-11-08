@@ -1,0 +1,6 @@
+parameter,value,unit,as_of,source_name,source_url,notes
+benefit_rate,55,percent of average insurable weekly earnings,2026,Government of Canada - EI regular benefits: How much you could receive,https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html,Same 55% the judges use
+max_weekly_benefit,729,CAD per week,2026,Government of Canada - EI regular benefits: How much you could receive,https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html,Monthly equivalent ~= 729 * 52 / 12 = 3159
+max_insurable_earnings,68900,CAD per year,2026,Government of Canada - EI regular benefits: How much you could receive,https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html,
+min_benefit_weeks,14,weeks,2026,Government of Canada - EI regular benefits: How much you could receive,https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html,Depends on regional unemployment and insurable hours
+max_benefit_weeks,45,weeks,2026,Government of Canada - EI regular benefits: How much you could receive,https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html,

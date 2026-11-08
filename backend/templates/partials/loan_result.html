@@ -1,0 +1,40 @@
+{% set vclass = {'comfortable': 'good', 'tight': 'warn', 'risky': 'bad'}.get(a.verdict, '') %}
+<div class="plan-stack">
+  <section class="card">
+    <p class="text-muted text-sm">Account {{ account_id }} · {{ amount | money }} over {{ months }} months at {{ a.rate_used }}%</p>
+    <div class="dash-runway">
+      <span class="runway-big {{ vclass }}">{{ a.verdict | capitalize }}</span>
+    </div>
+    <p class="dash-verdict">{{ a.payment | money }} a month. Runway goes from
+      <b>{{ a.runway_before | runway_num }}</b> to <b class="{{ a.runway_with_loan | runway_class }}">{{ a.runway_with_loan | runway_num }} months</b>,
+      or <b class="{{ a.runway_with_loan_and_shock | runway_class }}">{{ a.runway_with_loan_and_shock | runway_num }} months</b> if a job loss hits too.</p>
+
+    <details class="more">
+      <summary>How this was worked out</summary>
+      <p>{{ a.explanation }}</p>
+      <p class="text-muted text-sm">Rate: {{ a.rate_source }}{% if rate and rate.source_url %},
+        <a class="link" href="{{ rate.source_url }}" target="_blank" rel="noopener">source</a>{% endif %}.
+        Comfortable = income covers spending plus the payment and a job loss still leaves 6+ months; risky = under 6 months
+        even without a shock. Our measure.</p>
+    </details>
+  </section>
+
+  <section class="card">
+    <h2 class="card-title">Their current loan: pay it down faster, or save first?</h2>
+    {% if p.no_loan %}
+      <p class="text-muted">No running loan on this account, so there's nothing to prepay.</p>
+    {% else %}
+      <dl class="plan-facts">
+        {% for s in p.strategies %}
+        <div><dt>{{ s.name }}: runway if a job loss hits in month {{ s.runway_if_shock_hits_by_month | length - 1 }}</dt>
+          <dd class="{{ s.runway_if_shock_hits_by_month[-1] | runway_class }}">{{ s.runway_if_shock_hits_by_month[-1] | runway_num }} months</dd></div>
+        {% endfor %}
+      </dl>
+      <details class="more">
+        <summary>Savings month by month</summary>
+        <div class="chart" data-chart='{{ chart | tojson }}'></div>
+        {% if p.explanation %}<p class="text-muted text-sm">{{ p.explanation }}</p>{% endif %}
+      </details>
+    {% endif %}
+  </section>
+</div>

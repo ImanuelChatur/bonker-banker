@@ -4,65 +4,45 @@
 <div class="home-grid">
 <section class="hero">
   <h1>Know your runway before life goes bonkers.</h1>
-  <p>Pick any of the 4,500 accounts in the Tangerine dataset and see how many months its savings would last.
-     Then apply a job loss, higher bills or a surprise repair and watch the number change.
-     You can also upload your own bank statements to see where the money went.</p>
+  <p>How many months would the savings last if the paycheque stopped? Pick any of the 4,500 accounts and find out.</p>
 
   <form action="/customer" method="get" class="hero-form">
     <input name="account_id" required placeholder="Account ID, e.g. 20111"
-           inputmode="numeric" autocomplete="off" aria-label="Account ID">
-    <button class="btn-primary" type="submit">Look up customer</button>
+           inputmode="numeric" autocomplete="off" aria-label="Account ID" class="input-lg">
+    <button class="btn-primary" type="submit">See runway</button>
   </form>
   <p class="hero-demos">
-    Try a demo:
-    <a href="/customer/20176">Steady saver</a> ·
-    <a href="/customer/20111">Spending more than it earns</a> ·
-    <a href="/customer/21817">Living on the edge</a>
+    Try: <a href="/customer/20176">steady saver</a> ·
+    <a href="/customer/20111">spending more than it earns</a> ·
+    <a href="/customer/21817">living on the edge</a>
     <br>Judges: <a href="/demo?account_id=20111">live twist walkthrough</a>
   </p>
 </section>
 
-<nav class="home-links" aria-label="Pages">
-  <a class="home-link" href="/customer">
-    <span class="home-link-name">Customer</span>
-    <span class="home-link-desc">Income, bills, savings buffer and months of runway for one account.</span>
+<div class="home-side">
+  {% if stat %}
+  <a class="home-stat" href="/insights">
+    <span class="home-stat-big">{{ stat.big }}</span>
+    <span class="home-stat-text">{{ stat.text }}</span>
+    {% if stat.scenario %}<span class="home-stat-note">Scenario: {{ stat.scenario }} · see Insights</span>{% endif %}
   </a>
-  <a class="home-link" href="/shock">
-    <span class="home-link-name">Shock Lab</span>
-    <span class="home-link-desc">Job loss on EI, higher bills, a repair. Move a slider and the runway recalculates.</span>
-  </a>
-  <a class="home-link" href="/plan">
-    <span class="home-link-name">Plan</span>
-    <span class="home-link-desc">An emergency-fund goal, plus how much to cut if a shock hits.</span>
-  </a>
-  <a class="home-link" href="/insights">
-    <span class="home-link-name">Insights</span>
-    <span class="home-link-desc">How runway relates to loan default across every account.</span>
-  </a>
-  <a class="home-link" href="/upload">
-    <span class="home-link-name">Upload</span>
-    <span class="home-link-desc">Parse statements, break down spending and flag unusual purchases.</span>
-  </a>
-</nav>
+  {% endif %}
+
+  <nav class="home-links" aria-label="Start here">
+    <a class="home-link" href="/customer">
+      <span class="home-link-name">Customer</span>
+      <span class="home-link-desc">One account: runway, what drives it, and how it compares.</span>
+    </a>
+    <a class="home-link" href="/shock">
+      <span class="home-link-name">Shock Lab</span>
+      <span class="home-link-desc">Job loss, higher bills, a repair. Move a slider, watch the runway change.</span>
+    </a>
+    <a class="home-link" href="/insights">
+      <span class="home-link-name">Insights</span>
+      <span class="home-link-desc">Every shock across all accounts, and who is most at risk.</span>
+    </a>
+  </nav>
+</div>
 </div>
 
-<section class="steps" aria-label="How it works">
-  <div class="step"><span class="step-num">1</span>
-    <h3>Know the customer</h3>
-    <p>Income, bills, flexible spending and buffer, learned from months of transactions.</p>
-  </div>
-  <div class="step"><span class="step-num">2</span>
-    <h3>Shock it</h3>
-    <p>Job loss, higher bills, a car repair, or all three. Watch the runway move.</p>
-  </div>
-  <div class="step"><span class="step-num">3</span>
-    <h3>Plan for it</h3>
-    <p>A savings goal to reach a target runway, plus a backup plan if the shock hits first.</p>
-  </div>
-</section>
-
-<p class="footer-note text-muted text-sm">
-  <!-- HTMX health check: runs on load and swaps the reply into this span -->
-  <span class="status-pill" hx-get="/health" hx-trigger="load" hx-swap="innerHTML">Checking server</span>
-</p>
 {% endblock %}

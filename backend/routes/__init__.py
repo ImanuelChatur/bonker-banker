@@ -16,7 +16,9 @@ def _months(v) -> str:
 
 def _runway_num(v) -> str:
     """Big display number: 4.3 -> '4.3', 'no shortfall (120+)' -> '120+'."""
-    return f"{v:g}" if isinstance(v, (int, float)) else "120+"
+    if isinstance(v, (int, float)):
+        return "120+" if v >= 120 else f"{v:g}"   # 120 is the formula's cap, so show it as "120+"
+    return "120+"
 
 
 def _runway_class(v) -> str:
@@ -37,6 +39,6 @@ def register_routes(app):
         from engine import risk
         risk.warm_up()         # builds the peer-comparison table in the background (about 4 seconds)
 
-    from . import assistant, customer, demo, insights, plans, report, shocks, sources, uploads
-    for module in (customer, shocks, plans, insights, uploads, assistant, report, sources, demo):
+    from . import assistant, customer, demo, insights, plans, report, scenarios, shocks, sources, uploads
+    for module in (customer, shocks, plans, insights, uploads, assistant, report, sources, demo, scenarios):
         app.register_blueprint(module.bp)
