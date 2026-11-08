@@ -198,7 +198,7 @@
     <h2 class="card-title">About this customer <span class="advisor-tag">Advisor</span> {{ sample(p) }}</h2>
     <dl class="plan-facts">
       {% if p.age_band %}<div><dt>Age</dt><dd>{{ p.age_band }}</dd></div>{% endif %}
-      {% if p.tenure_years is not none %}<div><dt>Customer for</dt><dd>{{ p.tenure_years | round | int }} years</dd></div>{% endif %}
+      {% if p.tenure_years is not none %}<div><dt>Customer for</dt>{% set yrs = p.tenure_years | round | int %}<dd>{{ 'Under a year' if yrs == 0 else yrs ~ (' year' if yrs == 1 else ' years') }}</dd></div>{% endif %}
       {% if p.household_size %}<div><dt>People on the account</dt><dd>{{ p.household_size }}</dd></div>{% endif %}
       {% if p.district_name %}<div><dt>District</dt><dd>{{ p.district_name }}</dd></div>{% endif %}
       {% if p.district_unemployment_2023 is not none %}<div><dt>Local unemployment</dt>
