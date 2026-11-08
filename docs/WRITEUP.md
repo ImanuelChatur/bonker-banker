@@ -76,6 +76,7 @@ Everything else is labelled **"our measure"** in the app:
 ```bash
 python -m pip install -r backend/requirements.txt
 python scripts/precompute.py          # needs the provided CSVs in data/raw/
+python scripts/stress_test.py         # population stress test + at-risk list (about 1 second)
 python -m flask --app backend/app.py run
 ```
 
@@ -88,6 +89,15 @@ Tests: `python -m pytest backend/tests -q`.
   numbers, via the Tangerine datathon data pack.
 - **Employment Insurance regular benefits**, Government of Canada:
   https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit.html. The 55% income figure behind the job-loss preset.
+- **EI regular benefits: how much you could receive**, Government of Canada:
+  https://www.canada.ca/en/services/benefits/ei/ei-regular-benefit/benefit-amount.html. The 2026 maximum ($729/week)
+  behind the optional "realistic EI" shock.
+- **Interest rates for new and existing household lending**, Bank of Canada:
+  https://bankofcanada.ca/rates/banking-and-financial-statistics/interest-rates-for-new-and-existing-household-lending.
+  The loan planner's default rate (personal loan plans, 7.92%) and the other rates offered.
+- **Policy interest rate**, Bank of Canada: https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/.
+  The 2.50% rate (raised 2026-10-28), context for the rate-hike shock.
+- **Prime rate in Canada**, Ratehub (aggregator): https://www.ratehub.ca/prime-rate.
 - **Gemini API**, Google: https://ai.google.dev/. Turns a twist card typed in plain English into shock settings, and
   reads unfamiliar statement layouts. Only card text or masked statement text is sent; no dataset rows.
 
