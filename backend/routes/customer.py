@@ -1,7 +1,7 @@
 """/customer and /customer/<id>: know the customer."""
 from flask import Blueprint, redirect, render_template, request
 
-from engine import customer_metrics, goal_plan, runway
+from engine import Shock, apply_shock, customer_metrics, goal_plan, runway
 from engine.spending import CATEGORY_LABELS
 from services import data_store
 
@@ -68,7 +68,8 @@ def show(account_id):
     rows = all_rows[-36:]
     history = {"labels": [r["month"] for r in rows], "yName": "Avg daily balance ($)",
                "series": [{"name": "Balance", "data": [round(float(r["avg_daily_balance"]), 2) for r in rows]}]}
-    return render_template("customer.html", m=m, runway=runway(m.buffer, m.income, m.spending),
+    job_loss = apply_shock(m, Shock(income_factor=0.55, duration_months=6))   # the standard job-loss twist
+    return render_template("customer.html", m=m, runway=runway(m.buffer, m.income, m.spending), job_loss=job_loss,
                            no_income_runway=runway(m.buffer, 0.0, m.spending),
                            surplus=m.income - m.spending, mix=spending_mix(all_rows),
                            history=history, goal=goal_plan(m), account_id=account_id,

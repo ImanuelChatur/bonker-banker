@@ -55,8 +55,8 @@ const BBMode = (function () {
   }
 
   document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".mode-btn");
-    if (btn) set(btn.dataset.mode);
+    const btn = e.target.closest(".mode-btn, [data-set-mode]");
+    if (btn) set(btn.dataset.mode || btn.dataset.setMode);
   });
   // An expander the user opened or closed themselves keeps their choice.
   document.addEventListener("toggle", (e) => {

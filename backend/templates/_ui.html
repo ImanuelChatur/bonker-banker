@@ -31,6 +31,27 @@
 </details>
 {%- endmacro %}
 
+{# Clickable sample accounts, so a first-time visitor can explore straight away.
+   Picked by running the engine over every account (see docs/reports/DEMO_GUIDE.md). #}
+{% set SAMPLES = [
+  ("20176", "steady saver"),
+  ("36359", "fine until a job loss"),
+  ("20111", "has a loan"),
+  ("21817", "living on the edge"),
+] %}
+{% macro sample_accounts(base="/customer/") -%}
+<div class="sample-ids">
+  {% for id, label in SAMPLES %}<a class="chip-link" href="{{ base }}{{ id }}"><b>{{ id }}</b><span>{{ label }}</span></a>{% endfor %}
+</div>
+{%- endmacro %}
+
+{# A runway value as words: "4.3 months", "1 month", or "no shortfall" (the engine returns a string then). #}
+{% macro months(v) -%}
+{%- if v is string -%}no shortfall
+{%- elif v >= 120 -%}120+ months
+{%- else -%}{{ v | runway_num }} {{ 'month' if v == 1 else 'months' }}{%- endif -%}
+{%- endmacro %}
+
 {# A page's one question and its plain-English answer. #}
 {% macro question(q) -%}
 <p class="page-question">{{ q }}</p>
