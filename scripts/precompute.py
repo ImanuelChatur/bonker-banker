@@ -14,6 +14,7 @@ FILES = {  # name -> columns that must stay text
     "monthly_summary": ["account_id", "month"],
     "loans": ["loan_id", "account_id", "status"],
     "accounts": ["account_id", "district_id"],
+    "districts": ["district_id"],
 }
 
 

@@ -28,3 +28,30 @@ def test_sources_page_lists_dataset_credit():
     from app import create_app
     r = create_app().test_client().get("/sources")
     assert r.status_code == 200 and b"relational.fel.cvut.cz" in r.data
+
+
+@needs_data
+def test_insights_still_works_without_district_data(tmp_path, monkeypatch):
+    """A teammate who pulled without districts.csv/parquet still gets /insights, minus the regional section."""
+    import config
+    from engine import regions
+    from app import create_app
+    monkeypatch.setattr(config, "DATA_RAW", tmp_path)
+    monkeypatch.setattr(config, "DATA_PROCESSED", tmp_path)
+    regions._lookup.cache_clear()
+    regions.region_summary.cache_clear() if hasattr(regions.region_summary, "cache_clear") else None
+    try:
+        r = create_app().test_client().get("/insights")
+        assert r.status_code == 200 and b"resilience grade" in r.data and b"Does where you live" not in r.data
+    finally:
+        regions._lookup.cache_clear()
+        regions.region_summary.cache_clear() if hasattr(regions.region_summary, "cache_clear") else None
+
+
+def test_precompute_includes_accounts_and_districts():
+    import importlib.util
+    from config import ROOT
+    spec = importlib.util.spec_from_file_location("precompute", ROOT / "scripts" / "precompute.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert {"monthly_summary", "loans", "accounts", "districts"} <= set(mod.FILES)
