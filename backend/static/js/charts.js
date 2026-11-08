@@ -90,12 +90,41 @@ function renderDonutChart(el, { items, center = "" }) {
   return chart;
 }
 
+// Heatmap: { kind: "heatmap", xLabels, yLabels, xName, yName, data: [[xIndex, yIndex, value], ...], unit: "%" }
+function renderHeatmap(el, { xLabels, yLabels, xName = "", yName = "", data, unit = "%" }) {
+  const chart = echarts.init(el);
+  const t = themeColors();
+  const cs = getComputedStyle(document.documentElement);
+  const hot = cs.getPropertyValue("--brand").trim() || BB_COLORS.brand;
+  const cool = cs.getPropertyValue("--surface-2").trim() || "#f1f4f9";
+  chart.setOption({
+    textStyle: { fontFamily: "inherit", color: t.muted },
+    tooltip: {
+      backgroundColor: t.surface, borderColor: t.border, textStyle: { color: t.ink },
+      formatter: (p) => `${xName} ${xLabels[p.value[0]]}, ${yName} ${yLabels[p.value[1]]}<br><b>${p.value[2]}${unit}</b> run out within 6 months`,
+    },
+    grid: { left: 70, right: 16, top: 10, bottom: 50 },
+    xAxis: { type: "category", data: xLabels, name: xName, nameLocation: "middle", nameGap: 32,
+             axisTick: { show: false }, axisLine: { show: false }, axisLabel: { color: t.muted } },
+    yAxis: { type: "category", data: yLabels, name: yName, nameLocation: "middle", nameGap: 52,
+             axisTick: { show: false }, axisLine: { show: false }, axisLabel: { color: t.muted } },
+    visualMap: { min: 0, max: 100, show: false, inRange: { color: [cool, hot] } },
+    series: [{
+      type: "heatmap", data,
+      label: { show: true, formatter: (p) => p.value[2] + unit, color: t.ink, fontWeight: 600 },
+      itemStyle: { borderColor: t.surface, borderWidth: 3, borderRadius: 6 },
+      emphasis: { itemStyle: { borderColor: t.ink } },
+    }],
+  });
+  return chart;
+}
+
 // Draw every chart on the page that has a data-chart attribute.
 function initCharts(root = document) {
   root.querySelectorAll("[data-chart]").forEach((el) => {
     if (el.dataset.chartReady) return; // don't draw twice
     const cfg = JSON.parse(el.dataset.chart);
-    (cfg.kind === "donut" ? renderDonutChart : renderLineChart)(el, cfg);
+    ({ donut: renderDonutChart, heatmap: renderHeatmap }[cfg.kind] || renderLineChart)(el, cfg);
     el.dataset.chartReady = "1";
   });
 }

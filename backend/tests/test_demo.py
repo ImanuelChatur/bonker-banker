@@ -31,21 +31,24 @@ def test_sources_page_lists_dataset_credit():
 
 
 @needs_data
-def test_insights_still_works_without_district_data(tmp_path, monkeypatch):
+def test_insights_still_works_without_district_data(monkeypatch):
     """A teammate who pulled without districts.csv/parquet still gets /insights, minus the regional section."""
-    import config
     from engine import regions
     from app import create_app
-    monkeypatch.setattr(config, "DATA_RAW", tmp_path)
-    monkeypatch.setattr(config, "DATA_PROCESSED", tmp_path)
+
+    def missing(name):
+        raise FileNotFoundError(f"{name} not processed")
+    monkeypatch.setattr(regions, "_read", missing)
     regions._lookup.cache_clear()
-    regions.region_summary.cache_clear() if hasattr(regions.region_summary, "cache_clear") else None
+    if hasattr(regions.region_summary, "cache_clear"):
+        regions.region_summary.cache_clear()
     try:
         r = create_app().test_client().get("/insights")
         assert r.status_code == 200 and b"resilience grade" in r.data and b"Does where you live" not in r.data
     finally:
         regions._lookup.cache_clear()
-        regions.region_summary.cache_clear() if hasattr(regions.region_summary, "cache_clear") else None
+        if hasattr(regions.region_summary, "cache_clear"):
+            regions.region_summary.cache_clear()
 
 
 def test_precompute_includes_accounts_and_districts():

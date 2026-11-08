@@ -1,0 +1,10 @@
+<div id="heatmap-box">
+  <div class="preset-row" role="group" aria-label="Repair size">
+    {% for n, label in repairs %}
+    <button type="button" class="preset-btn {{ 'active' if n == one_off }}" hx-get="/insights/heatmap?one_off={{ n }}"
+            hx-target="#heatmap-box" hx-swap="outerHTML">{{ label }}</button>
+    {% endfor %}
+  </div>
+  <div class="chart chart-heat" data-chart='{{ heat | tojson }}'></div>
+  {% if heat.placeholder %}<span class="sample-badge">sample data</span>{% endif %}
+</div>

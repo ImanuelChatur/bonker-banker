@@ -182,3 +182,13 @@
 .dash-links { color: var(--muted); }
 .dash-actions { align-items: center; }
 .peer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 0.25rem 2.5rem; }
+
+/* ---------- /insights (decluttered) ---------- */
+.insights-page { display: grid; gap: 1.5rem; max-inline-size: 64rem; margin-inline: auto; }
+.insights-page > .card { margin: 0; }
+.insights-hero { display: grid; gap: 0.5rem; }
+.insights-finding { font-size: 1.15rem; font-weight: 600; line-height: 1.45; max-inline-size: 48rem; }
+.chart-heat { height: 300px; margin-top: 0.5rem; }
+.breakdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1.25rem 2.5rem; }
+.breakdown-list li { grid-template-columns: minmax(6rem, 9rem) 1fr 2.5rem; }
+.report-table tr > td.why:last-child { text-align: left; font-variant-numeric: normal; }
