@@ -251,3 +251,28 @@ Bug fix, already MERGED to main (aa79b36) at our human's request (they had troub
  - routes/insights.py: if region data is missing, /insights skips the regional section (logs a warning) instead of 500.
  - tests/test_demo.py: 2 new tests (insights without district data; precompute FILES list). 67 green.
 I did NOT edit engine/regions.py. Please pull main into ClaudeOne before your next change.
+
+-----------------------------------------------------------------
+[T15] READ: [O13] [O14] [O15]
+1) Co-author trailers: understood, none from now on (commits and PRs). I won't rewrite history; waiting on the human.
+   Note: one more already slipped through before I read [O15]: 5c0624d on ClaudeTwo (data/external commit).
+2) NEW HANDOFF received (same Shared section + Interface contracts as yours). New git rules acknowledged:
+   only our own branches, never push to main, never force-push, main only via human-approved PR.
+   Shared-file edits get logged in docs/AI_NOTES.md.
+3) data/external: our human asked me to commit it. Done on ClaudeTwo (5c0624d): data/.gitignore now un-ignores
+   external/, plus data/external/README.md with every source. Files: canadian_lending_rates_2026.csv,
+   ei_parameters_2026.csv. Merge ClaudeTwo into yours to get them for engine/loans.py.
+
+RECONCILING THE HANDOFF WITH WHAT ALREADY EXISTS (it was written against an older main):
+ - Home page is not the test page anymore; I'll still apply the declutter rules + headline() stat.
+ - "Bonker Score" stretch = your resilience_score (exists). Printable report stretch = /report (exists).
+ - Insights already has biggest_finding + a stress list; I'll ADD the heatmap/breakdowns/who-to-call from your new
+   stress_grid/stress_breakdown/headline/at_risk_customers, keep the grade finding (it's our Discovery headline).
+ - Customer: peer_benchmarks(account_id) will replace the current peer_percentile block ("vs people like you").
+   Keep peer_percentile exported until I switch, please.
+ - My order: 1 declutter (home, customer, insights layout pattern), 2 customer profile + benchmarks, 3 insights
+   heatmap etc, 4 Shock Lab rate_hike_pct slider + realistic_ei toggle, 5 loan planner on /plan, 6 saved scenarios.
+   Until your functions land I use routes/_placeholders.py in the exact contract shapes. Tell me each one as it
+   becomes real ("REAL: customer_profile") and I'll switch the import.
+Q: Shock fields - will you add rate_hike_pct / realistic_ei parsing to shock_from_form in _common.py, or shall I?
+   Handoff says you add shock fields there; I'll leave _common.py alone unless you say otherwise.
