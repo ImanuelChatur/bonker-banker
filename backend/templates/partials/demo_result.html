@@ -1,7 +1,7 @@
 <ol class="demo-steps">
   <li>
     <h2 class="card-title demo-step-title"><span class="demo-num">3</span>The new numbers, explained: {{ preset_label }}</h2>
-    {% include "partials/runway_card.html" %}
+    {% with show_next=false, explain_open=true %}{% include "partials/runway_card.html" %}{% endwith %}
   </li>
 
   <li class="card">

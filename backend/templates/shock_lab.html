@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "_ui.html" as ui %}
 {% block title %}Shock Lab · Bonker Banker{% endblock %}
 
 {% macro slider(name, label, min, max, step, value, fmt) %}
@@ -17,8 +18,9 @@
 
   <!-- ===== Left: controls ===== -->
   <section class="card lab-controls">
-    <h1 class="text-2xl font-bold mb-1">Shock Lab</h1>
-    <p class="text-muted mb-5">Move a slider and the runway recalculates instantly.</p>
+    {{ ui.question("What if something goes wrong?") }}
+    <h1 class="page-title mb-1">Shock Lab</h1>
+    <p class="text-muted mb-5">Pick a shock or move a slider. The runway updates as you go.</p>
 
     <!-- One form drives everything: any input change re-runs the shock (debounced). -->
     <form id="shock-form"
@@ -32,8 +34,8 @@
                placeholder="e.g. 39507" inputmode="numeric" autocomplete="off">
       </label>
 
-      <div class="mb-6">
-        <span class="metric-label">Twist presets</span>
+      <div class="mb-5">
+        <span class="metric-label">Common shocks</span>
         <div class="preset-row">
           {% for key, label in preset_labels %}
           <button type="button" class="preset-btn {{ 'active' if key == active_preset }}"
@@ -50,50 +52,71 @@
         </label>
         {{ slider("income_pct", "Income on EI (% of usual)", 0, 100, 5, f.income_pct, "pct") }}
         {{ slider("duration_months", "EI lasts", 0, 24, 1, f.duration_months, "months") }}
-        <label class="check-row">
-          <input type="checkbox" name="realistic_ei" id="realistic_ei" value="1" {{ 'checked' if f.realistic_ei }}>
-          <span>Realistic EI: capped at $729 a week</span>
-        </label>
       </fieldset>
 
       <fieldset class="lab-group">
         <legend class="font-semibold">Costs</legend>
-        {{ slider("bills_pct", "Household bills increase", 0, 50, 1, f.bills_pct, "pct_up") }}
+        {{ slider("bills_pct", "Household bills go up", 0, 50, 1, f.bills_pct, "pct_up") }}
         {{ slider("one_off_months", "Surprise repair (months of spending)", 0, 6, 0.5, f.one_off_months, "spend") }}
-        {{ slider("rate_hike_pct", "Interest rates up", 0, 3, 0.25, f.rate_hike_pct, "pts") }}
-        <div class="grid grid-cols-2 gap-3">
-          <label class="block">
-            <span class="metric-label">Extra one-off $</span>
-            <input type="number" name="one_off_cost" min="0" step="any" value="{{ f.one_off_cost }}" class="input">
-          </label>
-          <label class="block">
-            <span class="metric-label">Extra $ / month</span>
-            <input type="number" name="extra_spending" min="0" step="any" value="{{ f.extra_spending }}" class="input">
-          </label>
-        </div>
       </fieldset>
+
+      {# Rarely needed: open by default in Advisor view, or when a preset/saved scenario already uses them. #}
+      {% set more_used = f.rate_hike_pct or f.realistic_ei or f.one_off_cost or f.extra_spending %}
+      <details class="more-options" {{ 'open' if more_used else 'data-advisor-open' }}>
+        <summary>More options <span class="text-muted text-sm font-normal">rate hike, realistic EI, exact amounts</span></summary>
+        <div class="more-body">
+          {{ slider("rate_hike_pct", "Interest rates up", 0, 3, 0.25, f.rate_hike_pct, "pts") }}
+          <label class="check-row" data-job-only>
+            <input type="checkbox" name="realistic_ei" id="realistic_ei" value="1" {{ 'checked' if f.realistic_ei }}>
+            <span>{{ ui.term("realistic_ei", "Realistic EI") }}: capped at $729 a week (needs Job loss on)</span>
+          </label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="block">
+              <span class="metric-label">Extra one-off $</span>
+              <input type="number" name="one_off_cost" min="0" step="any" value="{{ f.one_off_cost }}" class="input">
+            </label>
+            <label class="block">
+              <span class="metric-label">Extra $ / month</span>
+              <input type="number" name="extra_spending" min="0" step="any" value="{{ f.extra_spending }}" class="input">
+            </label>
+          </div>
+        </div>
+      </details>
 
       <button type="button" id="reset-btn" class="btn-secondary w-full">Reset to no shock</button>
     </form>
 
-    <form class="save-row" hx-post="/shock/save" hx-include="#shock-form" hx-target="#save-msg">
-      <input name="name" class="input" placeholder="Name this scenario" maxlength="60" aria-label="Scenario name">
-      <button class="btn-secondary" type="submit">Save</button>
-    </form>
-    <p id="save-msg" class="mt-1" aria-live="polite"></p>
-
     <!-- Twist card: plain English → settings. Uses the same account ID field. -->
     <form class="twist-form" hx-post="/assistant/twist" hx-target="#result"
           hx-include="#account-id" hx-indicator="#result">
-      <span class="metric-label">Or paste a twist card</span>
+      <span class="metric-label">Or describe a shock in your own words</span>
       <textarea name="twist" rows="3" required class="input mt-1"
         placeholder="They lose their job (EI at 55%) and their household bills go up 15% in the same month."></textarea>
-      <button class="btn-primary w-full mt-2" type="submit">Interpret and run</button>
+      <button class="btn-secondary w-full mt-2" type="submit">Interpret and run</button>
+      <p class="text-muted text-sm mt-1">The assistant turns the sentence into the settings above, then runs it.</p>
     </form>
+
+    <details class="more">
+      <summary>Save this scenario</summary>
+      <form class="save-row" hx-post="/shock/save" hx-include="#shock-form" hx-target="#save-msg">
+        <input name="name" class="input" placeholder="Name this scenario" maxlength="60" aria-label="Scenario name">
+        <button class="btn-secondary" type="submit">Save</button>
+      </form>
+      <p id="save-msg" class="mt-1" aria-live="polite"></p>
+      <p class="text-muted text-sm">Saved scenarios appear on the customer's page, where you can compare up to three.</p>
+    </details>
+
+    {% call ui.howto() %}
+      <li><b>Runway</b> is how many months the savings would last: savings ÷ the monthly shortfall (what goes out minus what comes in).</li>
+      <li><b>Job loss</b> replaces income with {{ ui.term("ei", "EI") }} at the percentage you pick, for as many months as you pick.
+        The check under the big number says whether the savings last that long.</li>
+      <li><b>Surprise repair</b> is a one-off cost, sized in months of this customer's own typical spending.</li>
+      <li>Colours: green 12+ months, amber 3 to 12, red under 3.</li>
+    {% endcall %}
   </section>
 
   <!-- ===== Right: live results ===== -->
-  <section id="result" class="lab-result">
+  <section id="result" class="lab-result" aria-live="polite">
     {% include "partials/shock_empty.html" %}
   </section>
 </div>

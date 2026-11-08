@@ -134,3 +134,6 @@
   .runway-before { text-align: start; }
   .hero-form input { min-inline-size: 0; flex: 1 1 12rem; }
 }
+
+/* Realistic EI only applies with Job loss on; the script disables it otherwise. */
+.check-row:has(input:disabled) { opacity: 0.45; cursor: not-allowed; }

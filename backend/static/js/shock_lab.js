@@ -48,6 +48,11 @@
     });
     syncJobLoss();
     updateLabels();
+    // If the settings use anything under "More options", open it so the change is visible.
+    const more = form.querySelector(".more-options");
+    if (more && (Number(s.rate_hike_pct) || s.realistic_ei || Number(s.one_off_cost) || Number(s.extra_spending))) {
+      more.open = true;
+    }
   }
 
   function setActivePreset(btn) {

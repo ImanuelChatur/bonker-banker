@@ -1,40 +1,69 @@
+{% import "_ui.html" as ui %}
 {% set after = res.after %}
 {% set before = res.before %}
+{% set s = res.survives_duration %}
 <div class="card runway-card">
   {% if twist %}<p class="twist-quote">“{{ twist }}”</p>{% endif %}
 
+  {# ---------- The answer first, in one sentence ---------- #}
+  {% set no_shock = shock is defined and shock.income_factor == 1 and not shock.household_bills_pct
+       and not shock.extra_monthly_spending and not after.one_off_cost and not shock.rate_hike_pct %}
+  <p class="lead">
+    {% if no_shock %}
+      No shock yet: this is their usual month, with {{ 'no shortfall' if before.runway is string else ui.months(before.runway) ~ ' of runway' }}.
+      <span class="text-muted">Pick a common shock or move a slider.</span>
+    {% elif after.runway is string and after.one_off_cost %}
+      The one-off cost takes {{ after.one_off_cost | money }} out of their savings, leaving {{ after.buffer_left | money }}.
+      Income still covers spending, so the rest doesn't run down.
+    {% elif after.runway is string %}
+      Even with this shock, income still covers spending, so their savings don't run down.
+    {% elif after.runway == 0 and after.one_off_cost and before.buffer > 0 %}
+      The one-off cost of {{ after.one_off_cost | money }} would wipe out their savings straight away.
+    {% elif after.runway == 0 %}
+      They have no savings to absorb this shock.
+    {% else %}
+      With this shock, their savings would last <span class="{{ after.runway | runway_class }}">{{ ui.months(after.runway) }}</span>{% if before.runway is string %}, where today they don't run down at all{% elif before.runway != after.runway %}, down from {{ ui.months(before.runway) }}{% endif %}.
+    {% endif %}
+  </p>
+
   <div class="runway-hero">
     <div>
-      <div class="metric-label">Runway after shock</div>
+      <div class="metric-label">{{ ui.term("runway", "Runway") }} after the shock</div>
       <div class="runway-big {{ after.runway | runway_class }}">{{ after.runway | runway_num }}</div>
       <div class="runway-unit">{{ 'months · no shortfall' if after.runway is string else 'months' }}</div>
     </div>
-    <div class="runway-before">
-      <div class="metric-label">Before shock</div>
-      <div class="metric-value {{ before.runway | runway_class }}">{{ before.runway | runway_num }}</div>
-      <div class="runway-unit">months</div>
-    </div>
   </div>
 
-  {% if res.survives_duration %}
-    {% set s = res.survives_duration %}
-    <div class="verdict {{ 'good' if s.makes_it else 'bad' }}">
+  <dl class="support">
+    <div><dt>Before the shock</dt><dd class="{{ before.runway | runway_class }}">{{ ui.months(before.runway) | capitalize }}</dd></div>
+    <div><dt>Monthly {{ ui.term("shortfall") }} after</dt>
+      <dd class="{{ 'bad' if after.monthly_gap > 0 else 'good' }}">{{ after.monthly_gap | money if after.monthly_gap > 0 else 'None' }}</dd></div>
+    {% if s %}
+    <div><dt>Through {{ s.months }} months of {{ ui.term("ei", "EI") }}</dt>
+      <dd class="{{ 'good' if s.makes_it else 'bad' }}">{{ 'Makes it' if s.makes_it else 'Short ' ~ (s.shortfall | money) }}</dd>
+      <span class="support-note">{{ (s.buffer_at_end | money) ~ ' left at the end' if s.makes_it else 'runs out at month ' ~ (after.runway | runway_num) }}</span></div>
+    {% elif after.one_off_cost %}
+    <div><dt>One-off cost</dt><dd>{{ after.one_off_cost | money }}</dd></div>
+    {% endif %}
+  </dl>
+
+  {% if s %}
+    <div class="verdict {{ 'good' if s.makes_it else 'bad' }} mt-4">
       {% if s.makes_it %}
         Makes it through {{ s.months }} months of EI with {{ s.buffer_at_end | money }} left.
       {% else %}
         Doesn't make it through {{ s.months }} months: runs out at month {{ after.runway | runway_num }}, short {{ s.shortfall | money }}.
       {% endif %}
     </div>
-  {% elif after.runway is string %}
-    <div class="verdict good">Income still covers spending, so the buffer never drains.</div>
-  {% elif after.runway == 0 %}
-    <div class="verdict bad">The one-off cost wipes out the buffer immediately.</div>
-  {% else %}
-    <div class="verdict {{ after.runway | runway_class }}">Buffer runs out in {{ after.runway | runway_num }} months at this pace.</div>
   {% endif %}
 
-  {# ---------- For the live twist: what changed, and the judges' formula with real numbers ---------- #}
+  <div class="chart mt-4" data-chart='{{ chart | tojson }}'></div>
+  <p class="text-muted text-sm">Savings month by month: grey is a usual month, red is with the shock.</p>
+
+  {# ---------- What changed, and the runway formula with this account's numbers ---------- #}
   {% if shock is defined and m is defined %}
+  <details class="more" {{ "open" if explain_open else "data-advisor-open" }}>
+    <summary>What changed, and how the runway is worked out</summary>
   <div class="explain">
     <div>
       <h3 class="explain-title">What changed</h3>
@@ -46,7 +75,7 @@
         {% if shock.household_bills_pct %}
           <li>Household bills {{ '+' if shock.household_bills_pct > 0 }}{{ (shock.household_bills_pct * 100) | round | int }}%:
             {% if m.household_bills > 0 %}{{ '+' if shock.household_bills_pct > 0 }}{{ (shock.household_bills_pct * m.household_bills) | money }} a month on {{ m.household_bills | money }}
-            {% else %}no effect, this account's median household bills (H) are $0{% endif %}</li>
+            {% else %}no effect, this account's typical household bills (H) are $0{% endif %}</li>
         {% endif %}
         {% if after.ei_capped %}<li>EI capped at the $729 a week maximum ($3,159 a month)</li>{% endif %}
         {% if shock.rate_hike_pct %}
@@ -71,11 +100,22 @@
         {% elif after.monthly_gap <= 0 %}= no monthly shortfall, <b>no runway limit</b>
         {% else %}= {{ after.buffer_left | money }} ÷ {{ after.monthly_gap | money }} = <b>{{ after.runway | runway_num }} months</b>{% endif %}
       </p>
-      <p class="text-muted text-sm">Datathon definitions: B = average daily balance over the last 6 months,
-        S and I = median monthly money out and in. Capped at 120 months.</p>
+      <p class="text-muted text-sm">B = savings buffer (average daily balance over the last 6 months),
+        S and I = typical (median) monthly money out and in. Capped at 120 months.</p>
     </div>
   </div>
+  </details>
   {% endif %}
 
-  <div class="chart mt-4" data-chart='{{ chart | tojson }}'></div>
+  {% if (show_next is not defined or show_next) and shock is defined and m is defined %}
+  {% set q = {"account_id": m.account_id, "income_pct": (shock.income_factor * 100) | round | int,
+              "duration_months": shock.duration_months or 0, "bills_pct": (shock.household_bills_pct * 100) | round | int,
+              "extra_spending": shock.extra_monthly_spending, "one_off_cost": shock.one_off_cost,
+              "one_off_months": shock.one_off_months_of_spending, "rate_hike_pct": shock.rate_hike_pct,
+              "realistic_ei": 1 if shock.realistic_ei else 0} %}
+  <div class="next-step">
+    <a class="btn-primary" href="/plan?{{ q | urlencode }}">Make a plan for this →</a>
+    <span class="secondary"><a href="/customer/{{ m.account_id }}">Back to account {{ m.account_id }}</a></span>
+  </div>
+  {% endif %}
 </div>

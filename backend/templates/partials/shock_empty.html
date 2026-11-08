@@ -1,4 +1,8 @@
+{% import "_ui.html" as ui %}
 <div class="card empty-state">
   <h2 class="card-title">Pick a customer to start</h2>
-  <p class="text-muted">Type an account ID on the left, or try 20111, 20176 or 21817. Results update as you change the inputs.</p>
+  <p class="text-muted">Type an account ID on the left and the results appear here, updating as you change the inputs.
+    Or try one of these:</p>
+  {% set base = "/plan?account_id=" if request.path.startswith("/plan") else "/shock?preset=job_loss&account_id=" %}
+  {{ ui.sample_accounts(base) }}
 </div>
