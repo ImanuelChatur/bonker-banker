@@ -1,16 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Log in · Bonker Banker{% endblock %}
+{% import "_ui.html" as ui %}
+{% block title %}Sign in · Bonker Banker{% endblock %}
 
 {% block content %}
-<section class="card" style="max-inline-size: 26rem; margin: 3rem auto 0;">
-  <h1 class="text-2xl font-bold mb-1">Log in</h1>
-  <p class="text-muted mb-5">Log in to see runways, shocks and plans.</p>
+<section class="card auth-card">
+  <h1 class="page-title mb-1">Sign in</h1>
+  <p class="text-muted mb-5">See how long savings would last, test a shock, and make a plan. All accounts in this app are
+    anonymized sample data.</p>
 
   {% if error %}<p class="file-error mb-4" role="alert">{{ error }}</p>{% endif %}
 
   <form method="post" action="{{ url_for('auth.login') }}" class="space-y-4">
     <input type="hidden" name="csrf" value="{{ csrf_token() }}">
     <input type="hidden" name="next" value="{{ next }}">
+    {{ ui.role_choice(role) }}
     <label class="block">
       <span class="metric-label">Username</span>
       <input name="username" value="{{ username }}" required autocomplete="username" autofocus class="w-full mt-1">
@@ -19,14 +22,18 @@
       <span class="metric-label">Password</span>
       <input name="password" type="password" required autocomplete="current-password" class="w-full mt-1">
     </label>
-    <button class="btn-primary w-full" type="submit">Log in</button>
+    <button class="btn-primary w-full" type="submit">Sign in</button>
   </form>
 
   {% if registration_open %}
-  <p class="text-muted text-sm mt-5">No account yet? <a href="{{ url_for('auth.register', next=next) }}">Create one</a></p>
+  <div class="auth-alt">
+    <p>New here?</p>
+    <a class="btn-secondary w-full" href="{{ url_for('auth.register', next=next) }}">Create one in under a minute</a>
+  </div>
   {% elif no_users %}
   <p class="text-muted text-sm mt-5">No accounts exist yet. Create one from the project folder with
     <code>python scripts/create_user.py add &lt;username&gt;</code>.</p>
   {% endif %}
+  <p class="text-muted text-sm mt-4">This is a demo app: please use a password you don't use anywhere else.</p>
 </section>
 {% endblock %}

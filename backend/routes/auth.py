@@ -54,6 +54,17 @@ def _safe_next(target: str | None) -> str:
     return target
 
 
+def _with_view(target: str, role: str | None) -> str:
+    """The sign-in role choice picks the view: customer -> Simple, advisor -> Advisor (base.html reads ?view=)."""
+    view = {"customer": "simple", "advisor": "advisor"}.get((role or "").strip().lower())
+    if not view:
+        return target
+    parts = urlsplit(target)
+    query = "&".join(q for q in parts.query.split("&") if q and not q.startswith("view="))
+    query = f"{query}&view={view}" if query else f"view={view}"
+    return parts._replace(query=query).geturl()
+
+
 def _locked(key: tuple[str, str]) -> bool:
     now = time.time()
     recent = [t for t in _failures.get(key, []) if now - t < WINDOW_S]
@@ -81,12 +92,12 @@ def login():
             user = users.verify(username, password, current_app.config.get("USERS_DB"))
             if user:
                 _failures.pop(key, None)
-                nxt = _safe_next(request.form.get("next"))
+                nxt = _with_view(_safe_next(request.form.get("next")), request.form.get("role"))
                 _start_session(user)
                 return redirect(nxt)
             _failures.setdefault(key, []).append(time.time())
             error = "Wrong username or password."
-    return render_template("login.html", error=error, username=username,
+    return render_template("login.html", error=error, username=username, role=request.form.get("role", "customer"),
                            next=_safe_next(request.values.get("next")),
                            no_users=users.user_count(current_app.config.get("USERS_DB")) == 0,
                            registration_open=current_app.config.get("REGISTRATION_OPEN", True))
@@ -126,8 +137,8 @@ def register():
             else:
                 recent.append(now)
                 _start_session(users.verify(username, password, current_app.config.get("USERS_DB")) or username)
-                return redirect(_safe_next(request.form.get("next")))
-    return render_template("register.html", error=error, username=username,
+                return redirect(_with_view(_safe_next(request.form.get("next")), request.form.get("role")))
+    return render_template("register.html", error=error, username=username, role=request.form.get("role", "customer"),
                            next=_safe_next(request.values.get("next")), min_password=users.MIN_PASSWORD)
 
 

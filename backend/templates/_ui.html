@@ -62,3 +62,21 @@
 {% macro question(q) -%}
 <p class="page-question">{{ q }}</p>
 {%- endmacro %}
+
+{# Sign-in role choice: picks the view the app opens in (customer -> Simple, advisor -> Advisor). #}
+{% macro role_choice(role="customer") -%}
+<fieldset class="role-choice">
+  <legend class="metric-label">Who are you?</legend>
+  <label class="role-card">
+    <input type="radio" name="role" value="customer" {{ 'checked' if role != 'advisor' }}>
+    <span class="role-name">I'm a customer</span>
+    <span class="role-desc">Simple view: how long the savings would last, and what to do about it.</span>
+  </label>
+  <label class="role-card">
+    <input type="radio" name="role" value="advisor" {{ 'checked' if role == 'advisor' }}>
+    <span class="role-name">I'm an advisor</span>
+    <span class="role-desc">Advisor view: every number, peer comparisons, loan strategies and who to call.</span>
+  </label>
+  <p class="text-muted text-sm">You can switch any time with Simple / Advisor at the top of every page.</p>
+</fieldset>
+{%- endmacro %}
