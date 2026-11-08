@@ -1,6 +1,6 @@
 # What changed overnight
 
-Branch `overnight`, 23 commits on top of `main` at `85318eb`. Goal: easy to understand at first sight, with the
+Branch `overnight`, on top of `main` at `85318eb` (every commit is listed in `OVERNIGHT_LOG.md`). Goal: easy to understand at first sight, with the
 depth still one click away. **No calculation, engine file, precompute output or test expectation was changed**; all
 112 tests pass. Screenshots: `docs/reports/screenshots/` (`before_*` = `main`, `after_*` = this branch, account 36359).
 

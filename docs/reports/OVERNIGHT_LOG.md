@@ -17,3 +17,18 @@ Times are America/Toronto.
 | 00:28 | Insights: lead + hero + three numbers; heatmap visible, other views in tabs; who-to-call short in Simple, full in Advisor. | `595cdec` | Engine strings that say "the judges' formula" are shown as "the standard formula" in the template (rule 8); engine text itself untouched. |
 | 00:29 | Home: tagline, one search, headline stat, three numbered steps, sample chips. "Judges:" line removed. | `90f721d` | – |
 | 00:33 | Visual check in headless Edge (1280px and ~500px). Neutral chart colours, heatmap in "bad" red, page grids fixed for narrow screens, phone toggle beside the brand, removed repeated answers. | `ab39294`, `604c49c`, `c88134a` | Headless Edge has a 496px minimum viewport, so "phone" screenshots are ~500px wide; 390px crops looked broken but weren't. |
+| 00:36 | `?view=advisor` / `?view=simple` link parameter. | `78c37f6` | Lets the sign-in role choice (and shared links) open a page in a given view without server-side state. |
+| 00:37 | True fixed costs wording when standing orders are already in F. | `a75491a` | Seen in the Advisor screenshot of 20111: "adding $2,330 gives $2,330". |
+| 00:40 | Friendly error pages and notices; site-wide 404 / 413 / 500; assistant failures explained. | `c107515` | Full-page requests get a page with nav; HTMX swaps get a notice card. Status codes unchanged (tests check 404s). Side effect, noted in CHANGES_SUMMARY: in `--debug`, unexpected errors show the friendly page instead of Flask's debugger. |
+| 00:42 | Judge-facing wording removed (demo page, report, sources). | `b4644a9` | Rule 8. Data credit in the footer kept. |
+| 00:46 | Sign-in role choice ("I'm a customer" / "I'm an advisor") on sign-in and sign-up. | `f1b84bc` | Kept real password auth (see 00:03). Role adds `?view=` to the redirect; with no role the redirect is unchanged, so `test_auth` still passes. Checked the full flow with login on and a throwaway users DB. |
+| 00:48 | Robustness sweep: 20 random accounts (seed 20261108) + 5 edge cases × every page × 3 scenarios + no shock. Found a 500 on `/customer/21132` and "None" labels. | `df2b035` | The crash predates tonight (same expression on `main`); fixed in the template. After the fix: 333/333 page checks, 83/83 links, 20/20 browser click tests, no console errors. |
+| 00:54 | KEY_FINDINGS + `compute_key_findings.py`. | `b65256d` | Every number comes from running the engine tonight; the script reprints them all. I checked my own explanation of the income-band result with numbers before keeping it, and dropped an unverified one for the 65+ group. |
+| 00:56 | README. | `57d33c4` | Privacy section written from the code: PDFs deleted after parsing, transactions kept in `uploads/ledger.db` (not per user, no expiry), Gemini fallback only when parsing doesn't reconcile, digits masked. |
+| 00:58 | QA report. | `a7e88da` | – |
+| 00:59 | Known issues and Q&A prep. | `ae7a1eb` | Checked claims before writing them; removed one that was wrong (21132's income swings are real: money in during 11 of 35 months). |
+| 01:01 | "1 year" fix; demo guide; before/after screenshots. | `f3a0826`, `188a7f0` | "Before" shots come from `main` at `85318eb` served from a temporary detached worktree in the scratchpad (removed afterwards; `main` itself untouched). |
+| 01:04 | Changes summary. | `a6c0470` | – |
+| 01:05 | Final checks: 112 tests pass; sweep 333/333; `origin/main` still `85318eb` (unchanged since setup). Local servers stopped, temporary worktree removed. | this commit | Priorities 1–3 and all reports done well before the 03:00 cutoff, so I stopped rather than add work. |
+
+**Stopped at 01:05. Branch `overnight` is ready for review.**
