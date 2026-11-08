@@ -1,4 +1,4 @@
-"""/demo: a one-page walkthrough for the judges' live twist (know -> shock -> explain -> plan -> report)."""
+"""/demo: a one-page walkthrough for one account (know -> shock -> explain -> plan -> report)."""
 from flask import Blueprint, render_template, request
 
 from engine import customer_metrics, runway

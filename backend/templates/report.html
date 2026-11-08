@@ -110,7 +110,7 @@
   {% if score and score.parts %}
   <section class="report-section">
     <h2 class="card-title">Why the resilience score is {{ score.score }}</h2>
-    <p class="text-muted text-sm mb-2">Our measure, built on the datathon numbers.</p>
+    <p class="text-muted text-sm mb-2">Our measure, built on the standard runway numbers.</p>
     <ul class="report-list">
       {% for p in score.parts if p.why %}<li><b>{{ p.name }}</b> ({{ '%g' | format(p.points | round(1)) }}{{ ' / ' ~ p.max if p.max }}): {{ p.why }}</li>{% endfor %}
     </ul>
@@ -118,7 +118,7 @@
   {% endif %}
 
   <footer class="report-foot text-muted text-sm">
-    Runway uses the datathon definitions: (B − one-off cost) ÷ (spending − income), capped at 120 months, where
+    Runway uses the standard definitions: (B − one-off cost) ÷ (spending − income), capped at 120 months, where
     I and S are median monthly money in and out and B is the average daily balance over the last 6 months.
     Items marked "our measure" are our own additions. Figures describe typical months, not a forecast.
   </footer>

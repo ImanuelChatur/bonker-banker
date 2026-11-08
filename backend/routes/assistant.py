@@ -1,4 +1,4 @@
-"""/assistant/twist: turn a judge's twist card (plain English) into shock settings, then run it."""
+"""/assistant/twist: turn a twist card (plain English) into shock settings, then run it."""
 import json
 
 from flask import Blueprint, make_response, render_template, request

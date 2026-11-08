@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Demo · Account {{ account_id }} · Bonker Banker{% endblock %}
+{% block title %}Walkthrough · Account {{ account_id }} · Bonker Banker{% endblock %}
 
 {% block content %}
 <article class="demo">
   <header class="demo-head">
     <div>
-      <h1 class="report-title">Live twist walkthrough</h1>
-      <p class="text-muted">Five steps, one page. Load the judges' account, pick their twist card, then read down.</p>
+      <h1 class="report-title">One account, start to finish</h1>
+      <p class="text-muted">Five steps on one page: the customer, a shock, the numbers explained, the plan and the report. Pick a shock, then read down.</p>
     </div>
     <form action="/demo" method="get" class="dash-lookup">
       <input name="account_id" value="{{ account_id }}" class="input" inputmode="numeric" aria-label="Account ID">
@@ -31,27 +31,27 @@
     </li>
 
     <li class="card">
-      <h2 class="card-title"><span class="demo-num">2</span>Apply the twist card</h2>
-      <div class="preset-row" role="group" aria-label="Twist cards">
+      <h2 class="card-title"><span class="demo-num">2</span>Apply a shock</h2>
+      <div class="preset-row" role="group" aria-label="Shocks">
         {% for key, label in presets %}
         <button type="button" class="preset-btn demo-preset" hx-post="/demo/run" hx-target="#demo-result"
                 hx-vals='{"account_id": "{{ account_id }}", "preset": "{{ key }}"}'>{{ label }}</button>
         {% endfor %}
       </div>
-      <p class="text-muted text-sm mt-2">A different twist? <a class="link" href="/shock?account_id={{ account_id }}">Open the Shock Lab</a>
-        to use sliders or paste the card text.</p>
+      <p class="text-muted text-sm mt-2">Something else? <a class="link" href="/shock?account_id={{ account_id }}">Open the Shock Lab</a>
+        to use the sliders or describe it in your own words.</p>
     </li>
   </ol>
 
   <div id="demo-result" class="lab-result" aria-live="polite">
-    <div class="card"><p class="text-muted">Pick a twist card above. Steps 3 to 5 appear here.</p></div>
+    <div class="card"><p class="text-muted">Pick a shock above. Steps 3 to 5 appear here.</p></div>
   </div>
 </article>
 {% endblock %}
 
 {% block scripts %}
 <script>
-  // Highlight the twist card that was clicked.
+  // Highlight the shock that was clicked.
   document.querySelectorAll(".demo-preset").forEach((btn) =>
     btn.addEventListener("click", () =>
       document.querySelectorAll(".demo-preset").forEach((b) => b.classList.toggle("active", b === btn))));
