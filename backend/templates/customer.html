@@ -36,6 +36,7 @@
         {% else %}Spending is {{ (-surplus) | money }} a month above income, so savings last {{ runway | runway_num }} months.{% endif %}
         If income stopped today: {{ no_income_runway | runway_num }} months.
       </p>
+      {% if sim %}<p class="dash-sim" title="{{ sim.method }}">{{ sim.text }}</p>{% endif %}
       <div class="dash-actions">
         <a class="btn-primary" href="/shock?preset=job_loss&account_id={{ account_id }}">What if they lose their job?</a>
         <span class="dash-links text-sm">

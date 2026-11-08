@@ -225,3 +225,4 @@
 .compare-col > .text-muted { min-block-size: 2.6em; }
 .peer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (max-width: 760px) { .peer-grid { grid-template-columns: 1fr; } }
+.dash-sim { color: var(--muted); font-size: 0.9375rem; margin-bottom: 0.25rem; cursor: help; }
