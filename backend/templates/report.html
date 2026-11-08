@@ -25,7 +25,7 @@
     <div class="report-big">
       <div class="metric-label">If income stopped</div>
       <div class="runway-big {{ no_income_runway | runway_class }}">{{ no_income_runway | runway_num }}</div>
-      <div class="runway-unit">months · our measure</div>
+      <div class="runway-unit">{{ 'month' if no_income_runway == 1 else 'months' }} · our measure</div>
     </div>
     {% if score %}
     <div class="report-big">

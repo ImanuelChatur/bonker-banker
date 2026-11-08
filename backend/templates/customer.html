@@ -34,7 +34,7 @@
         {% if runway is string %}Income covers spending, so savings grow by about {{ surplus | money }} a month.
         {% elif runway == 0 %}No savings left to absorb anything.
         {% else %}Spending is {{ (-surplus) | money }} a month above income, so savings last {{ runway | runway_num }} months.{% endif %}
-        If income stopped today: {{ no_income_runway | runway_num }} months.
+        If income stopped today: {{ no_income_runway | runway_num }} {{ 'month' if no_income_runway == 1 else 'months' }}.
       </p>
       {% if sim %}<p class="dash-sim" title="{{ sim.method }}">{{ sim.text }}</p>{% endif %}
       <div class="dash-actions">
