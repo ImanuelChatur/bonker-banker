@@ -12,7 +12,7 @@ def home_stat() -> dict | None:
     try:
         if not is_placeholder("insights", "headline"):
             h = engine_fn("insights", "headline")()
-            return {"big": f"{h['pct_runout_6m']:g}%", "text": h["text"], "scenario": h.get("scenario")}
+            return {"big": f"{h['pct_runout_6m']:g}%", "text": h["text"], "scenario": None}  # text names the scenario
         from engine.findings import biggest_finding
         f = biggest_finding()
         job = next((s for s in f["stress"] if s["name"].lower().startswith("job loss, ei")), None)
