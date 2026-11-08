@@ -7,18 +7,29 @@ Sheridan Datathon 2026, Tangerine track "Resilience Rewired".
 Bonker Banker answers one question for any customer: **if something goes wrong, how many months until the money runs out?**
 
 1. **Know the customer.** Pick any of the 4,500 accounts. We show typical monthly income, spending, fixed costs,
-   household bills, savings buffer and **runway**, all with the datathon's definitions, plus three measures of our
-   own: a 0 to 100 **resilience score** that explains every point it gives or takes away, the **peer percentile**
-   (where the account ranks among all 4,500), and **if income stopped today** (months the buffer covers typical
-   spending with no income at all).
-2. **Take a shock.** The Shock Lab applies a job loss on EI, higher bills, a surprise repair or any mix, with sliders
-   for the size. The runway recalculates instantly and the judges' formula is shown worked through with the
-   account's real numbers. A twist card typed in plain English can be turned into shock settings.
-3. **Make a plan.** A goal plan (an emergency fund sized to the customer's own spending) and a backup plan if the
-   shock hits, plus a ranked list of concrete actions with the months of runway each one buys.
-4. **Share it.** A printable one-page Runway Report per customer, and a `/demo` page that walks a live twist from
+   household bills, savings buffer and **runway**, all with the datathon's definitions, plus measures of our own:
+   - a 0 to 100 **resilience score** that explains every point it gives or takes away;
+   - **compared with people like them**: savings, runway, fixed-cost share and income swings against customers of the
+     same income band and age band;
+   - **about this customer**: household size, district and its unemployment trend, card, standing orders and
+     **true fixed costs** (F plus committed payments F leaves out, such as leasing);
+   - **if income stopped today**, and a **simulated runway**: 1,000 futures replaying the account's own months in
+     random order ("in 9 of 10 simulated futures the savings last at least X months").
+2. **Take a shock.** The Shock Lab applies a job loss on EI, higher bills, a surprise repair, a **rate hike** or any
+   mix, with sliders for the size. The runway recalculates instantly and the judges' formula is shown worked through
+   with the account's real numbers. An optional **realistic EI** switch caps benefits at the 2026 maximum
+   ($729/week). A twist card typed in plain English ("rates go up 1%") becomes shock settings. Scenarios can be
+   **saved** and up to three compared side by side.
+3. **Make a plan.** A goal plan (an emergency fund sized to the customer's own spending), a backup plan if the
+   shock hits, and a ranked list of concrete actions with the months of runway each one buys. A **loan check** asks
+   "can they afford this loan?" at Bank of Canada rates (comfortable, tight or risky, with and without a job loss),
+   and for a running loan compares prepaying against building savings first.
+4. **See the whole population.** Insights runs every shock combination across all 4,500 accounts as a heatmap,
+   breaks it down by age, household, region and income, and lists the customers most at risk ("who to call this
+   week"), with plain-English reasons.
+5. **Share it.** A printable one-page Runway Report per customer, and a `/demo` page that walks a live twist from
    customer, to shock, to the worked formula, to the plan and report, one click per step.
-5. **Bring your own statements.** Upload one or more bank statement PDFs: we parse them, categorize every
+6. **Bring your own statements.** Upload one or more bank statement PDFs: we parse them, categorize every
    transaction, break down spending, and flag unusual activity (large outliers, possible duplicate charges, large
    transfers, purchases billed abroad). Uploaded data produces the same monthly summary as the dataset, so the
    same engine runs on it.
@@ -69,6 +80,16 @@ Everything else is labelled **"our measure"** in the app:
   10 points. Each part shows why it scored what it did.
 - **Peer percentile:** where an account ranks among all 4,500 (ties count half).
 - **If income stopped today:** buffer divided by typical monthly spending (B / S).
+- **Peer group:** same income band (quintiles of I) and age band; widened to income band alone if fewer than 30
+  people. Gender is never used in any benchmark, score or advice.
+- **True fixed costs:** F plus standing orders whose purpose F doesn't already count (leasing, blank/other).
+- **Simulated runway:** 1,000 runs replaying the account's own monthly money in and out in random order from B,
+  until savings drop below zero (capped at 120 months). With identical months it equals the judges' runway.
+- **Rate hike:** extra interest on a running loan's remaining balance (dataset loans carry no rate, so we treat the
+  balance as variable-rate). **Realistic EI:** income on EI capped at $729 x 52 / 12 per month. Both are off by
+  default, so the default numbers always match the judges'.
+- **Population stress test:** the judges' runway for every account under 60 shock combinations (EI 100/75/55/40/0%,
+  bills +0/10/15/25%, repair 0/1/2 months); a test checks it equals the engine account by account.
 - **Action plan:** each action's runway gain is the judges' formula re-run with that action applied.
 
 ## Run it
