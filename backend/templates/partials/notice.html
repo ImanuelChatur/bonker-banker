@@ -1,0 +1,6 @@
+{% import "_ui.html" as ui %}
+<div class="notice {{ 'is-error' if is_error }}" role="alert">
+  <p class="notice-title">{{ title }}</p>
+  <p class="text-muted">{{ msg }}</p>
+  {% if samples %}{{ ui.sample_accounts(("/plan?account_id=" if request.path.startswith("/plan") else "/shock?preset=job_loss&account_id=" if request.path.startswith("/shock") else "/customer/")) }}{% endif %}
+</div>

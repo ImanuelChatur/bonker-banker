@@ -45,6 +45,36 @@ def register_routes(app):
         from engine import risk
         risk.warm_up()         # builds the peer-comparison table in the background (about 4 seconds)
 
+    _register_error_pages(app)
+
     from . import assistant, customer, demo, insights, plans, report, scenarios, shocks, sources, uploads
     for module in (customer, shocks, plans, insights, uploads, assistant, report, sources, demo, scenarios):
         app.register_blueprint(module.bp)
+
+
+def _register_error_pages(app):
+    """Friendly pages instead of the default 'Not Found' text or a stack trace."""
+    import logging
+
+    from werkzeug.exceptions import HTTPException
+
+    from ._common import error_response
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return error_response("We couldn't find that page",
+                              "The link may be out of date. Look up an account, or start with a sample:", 404, samples=True)
+
+    @app.errorhandler(413)
+    def too_large(e):
+        return error_response("That upload is too large",
+                              f"Upload at most {config.MAX_FILES} statements of up to "
+                              f"{config.MAX_FILE_BYTES // (1024 * 1024)} MB each.", 413)
+
+    @app.errorhandler(Exception)
+    def unexpected(e):
+        if isinstance(e, HTTPException):          # 400, 401, 405...: keep Flask's own response
+            return e
+        logging.getLogger(__name__).exception("Unhandled error")
+        return error_response("Something went wrong on our side",
+                              "Try again, or go back and pick another account. The details are in the server log.", 500)

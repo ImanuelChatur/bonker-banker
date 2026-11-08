@@ -32,11 +32,17 @@ def twist():
     account_id = request.form.get("account_id", "").strip()
     text = request.form.get("twist", "").strip()[:1000]
     if not text:
-        return error_html("Paste a twist card first."), 400
+        return error_html("Type a shock in your own words first, e.g. \"They lose their job and bills go up 15%.\""), 400
     try:
         s = llm.generate_json(PROMPT + text, SCHEMA)
+        if not isinstance(s, dict):
+            raise ValueError("unexpected reply")
+    except (ValueError, KeyError, IndexError, TypeError, OSError) as e:   # timeout, bad JSON, odd reply
+        return error_html("The assistant couldn't read that card just now. The common shocks and sliders do the same "
+                          f"job: pick one, or set the sliders to match the card. ({type(e).__name__})"), 503
     except llm.LLMUnavailable as e:
-        return error_html(f"Assistant unavailable: {e}"), 503
+        return error_html(f"The assistant isn't available right now ({e}). The common shocks and sliders do the same "
+                          "job: pick one, or set the sliders to match the card."), 503
     shock = Shock(
         income_factor=min(max(float(s.get("income_pct", 100)), 0), 200) / 100,
         household_bills_pct=min(max(float(s.get("bills_pct", 0)), -50), 300) / 100,

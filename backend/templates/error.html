@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% import "_ui.html" as ui %}
+{% block title %}{{ title }} · Bonker Banker{% endblock %}
+{% block content %}
+<section class="card empty-state">
+  <h1 class="card-title">{{ title }}</h1>
+  <p class="text-muted">{{ msg }}</p>
+  {% if samples %}{{ ui.sample_accounts() }}{% endif %}
+  <form action="/customer" method="get" class="dash-lookup mx-auto mt-6">
+    <input name="account_id" required inputmode="numeric" placeholder="Account ID, e.g. 20111" class="input" aria-label="Account ID">
+    <button class="btn-primary" type="submit">Look up</button>
+  </form>
+  <p class="text-sm mt-4"><a class="link" href="/">Back to the start</a></p>
+</section>
+{% endblock %}

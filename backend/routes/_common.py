@@ -53,6 +53,19 @@ def build_scenario(account_id: str, shock: Shock, goal_months: float = 3.0, targ
             "backup": backup_plan(m, shock, target_runway), "shock": shock}
 
 
+def _account_asked() -> str:
+    from flask import request
+    return str((request.view_args or {}).get("account_id") or request.values.get("account_id") or "").strip()
+
+
+def error_response(title: str, msg: str, status: int, samples: bool = False):
+    """A full page (with the nav) for normal page loads; a notice card for HTMX swaps and form posts."""
+    from flask import render_template, request
+    full = request.method == "GET" and not request.headers.get("HX-Request")
+    tpl = "error.html" if full else "partials/notice.html"
+    return render_template(tpl, title=title, msg=msg, samples=samples, is_error=status >= 500), status
+
+
 def friendly_errors(render_error):
     """Decorator: turn missing data / unknown account into a readable message instead of a 500."""
     def deco(fn):
@@ -61,13 +74,19 @@ def friendly_errors(render_error):
             try:
                 return fn(*a, **kw)
             except DataNotReady as e:
-                return render_error(str(e)), 503
+                return error_response("The data isn't ready yet",
+                                      f"{e} Ask whoever runs this site to run scripts/precompute.py, then reload.", 503)
             except KeyError as e:
-                return render_error(f"Account not found: {e.args[0]}"), 404
+                asked = _account_asked()
+                if asked:
+                    hint = ("Account IDs are numbers, like 20111." if not asked.isdigit()
+                            else "Check the number, or start with one of these:")
+                    return error_response(f"We couldn't find account {asked}", hint, 404, samples=True)
+                return error_response("Something is missing", f"Not found: {e.args[0] if e.args else e}", 404)
         return inner
     return deco
 
 
 def error_html(msg: str) -> str:
     from markupsafe import escape
-    return f'<div class="card"><p class="text-muted">{escape(msg)}</p></div>'
+    return f'<div class="notice" role="alert"><p>{escape(msg)}</p></div>'
