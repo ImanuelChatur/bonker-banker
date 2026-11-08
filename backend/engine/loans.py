@@ -118,6 +118,7 @@ def prepay_strategies(m: Metrics, shock: Shock | None, months: int = 24, target_
 
     def simulate(share_to_prepay) -> dict:
         buffer, balance, paid_off = m.buffer, balance0, None
+        buffer = max(buffer, 0.0)
         buffers, runways = [round(buffer, 2)], []
         for t in range(months + 1):
             loan_cost = pay if balance > 0 else 0.0
@@ -134,6 +135,7 @@ def prepay_strategies(m: Metrics, shock: Shock | None, months: int = 24, target_
             buffer += surplus - to_loan
             if balance <= 0 and paid_off is None:
                 paid_off = t + 1
+            buffer = max(buffer, 0.0)               # savings can't go below zero; runway is already 0 there
             buffers.append(round(buffer, 2))
         return {"buffer_by_month": buffers, "runway_if_shock_hits_by_month": runways, "loan_paid_off_month": paid_off}
 

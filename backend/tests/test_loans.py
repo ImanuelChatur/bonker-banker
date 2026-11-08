@@ -48,3 +48,5 @@ def test_prepay_strategies():
     by = {s["name"]: s for s in p["strategies"]}
     assert by["Buffer first"]["buffer_by_month"][-1] >= by["Prepay"]["buffer_by_month"][-1]
     assert "no interest" in p["explanation"]
+    short = prepay_strategies(customer_metrics("20111"), None)              # no surplus: savings drain
+    assert all(b >= 0 for s in short["strategies"] for b in s["buffer_by_month"])   # never negative (ClaudeTwo T17)
