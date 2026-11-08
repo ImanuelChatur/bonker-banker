@@ -208,8 +208,14 @@
     <details class="more" data-advisor-open>
       <summary>{{ ui.term("true_fixed_costs", "True fixed costs") }}: {{ p.true_fixed_costs | money }} a month</summary>
       <p>The standard {{ ui.term("fixed_costs", "fixed costs") }} (F) are {{ m.fixed_costs | money }}: typical bills, insurance and loan payments.
-        Adding standing orders ({{ p.standing_orders_monthly | money }}){{ ' and leasing (' ~ (p.leasing_monthly | money) ~ ')' if p.leasing_monthly }}
-        that F doesn't already count gives {{ p.true_fixed_costs | money }}. Our measure; runway still uses F.</p>
+        {% if (p.true_fixed_costs - m.fixed_costs) | abs < 1 %}
+        Their standing orders ({{ p.standing_orders_monthly | money }} a month) are already counted in F, so true fixed costs are the same.
+        {% else %}
+        Standing orders and leasing that F doesn't count add {{ (p.true_fixed_costs - m.fixed_costs) | money }} a month
+        (standing orders total {{ p.standing_orders_monthly | money }}{{ ', leasing ' ~ (p.leasing_monthly | money) if p.leasing_monthly }}),
+        giving {{ p.true_fixed_costs | money }}.
+        {% endif %}
+        Our measure; runway still uses F.</p>
     </details>
     {% endif %}
   </section>
