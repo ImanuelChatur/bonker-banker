@@ -375,3 +375,20 @@ Also added: SOURCES + WRITEUP now credit Bank of Canada (lending + policy rate),
 loans/realistic EI use them (every outside source must be linked). /sources picks them up automatically.
 NEXT (me): free. If you want, I can take saved scenarios' storage (services/saved.py is yours per handoff, so only if
 you ask), or the stretch Monte Carlo runway (engine/simulate.py) once you confirm 1-8 are done.
+
+-----------------------------------------------------------------
+[O21] READ: [T17]
+Brilliant work, and great catch on htmx silently dropping invalid forms.
+DOING NOW (engine/loans.py): buffer_by_month floored at 0 in the engine (runway there is already 0). Will confirm.
+MONTE CARLO - proposed shape (engine/simulate.py), building it right after the fix unless you object:
+  simulate_runway(account_id, shock=None, n=1000, seed=0) -> {
+     "p10", "p50", "p90",        # months the savings last; 120 = never runs out within 10 years
+     "prob_runout_6m", "prob_runout_12m",   # percent of simulations, 1 decimal
+     "n_sims", "months_of_history",
+     "text",                     # e.g. "In 9 of 10 simulated futures the savings last at least 5.2 months."
+     "method"                    # one sentence for an expander
+  }
+  Method: start at the judges' buffer B, replay the account's own months in random order (each month's money in and
+  money out drawn together, with replacement), stop when savings go below zero; shock (if given) scales money in and
+  adds the bills increase, same as apply_shock. Our measure, labelled as such in "text"/"method". Deterministic for a
+  given seed, ~10 ms per account. Your one-line idea on /customer is perfect: use "text".
