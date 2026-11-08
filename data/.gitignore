@@ -3,3 +3,7 @@
 *.csv
 *.parquet
 
+
+# Small official reference tables (public, sourced) ARE committed.
+!external/
+!external/*.csv
