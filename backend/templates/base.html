@@ -29,6 +29,13 @@
   <nav class="nav">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="/" class="nav-brand">Bonker Banker</a>
+      {% if current_user or not auth_required %}
+      {# Phones: the nav links scroll sideways, so the view toggle sits next to the brand instead. #}
+      <div class="mode-switch mode-switch-phone" role="group" aria-label="How much detail to show">
+        <button type="button" class="mode-btn" data-mode="simple" aria-pressed="true">Simple</button>
+        <button type="button" class="mode-btn" data-mode="advisor" aria-pressed="false">Advisor</button>
+      </div>
+      {% endif %}
       {# Logged-out visitors (login page) see only the brand; links appear after login, or always when BB_AUTH=off #}
       {% if current_user or not auth_required %}
       <div class="flex gap-6 items-center">
@@ -46,7 +53,7 @@
         <a href="{{ href }}{{ q if keep_id }}"
            class="nav-link {{ 'active' if request.path.startswith(href) }}">{{ label }}</a>
         {% endfor %}
-        <div class="mode-switch" role="group" aria-label="How much detail to show"
+        <div class="mode-switch mode-switch-wide" role="group" aria-label="How much detail to show"
              title="Simple: what a customer needs. Advisor: every number, peer comparisons and loan strategies.">
           <button type="button" class="mode-btn" data-mode="simple" aria-pressed="true">Simple</button>
           <button type="button" class="mode-btn" data-mode="advisor" aria-pressed="false">Advisor</button>
