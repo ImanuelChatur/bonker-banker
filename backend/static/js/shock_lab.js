@@ -6,14 +6,16 @@
   if (!form) return;
 
   const DEFAULTS = JSON.parse(document.getElementById("shock-defaults").textContent);
-  const FIELDS = ["income_pct", "duration_months", "bills_pct", "one_off_months", "one_off_cost", "extra_spending"];
-  const JOB_FIELDS = ["income_pct", "duration_months"];
+  const FIELDS = ["income_pct", "duration_months", "bills_pct", "one_off_months", "one_off_cost", "extra_spending",
+                  "rate_hike_pct"];
+  const JOB_FIELDS = ["income_pct", "duration_months", "realistic_ei"];
 
   const FORMAT = {
     pct: (v) => `${v}%`,
     pct_up: (v) => (Number(v) === 0 ? "None" : `+${v}%`),
     months: (v) => (Number(v) === 0 ? "Ongoing" : `${v} months`),
     spend: (v) => (Number(v) === 0 ? "None" : `${v}× spending`),
+    pts: (v) => (Number(v) === 0 ? "None" : `+${Number(v).toFixed(2)} pts`),
   };
 
   // Show each slider's current value next to its label.
@@ -39,6 +41,7 @@
       s.job_loss = Number(settings.income_pct) < 100; // twist card sends income_pct only
     }
     form.elements.job_loss.checked = !!s.job_loss;
+    form.elements.realistic_ei.checked = !!s.realistic_ei;
     if (s.job_loss && Number(s.income_pct) >= 100) s.income_pct = DEFAULTS.income_pct;
     FIELDS.forEach((n) => {
       if (form.elements[n] && s[n] !== undefined && s[n] !== null) form.elements[n].value = s[n];

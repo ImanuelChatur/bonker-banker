@@ -7,7 +7,7 @@ bp = Blueprint("shocks", __name__)
 
 # Every preset sets ALL fields, so clicking one fully replaces the previous scenario.
 _BLANK = {"job_loss": False, "income_pct": 55, "duration_months": 6, "bills_pct": 0,
-          "one_off_months": 0, "one_off_cost": 0, "extra_spending": 0}
+          "one_off_months": 0, "one_off_cost": 0, "extra_spending": 0, "rate_hike_pct": 0, "realistic_ei": False}
 PRESETS = {  # the README's example twists, one click each
     "job_loss": {**_BLANK, "job_loss": True, "income_pct": 55, "duration_months": 6},
     "bills_up": {**_BLANK, "bills_pct": 15},

@@ -50,12 +50,17 @@
         </label>
         {{ slider("income_pct", "Income on EI (% of usual)", 0, 100, 5, f.income_pct, "pct") }}
         {{ slider("duration_months", "EI lasts", 0, 24, 1, f.duration_months, "months") }}
+        <label class="check-row">
+          <input type="checkbox" name="realistic_ei" id="realistic_ei" value="1" {{ 'checked' if f.realistic_ei }}>
+          <span>Realistic EI: capped at $729 a week</span>
+        </label>
       </fieldset>
 
       <fieldset class="lab-group">
         <legend class="font-semibold">Costs</legend>
         {{ slider("bills_pct", "Household bills increase", 0, 50, 1, f.bills_pct, "pct_up") }}
         {{ slider("one_off_months", "Surprise repair (months of spending)", 0, 6, 0.5, f.one_off_months, "spend") }}
+        {{ slider("rate_hike_pct", "Interest rates up", 0, 3, 0.25, f.rate_hike_pct, "pts") }}
         <div class="grid grid-cols-2 gap-3">
           <label class="block">
             <span class="metric-label">Extra one-off $</span>

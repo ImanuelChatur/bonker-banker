@@ -192,3 +192,6 @@
 .breakdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1.25rem 2.5rem; }
 .breakdown-list li { grid-template-columns: minmax(6rem, 9rem) 1fr 2.5rem; }
 .report-table tr > td.why:last-child { text-align: left; font-variant-numeric: normal; }
+.check-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; margin-top: 0.75rem; cursor: pointer; }
+.check-row input { accent-color: var(--brand); inline-size: 1rem; block-size: 1rem; }
+.lab-group.is-off .check-row { opacity: 0.4; }
