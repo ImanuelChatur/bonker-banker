@@ -6,6 +6,7 @@ from engine.spending import CATEGORY_LABELS
 from services import data_store
 
 from ._common import error_html, friendly_errors
+from ._placeholders import engine_fn
 
 bp = Blueprint("customer", __name__)
 
@@ -22,6 +23,17 @@ def spending_mix(rows: list[dict], months: int = 12) -> dict:
     items = sorted(({"name": CATEGORY_LABELS.get(c, c), "value": round(v, 2)} for c, v in avg.items() if v >= 1),
                    key=lambda i: -i["value"])
     return {"kind": "donut", "center": f"${total:,.0f}/mo", "items": items, "months": len(recent)}
+
+
+def profile_and_peers(account_id) -> dict:
+    """customer_profile + peer_benchmarks (ClaudeOne's engine, or labelled placeholders until they land)."""
+    out = {}
+    for key, module, name in (("profile", "profile", "customer_profile"), ("bench", "benchmarks", "peer_benchmarks")):
+        try:
+            out[key] = engine_fn(module, name)(account_id)
+        except KeyError:
+            out[key] = None
+    return out
 
 
 def optional_extras(account_id, m) -> dict:
@@ -60,4 +72,4 @@ def show(account_id):
                            no_income_runway=runway(m.buffer, 0.0, m.spending),
                            surplus=m.income - m.spending, mix=spending_mix(all_rows),
                            history=history, goal=goal_plan(m), account_id=account_id,
-                           **optional_extras(account_id, m))
+                           **optional_extras(account_id, m), **profile_and_peers(account_id))

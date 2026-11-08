@@ -17,7 +17,7 @@ def client():
 def test_customer_page_shows_score_and_peers(client):
     html = client.get("/customer/20111").data.decode()
     assert "Resilience" in html or "resilience" in html
-    assert "4,500" in html                                   # peer comparison: n with a thousands separator
+    assert "Compared with people like them" in html          # peer benchmarks section (replaced the 4,500-wide percentile)
 
 
 def test_report_page_renders(client):

@@ -158,3 +158,27 @@
 .demo-facts b { font-size: 1.2rem; }
 .demo-facts .demo-big { font-size: 2rem; line-height: 1.1; }
 .demo-big small { font-size: 0.9rem; font-weight: 500; color: var(--muted); }
+
+/* ---------- Home: one headline stat + three entry points ---------- */
+.home-side { display: grid; gap: 1.5rem; }
+.home-stat { display: grid; gap: 0.35rem; padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius);
+             background: var(--surface); text-decoration: none; color: inherit; }
+.home-stat:hover { border-color: var(--brand); }
+.home-stat-big { font-size: clamp(2.5rem, 6vw, 3.5rem); font-weight: 800; line-height: 1; color: var(--brand-strong);
+                 font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+.home-stat-text { font-size: 1.05rem; }
+.home-stat-note { font-size: 0.875rem; color: var(--muted); }
+
+/* ---------- Declutter helpers: one hero per page, the rest behind expanders ---------- */
+.sample-badge { display: inline-block; font-size: 0.8125rem; color: var(--warn); border: 1px solid currentColor;
+                border-radius: 0.4rem; padding: 0.05rem 0.45rem; margin-left: 0.5rem; vertical-align: middle; font-weight: 600; }
+.more { border-top: 1px solid var(--border); padding-top: 0.75rem; margin-top: 1rem; }
+.more > summary { cursor: pointer; font-weight: 600; color: var(--brand-strong); list-style: none; }
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary::before { content: "+ "; }
+.more[open] > summary::before { content: "− "; }
+.more > :not(summary) { margin-top: 1rem; }
+.dash-verdict { font-size: 1.05rem; max-inline-size: 40rem; margin-bottom: 0.25rem; }
+.dash-links { color: var(--muted); }
+.dash-actions { align-items: center; }
+.peer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 0.25rem 2.5rem; }
