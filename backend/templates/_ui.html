@@ -52,6 +52,12 @@
 {%- else -%}{{ v | runway_num }} {{ 'month' if v == 1 else 'months' }}{%- endif -%}
 {%- endmacro %}
 
+{# A length of time for people: "8 months", "about 2.5 years". #}
+{% macro duration(m) -%}
+{%- if m >= 24 -%}about {{ '%g' % ((m / 12) | round(1)) }} years
+{%- else -%}{{ '%g' % m }} {{ 'month' if m == 1 else 'months' }}{%- endif -%}
+{%- endmacro %}
+
 {# A page's one question and its plain-English answer. #}
 {% macro question(q) -%}
 <p class="page-question">{{ q }}</p>

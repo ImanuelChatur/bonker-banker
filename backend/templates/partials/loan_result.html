@@ -12,15 +12,19 @@
     <details class="more">
       <summary>How this was worked out</summary>
       <p>{{ a.explanation }}</p>
-      <p class="text-muted text-sm">Rate: {{ a.rate_source }}{% if rate and rate.source_url %},
+      <p class="text-muted text-sm">Rate: {{ (rate.product ~ " (" ~ rate.source_name ~ (", " ~ rate.as_of if rate.as_of) ~ ")") if rate and rate.source_name else (rate.product if rate else a.rate_source) }}{% if rate and rate.source_url %},
         <a class="link" href="{{ rate.source_url }}" target="_blank" rel="noopener">source</a>{% endif %}.
         Comfortable = income covers spending plus the payment and a job loss still leaves 6+ months; risky = under 6 months
         even without a shock. Our measure.</p>
     </details>
   </section>
 
-  <section class="card">
-    <h2 class="card-title">Their current loan: pay it down faster, or save first?</h2>
+  {% if not p.no_loan %}
+  <p class="advisor-hint simple-only">They already have a running loan. Advisor view compares paying it down faster with
+    building savings first. <button type="button" class="link-btn" data-set-mode="advisor">Switch to Advisor</button></p>
+  {% endif %}
+  <section class="card advisor-only">
+    <h2 class="card-title">Their current loan: pay it down faster, or save first? <span class="advisor-tag">Advisor</span></h2>
     {% if p.no_loan %}
       <p class="text-muted">No running loan on this account, so there's nothing to prepay.</p>
     {% else %}

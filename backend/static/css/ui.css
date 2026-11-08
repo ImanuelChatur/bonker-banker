@@ -137,3 +137,13 @@
 
 /* Realistic EI only applies with Job loss on; the script disables it otherwise. */
 .check-row:has(input:disabled) { opacity: 0.45; cursor: not-allowed; }
+
+/* /plan: the three steps that help most, and the shock folded under the plan (no card inside a card). */
+.action-list { display: grid; gap: 0; counter-reset: act; }
+.action-list li { display: grid; grid-template-columns: 1.75rem minmax(0, 1fr) auto; gap: var(--space-3); align-items: start;
+                  padding-block: var(--space-3); border-top: 1px solid var(--border); counter-increment: act; }
+.action-list li::before { content: counter(act); font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+.action-gain { font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.plan-shock { margin: 0; }
+.plan-shock.more { border-top: 1px solid var(--border); padding-top: var(--space-5); margin-top: 0; }
+.plan-shock > .runway-card { border: 0; padding: 0; margin-top: var(--space-4); }

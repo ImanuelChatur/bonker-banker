@@ -1,32 +1,94 @@
-{# /plan result: goal plan first (what to do now), then what happens if the shock hits. #}
+{# /plan result: the answer first (what to do), then the detail an advisor wants. #}
+{% import "_ui.html" as ui %}
 {% set g = goal %}
-{% set pct = 100 if g.target_amount <= 0 else [100 * g.current_buffer / g.target_amount, 100] | min %}
+{% set pct = 100 if g.target_amount <= 0 else [[100 * g.current_buffer / g.target_amount, 100] | min, 0] | max %}
+{% set cut = backup.monthly_cut_needed if backup.monthly_cut_needed is defined else none %}
+{% set after = res.after %}
+{# The engine's backup text blames "the one-off cost" whenever savings are gone; say it plainly when there is no one-off cost. #}
+{% set no_savings = m.buffer <= 0 and not after.one_off_cost %}
+{% set backup_text = "They have no savings to fall back on, so outside help (credit, family, a payment deferral) is needed before cuts can work."
+                     if no_savings and not backup.feasible_with_cuts else backup.plan %}
+{% set top = actions[:3] if actions else [] %}
+{% set fund = ('%g' % g.target_months) ~ '-month emergency fund' %}
 <div class="plan-stack">
   <section class="card">
     <div class="plan-head">
-      <h2 class="card-title">Goal plan: an emergency fund of {{ g.target_months | months }}</h2>
-      <a class="link text-sm" href="/customer/{{ account_id }}">Account {{ account_id }}</a>
+      {{ ui.question("What should they do about it? · Account " ~ account_id) }}
+      <a class="link text-sm" href="/customer/{{ account_id }}">Back to the account</a>
     </div>
-    <p class="plan-lead">{{ g.plan }}</p>
-    <div class="goal-bar" role="img" aria-label="{{ pct | round | int }}% of the goal saved">
+
+    {# ---------- One sentence: the most useful thing to do ---------- #}
+    <p class="lead">
+      {% if g.still_needed == 0 and cut == 0 %}
+        They're well prepared: the {{ fund }} is already saved, and their savings would
+        last through this shock without any cuts.
+      {% elif g.still_needed == 0 and cut %}
+        The emergency fund is already saved. If the shock hits, they'd need to cut about {{ cut | money }} a month to last
+        {{ backup.target_runway_months | months }}.
+      {% elif g.months_at_current_surplus is defined %}
+        Saving {{ g.typical_monthly_surplus | money }} a month would build a {{ fund }}
+        in {{ ui.duration(g.months_at_current_surplus) }}.
+      {% elif top %}
+        They spend more than they earn, so there's nothing left over to save yet. The biggest single step:
+        {{ top[0].title[0] | lower }}{{ top[0].title[1:] }}.
+      {% else %}
+        {{ g.plan }}
+      {% endif %}
+    </p>
+
+    {# ---------- Hero number + up to three supporting numbers ---------- #}
+    <div class="hero-num">
+      {% if g.still_needed == 0 %}
+        <span class="runway-big good">Goal met</span>
+      {% else %}
+        <span class="runway-big">{{ g.still_needed | money }}</span>
+        <span class="hero-num-unit">still to save for a {{ fund }}</span>
+      {% endif %}
+    </div>
+    <div class="goal-bar mt-3" role="img" aria-label="{{ pct | round | int }}% of the goal saved">
       <div class="bar"><span style="width: {{ pct | round(1) }}%"></span></div>
       <div class="goal-bar-legend">
         <span>Saved {{ g.current_buffer | money }}</span>
         <span>Goal {{ g.target_amount | money }}</span>
       </div>
     </div>
-    <dl class="plan-facts">
-      <div><dt>Still needed</dt><dd>{{ g.still_needed | money }}</dd></div>
-      <div><dt>Typical monthly surplus</dt><dd>{{ g.typical_monthly_surplus | money }}</dd></div>
+    <dl class="support">
       <div><dt>Time to goal</dt>
-        <dd>{% if g.still_needed == 0 %}Done{% elif g.months_at_current_surplus is defined %}{{ g.months_at_current_surplus }} months{% else %}Not reachable yet{% endif %}</dd></div>
+        <dd>{% if g.still_needed == 0 %}Done{% elif g.months_at_current_surplus is defined %}{{ ui.duration(g.months_at_current_surplus) | capitalize }}{% else %}Not yet reachable{% endif %}</dd>
+        {% if g.still_needed and g.months_at_current_surplus is not defined %}<span class="support-note">no monthly surplus to save from</span>{% endif %}</div>
+      <div><dt>If the shock hits, cut</dt>
+        <dd class="{{ 'good' if cut == 0 else 'warn' if cut else 'bad' }}">{{ 'Nothing' if cut == 0 else (cut | money) ~ ' / mo' if cut else 'Cuts not enough' }}</dd>
+        {% if cut %}<span class="support-note">to last {{ backup.target_runway_months | months }}{{ ', ' ~ backup.cut_pct_of_discretionary ~ '% of non-fixed spending' if backup.cut_pct_of_discretionary is defined }}</span>{% endif %}</div>
+      <div><dt>{{ ui.term("runway", "Runway") }} in this shock</dt>
+        <dd class="{{ after.runway | runway_class }}">{{ ui.months(after.runway) | capitalize }}</dd></div>
     </dl>
+
+    {# ---------- The three steps that help most ---------- #}
+    {% if top %}
+    <h2 class="card-title mt-6">What helps most</h2>
+    <ol class="action-list">
+      {% for a in top %}
+      <li>
+        <div><b>{{ a.title }}</b>{% if a.detail %}<p class="text-muted text-sm">{{ a.detail }}</p>{% endif %}</div>
+        <span class="action-gain good">{% if a.closes_gap %}Closes the gap{% elif a.runway_gain_months is not none %}+{{ a.runway_gain_months }} mo{% else %}–{% endif %}</span>
+      </li>
+      {% endfor %}
+    </ol>
+    {% endif %}
+
+    <p class="plan-lead mt-4"><b>If the shock hits:</b> {{ backup_text }}</p>
+
+    <div class="next-step">
+      <a class="btn-primary" href="/report/{{ account_id }}">Print the runway report →</a>
+      <span class="secondary"><a href="/shock?account_id={{ account_id }}&preset=job_loss">Try another shock</a></span>
+    </div>
   </section>
 
+  {# ---------- Advisor depth ---------- #}
   {% if actions %}
-  <section class="card">
-    <h2 class="card-title">Actions that add runway</h2>
-    <p class="text-muted text-sm mb-3">Our measure: each action on its own, using the judges' runway formula.</p>
+  <section class="card advisor-only">
+    <h2 class="card-title">Every action, with the runway it adds <span class="advisor-tag">Advisor</span></h2>
+    <p class="text-muted text-sm mb-3">Our measure: each action on its own, using the standard runway formula, in the shock on the left.</p>
     <div class="table-wrap">
       <table class="report-table">
         <thead><tr><th>Action</th><th class="num">Per month</th><th class="num">Runway gain</th></tr></thead>
@@ -44,17 +106,22 @@
   </section>
   {% endif %}
 
-  <section class="card">
-    <h2 class="card-title">Backup plan: if the shock hits</h2>
-    <p class="plan-lead">{{ backup.plan }}</p>
+  <section class="card advisor-only">
+    <h2 class="card-title">Backup plan detail <span class="advisor-tag">Advisor</span></h2>
+    <p class="plan-lead">{{ backup_text }}</p>
     {% if backup.monthly_cut_needed is defined %}
     <dl class="plan-facts">
       <div><dt>Goal</dt><dd>Last {{ backup.target_runway_months | months }}</dd></div>
       <div><dt>Monthly cut needed</dt><dd>{{ backup.monthly_cut_needed | money }}</dd></div>
       <div><dt>Non-fixed spending</dt><dd>{{ backup.discretionary_spending | money }}</dd></div>
+      <div><dt>Typical monthly surplus</dt><dd>{{ g.typical_monthly_surplus | money }}</dd></div>
     </dl>
     {% endif %}
+    <p class="text-muted text-sm mt-3">Emergency fund: {{ g.plan }}</p>
   </section>
 
-  {% with show_next=false %}{% include "partials/runway_card.html" %}{% endwith %}
+  <details class="card more plan-shock" data-advisor-open>
+    <summary>The shock this plan is for</summary>
+    {% with show_next=false %}{% include "partials/runway_card.html" %}{% endwith %}
+  </details>
 </div>

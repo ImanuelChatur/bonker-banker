@@ -32,10 +32,24 @@ def _floor0(xs):
     return [max(round(float(x), 2), 0.0) for x in xs]
 
 
+# Shock the plan prepares for. Defaults: job loss, EI at 55% for 6 months. "Make a plan for this" on the
+# Shock Lab passes its own settings in the query string, so the plan is for the shock the user just tried.
+PLAN_SHOCK_FIELDS = [("income_pct", 55, 0, 200), ("duration_months", 6, 0, 120), ("bills_pct", 0, -50, 300),
+                     ("extra_spending", 0, 0, None), ("one_off_cost", 0, 0, None), ("one_off_months", 0, 0, 24),
+                     ("rate_hike_pct", 0, 0, 10)]
+
+
+def _plan_shock_defaults(args) -> dict:
+    f = {name: num(args, name, default, lo, hi) for name, default, lo, hi in PLAN_SHOCK_FIELDS}
+    f = {k: (int(v) if float(v).is_integer() else v) for k, v in f.items()}
+    f["realistic_ei"] = str(args.get("realistic_ei", "")).strip() in ("1", "true", "on")
+    return f
+
+
 @bp.get("/plan")
 def page():
     rates = loan_rates()
-    return render_template("plan.html", account_id=request.args.get("account_id", ""),
+    return render_template("plan.html", account_id=request.args.get("account_id", ""), f=_plan_shock_defaults(request.args),
                            loan_rates=rates, default_rate_idx=_default_rate_idx(rates))
 
 

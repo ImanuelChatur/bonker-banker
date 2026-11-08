@@ -1,7 +1,9 @@
 {% extends "base.html" %}
+{% import "_ui.html" as ui %}
 {% block title %}Plan · Bonker Banker{% endblock %}
 
 {% block content %}
+{{ ui.question("What should they do about it?") }}
 <div class="plan-tabs" role="tablist" aria-label="Plan">
   <button type="button" role="tab" class="plan-tab" data-tab="savings" aria-selected="true">Savings plan</button>
   <button type="button" role="tab" class="plan-tab" data-tab="loan" aria-selected="false">Can they afford a loan?</button>
@@ -10,8 +12,8 @@
 {# ---------- Tab 1: savings plan (live) ---------- #}
 <div class="lab-grid" data-panel="savings">
   <section class="card lab-controls">
-    <h1 class="text-2xl font-bold mb-1">Savings plan</h1>
-    <p class="text-muted mb-5">An emergency fund, and what to cut if a shock hits. Updates as you type.</p>
+    <h1 class="page-title mb-1">Savings plan</h1>
+    <p class="text-muted mb-5">An emergency fund to build now, and what to cut if a shock hits. Updates as you type.</p>
 
     <form id="plan-form" hx-post="/plan/run" hx-target="#result"
           hx-trigger="load, input delay:400ms, change" hx-sync="this:replace" hx-indicator="#result">
@@ -28,23 +30,35 @@
           <input name="target_runway" type="number" step="1" min="1" max="60" value="6" class="input"></label>
       </div>
 
-      <details class="more">
-        <summary>Shock: job loss, EI at 55% for 6 months</summary>
+      {% set is_default = f.income_pct == 55 and f.duration_months == 6 and not (f.bills_pct or f.extra_spending
+           or f.one_off_cost or f.one_off_months or f.rate_hike_pct or f.realistic_ei) %}
+      <details class="more" {{ 'open' if not is_default }}>
+        <summary>Shock to plan for: {{ 'job loss, EI at 55% for 6 months' if is_default else 'from the Shock Lab' }}</summary>
         <div class="grid grid-cols-2 gap-3">
-          {% for name, label, value in [
-            ("income_pct", "Income after shock (% of usual)", 55),
-            ("duration_months", "Lasts (months, 0 = ongoing)", 6),
-            ("bills_pct", "Household bills change (%)", 0),
-            ("extra_spending", "Extra spending ($/month)", 0),
-            ("one_off_cost", "One-off cost ($)", 0),
-            ("one_off_months", "One-off cost (months of spending)", 0)
+          {% for name, label in [
+            ("income_pct", "Income after shock (% of usual)"),
+            ("duration_months", "Lasts (months, 0 = ongoing)"),
+            ("bills_pct", "Household bills change (%)"),
+            ("extra_spending", "Extra spending ($/month)"),
+            ("one_off_cost", "One-off cost ($)"),
+            ("one_off_months", "One-off cost (months of spending)"),
+            ("rate_hike_pct", "Interest rates up (points)")
           ] %}
           <label class="block"><span class="metric-label">{{ label }}</span>
-            <input name="{{ name }}" type="number" step="any" value="{{ value }}" class="input"></label>
+            <input name="{{ name }}" type="number" step="any" value="{{ f[name] }}" class="input"></label>
           {% endfor %}
+          <label class="check-row col-span-2">
+            <input type="checkbox" name="realistic_ei" value="1" {{ 'checked' if f.realistic_ei }}>
+            <span>{{ ui.term("realistic_ei", "Realistic EI") }}: capped at $729 a week</span>
+          </label>
         </div>
       </details>
     </form>
+    {% call ui.howto() %}
+      <li><b>Emergency fund</b>: savings worth this many months of the customer's typical spending. Three months is a common target.</li>
+      <li><b>If the shock hits</b>: how long the savings should last; the plan works out the monthly cut that gets there.</li>
+      <li><b>Actions</b> show how many months of {{ ui.term("runway") }} each step buys on its own, in the shock above.</li>
+    {% endcall %}
   </section>
 
   <section id="result" class="lab-result" aria-live="polite">
@@ -55,7 +69,7 @@
 {# ---------- Tab 2: loan check ---------- #}
 <div class="lab-grid" data-panel="loan" hidden>
   <section class="card lab-controls">
-    <h1 class="text-2xl font-bold mb-1">Can they afford a loan?</h1>
+    <h1 class="page-title mb-1">Can they afford a loan?</h1>
     <p class="text-muted mb-5">What a new loan does to the runway, today and if a job loss hits.</p>
 
     <form id="loan-form" hx-post="/plan/loan" hx-target="#loan-result"
