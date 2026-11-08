@@ -111,7 +111,7 @@ function renderHeatmap(el, { xLabels, yLabels, xName = "", yName = "", data, uni
     visualMap: { min: 0, max: 100, show: false, inRange: { color: [cool, hot] } },
     series: [{
       type: "heatmap", data,
-      label: { show: true, formatter: (p) => p.value[2] + unit, color: t.ink, fontWeight: 600 },
+      label: { show: true, formatter: (p) => p.value[2] + unit, color: t.ink, fontWeight: 700, fontSize: 15 },
       itemStyle: { borderColor: t.surface, borderWidth: 3, borderRadius: 6 },
       emphasis: { itemStyle: { borderColor: t.ink } },
     }],
