@@ -7,8 +7,10 @@ Sheridan Datathon 2026, Tangerine track "Resilience Rewired".
 Bonker Banker answers one question for any customer: **if something goes wrong, how many months until the money runs out?**
 
 1. **Know the customer.** Pick any of the 4,500 accounts. We show typical monthly income, spending, fixed costs,
-   household bills, savings buffer and **runway**, all with the datathon's definitions, plus a 0 to 100
-   **resilience score** that explains every point it gives or takes away.
+   household bills, savings buffer and **runway**, all with the datathon's definitions, plus three measures of our
+   own: a 0 to 100 **resilience score** that explains every point it gives or takes away, the **peer percentile**
+   (where the account ranks among all 4,500), and **if income stopped today** (months the buffer covers typical
+   spending with no income at all).
 2. **Take a shock.** The Shock Lab applies a job loss on EI, higher bills, a surprise repair or any mix, with sliders
    for the size. The runway recalculates instantly and the judges' formula is shown worked through with the
    account's real numbers. A twist card typed in plain English can be turned into shock settings.
@@ -66,6 +68,7 @@ Everything else is labelled **"our measure"** in the app:
 - **Resilience score (0 to 100):** runway 40, cash flow 20, fixed-cost burden 15, income stability 15, overdraft days
   10 points. Each part shows why it scored what it did.
 - **Peer percentile:** where an account ranks among all 4,500 (ties count half).
+- **If income stopped today:** buffer divided by typical monthly spending (B / S).
 - **Action plan:** each action's runway gain is the judges' formula re-run with that action applied.
 
 ## Run it
