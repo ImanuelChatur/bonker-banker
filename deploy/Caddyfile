@@ -1,0 +1,8 @@
+# SITE_ADDRESS is ":80" (plain HTTP, any host) or a domain name (Caddy gets a free HTTPS certificate).
+{$SITE_ADDRESS}
+
+encode gzip
+request_body {
+	max_size 160MB
+}
+reverse_proxy app:8000

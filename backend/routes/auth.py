@@ -29,7 +29,7 @@ MAX_FAILURES, WINDOW_S, LOCK_S = 5, 300, 300
 _failures: dict[tuple[str, str], list[float]] = {}
 MAX_SIGNUPS_PER_HOUR = 5                      # per address, so one visitor can't mass-create accounts
 _signups: dict[str, list[float]] = {}
-OPEN_ENDPOINTS = {"auth.login", "auth.register", "static"}
+OPEN_ENDPOINTS = {"auth.login", "auth.register", "static", "health"}   # health: Docker health check
 
 
 def csrf_token() -> str:

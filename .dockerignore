@@ -1,0 +1,20 @@
+# Secrets are passed at runtime (env_file in docker-compose.yml), never baked into the image.
+.env
+.env.*
+!.env.example
+.mcp.json
+.git
+.claude
+.idea
+.vscode
+.venv
+venv
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+.ipynb_checkpoints
+notebooks
+docs
+uploads
+data/raw
+backend/tests

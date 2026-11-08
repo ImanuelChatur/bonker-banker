@@ -92,6 +92,15 @@ BB_SECRET_KEY=...              # required when hosting: python -c "import secret
 Without `GEMINI_API_KEY` everything works except "describe a shock in your own words", which then says to use the
 common shocks and sliders instead. Login accounts can also be managed with `python scripts/create_user.py`.
 
+### Docker
+
+```bash
+cp .env.example .env            # add GEMINI_API_KEY and a BB_SECRET_KEY
+docker compose up -d --build    # needs data/processed/*.parquet (run precompute first)
+```
+
+The site is then on `http://localhost`. Hosting on EC2 (with HTTPS): see [deploy/EC2.md](deploy/EC2.md).
+
 ## Project structure
 
 ```

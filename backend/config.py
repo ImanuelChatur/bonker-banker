@@ -22,12 +22,13 @@ USERS_DB = Path(os.environ.get("BB_USERS_DB") or UPLOAD_DIR / "users.db")   # lo
 def secret_key() -> str:
     """Signs the session cookie. Set BB_SECRET_KEY in .env before hosting; without it a random key is used,
     so everyone is logged out whenever the server restarts."""
-    key = os.environ.get("BB_SECRET_KEY")
-    if key:
+    key = (os.environ.get("BB_SECRET_KEY") or "").strip()
+    if key and key != "change-me":      # the .env.example placeholder is public, so never sign with it
         return key
     import logging
     import secrets
-    logging.getLogger(__name__).warning("BB_SECRET_KEY not set: using a random key (sessions end on restart)")
+    logging.getLogger(__name__).warning("BB_SECRET_KEY not set (or still change-me): using a random key "
+                                        "(sessions end on restart)")
     return secrets.token_hex(32)
 
 
@@ -44,6 +45,12 @@ def registration_open() -> bool:
 def cookie_secure() -> bool:
     """Send the session cookie over HTTPS only. Turn on (BB_COOKIE_SECURE=1) once the site is served over HTTPS."""
     return os.environ.get("BB_COOKIE_SECURE", "0").strip().lower() in ("1", "true", "on", "yes")
+
+
+def behind_proxy() -> bool:
+    """Trust one reverse proxy's X-Forwarded-For / -Proto (docker-compose sets this for Caddy). Leave off when the
+    app is reachable directly, or visitors could fake their address and dodge the login lockout."""
+    return os.environ.get("BB_BEHIND_PROXY", "0").strip().lower() in ("1", "true", "on", "yes")
 
 
 def gemini_key() -> str | None:

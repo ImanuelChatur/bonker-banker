@@ -1,0 +1,34 @@
+# Production-style setup for one server (e.g. EC2). See deploy/EC2.md.
+#   docker compose up -d --build
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      BB_BEHIND_PROXY: "1"        # trust Caddy's X-Forwarded-For, so login lockouts see the real visitor
+    volumes:
+      - uploads:/app/uploads      # login accounts, saved scenarios, uploaded statements
+    expose:
+      - "8000"                    # only reachable through Caddy, not from the internet
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      # Plain HTTP on port 80 by default. Set SITE_ADDRESS=your.domain in .env for automatic HTTPS.
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  uploads:
+  caddy_data:
+  caddy_config:

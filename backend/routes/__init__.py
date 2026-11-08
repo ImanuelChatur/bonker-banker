@@ -35,6 +35,9 @@ def _runway_class(v) -> str:
 
 def register_routes(app):
     app.config.setdefault("MAX_CONTENT_LENGTH", config.MAX_UPLOAD_BYTES)
+    if config.behind_proxy():  # real visitor address for login lockouts and sign-up limits
+        from werkzeug.middleware.proxy_fix import ProxyFix
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
     from .auth import init_auth
     init_auth(app)             # login required on every page (BB_AUTH=off disables it); see routes/auth.py
     app.jinja_env.filters["money"] = _money
