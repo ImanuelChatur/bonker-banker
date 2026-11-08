@@ -40,7 +40,8 @@
           ('/shock', 'Shock Lab', true),
           ('/plan', 'Plan', true),
           ('/insights', 'Insights', false),
-          ('/upload', 'Upload', false)
+          ('/upload', 'Upload', false),
+          ('/sources', 'Sources', false)
         ] %}
         <a href="{{ href }}{{ q if keep_id }}"
            class="nav-link {{ 'active' if request.path.startswith(href) }}">{{ label }}</a>
