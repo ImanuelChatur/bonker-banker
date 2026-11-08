@@ -154,3 +154,6 @@
                 padding-block: var(--space-3); border-top: 1px solid var(--border); }
 .call-list li > span:nth-child(2) { font-weight: 700; font-variant-numeric: tabular-nums; }
 @media (max-width: 640px) { .call-list li { grid-template-columns: 1fr auto; } .call-list li > span:last-child { grid-column: 1 / -1; } }
+.home-link { grid-template-columns: 8.5rem minmax(0, 1fr); }
+@media (max-width: 560px) { .home-link { grid-template-columns: 1fr; } }
+.hero .sample-ids { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }

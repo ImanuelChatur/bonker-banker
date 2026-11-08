@@ -1,22 +1,20 @@
 {% extends "base.html" %}
+{% import "_ui.html" as ui %}
 
 {% block content %}
 <div class="home-grid">
 <section class="hero">
   <h1>Know your runway before life goes bonkers.</h1>
-  <p>How many months would the savings last if the paycheque stopped? Pick any of the 4,500 accounts and find out.</p>
+  <p>How many months would the savings last if the paycheque stopped? Look up any of the 4,500 accounts and find out.</p>
 
   <form action="/customer" method="get" class="hero-form">
     <input name="account_id" required placeholder="Account ID, e.g. 20111"
            inputmode="numeric" autocomplete="off" aria-label="Account ID" class="input-lg">
     <button class="btn-primary" type="submit">See runway</button>
   </form>
-  <p class="hero-demos">
-    Try: <a href="/customer/20176">steady saver</a> ·
-    <a href="/customer/20111">spending more than it earns</a> ·
-    <a href="/customer/21817">living on the edge</a>
-    <br>Judges: <a href="/demo?account_id=20111">live twist walkthrough</a>
-  </p>
+  <p class="hero-demos">New here? Start with a sample account:</p>
+  {{ ui.sample_accounts() }}
+  <p class="hero-demos mt-4"><a href="/demo?account_id=20111">Or follow one account through all five steps on a single page</a></p>
 </section>
 
 <div class="home-side">
@@ -24,24 +22,25 @@
   <a class="home-stat" href="/insights">
     <span class="home-stat-big">{{ stat.big }}</span>
     <span class="home-stat-text">{{ stat.text }}</span>
-    {% if stat.scenario %}<span class="home-stat-note">Scenario: {{ stat.scenario }} · see Insights</span>{% endif %}
+    <span class="home-stat-note">{% if stat.scenario %}Scenario: {{ stat.scenario }} · {% endif %}See Insights →</span>
   </a>
   {% endif %}
 
   <nav class="home-links" aria-label="Start here">
     <a class="home-link" href="/customer">
-      <span class="home-link-name">Customer</span>
-      <span class="home-link-desc">One account: runway, what drives it, and how it compares.</span>
+      <span class="home-link-name">1 · Customer</span>
+      <span class="home-link-desc">How long could they last? One account's runway, in plain English.</span>
     </a>
     <a class="home-link" href="/shock">
-      <span class="home-link-name">Shock Lab</span>
-      <span class="home-link-desc">Job loss, higher bills, a repair. Move a slider, watch the runway change.</span>
+      <span class="home-link-name">2 · Shock Lab</span>
+      <span class="home-link-desc">What if something goes wrong? Job loss, higher bills, a repair: move a slider and watch.</span>
     </a>
-    <a class="home-link" href="/insights">
-      <span class="home-link-name">Insights</span>
-      <span class="home-link-desc">Every shock across all accounts, and who is most at risk.</span>
+    <a class="home-link" href="/plan">
+      <span class="home-link-name">3 · Plan</span>
+      <span class="home-link-desc">What should they do about it? An emergency fund and the steps that help most.</span>
     </a>
   </nav>
+  <p class="text-muted text-sm">Across all customers: <a href="/insights">Insights</a> · Bring your own statements: <a href="/upload">Upload</a></p>
 </div>
 </div>
 
