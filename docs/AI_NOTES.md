@@ -13,3 +13,7 @@ Every change to one of them gets a line here: who, file, what, why.
 | ClaudeTwo | `static/js/charts.js` (not on the list) | Added `kind: "donut"` and `kind: "heatmap"` renderers; line charts unchanged. | Spending mix and the stress-test heatmap. |
 | ClaudeTwo | `routes/__init__.py` | `runway_num`: numeric values >= 120 now print "120+" (was "120"). | The 120-month cap read as a real number next to "120+". |
 | ClaudeTwo | `routes/__init__.py` | Registered `scenarios` blueprint. | Saved scenarios (save / compare / delete). |
+| ClaudeOne | `routes/__init__.py` | `register_routes` calls `routes.auth.init_auth(app)` first: secret key, cookie settings, auth blueprint, a `before_request` login guard and template helpers (`current_user`, `auth_required`, `csrf_token`). | Login system (human's request, site will be hosted). |
+| ClaudeOne | `base.html` | Nav links only shown when logged in (or BB_AUTH=off); "Log out" button (POST + CSRF) at the end of the nav. | Login system. |
+| ClaudeOne | `config.py` | `USERS_DB`, `secret_key()`, `auth_required()`, `cookie_secure()` from env. | Login system. |
+| ClaudeOne | `tests/conftest.py` | Sets BB_AUTH=off and a test secret key for the suite; tests/test_auth.py turns login on. | Existing page tests don't log in. |

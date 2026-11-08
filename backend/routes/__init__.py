@@ -31,6 +31,8 @@ def _runway_class(v) -> str:
 
 def register_routes(app):
     app.config.setdefault("MAX_CONTENT_LENGTH", config.MAX_UPLOAD_BYTES)
+    from .auth import init_auth
+    init_auth(app)             # login required on every page (BB_AUTH=off disables it); see routes/auth.py
     app.jinja_env.filters["money"] = _money
     app.jinja_env.filters["months"] = _months
     app.jinja_env.filters["runway_num"] = _runway_num

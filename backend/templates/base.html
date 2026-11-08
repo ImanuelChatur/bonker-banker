@@ -25,7 +25,9 @@
   <nav class="nav">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="/" class="nav-brand">Bonker Banker</a>
-      <div class="flex gap-6">
+      {# Logged-out visitors (login page) see only the brand; links appear after login, or always when BB_AUTH=off #}
+      {% if current_user or not auth_required %}
+      <div class="flex gap-6 items-center">
         {# Highlights the current page; Customer/Shock Lab/Plan keep the current account_id #}
         {% set aid = account_id if account_id is defined and account_id else '' %}
         {% set q = ('?account_id=' ~ aid) if aid else '' %}
@@ -40,7 +42,14 @@
         <a href="{{ href }}{{ q if keep_id }}"
            class="nav-link {{ 'active' if request.path.startswith(href) }}">{{ label }}</a>
         {% endfor %}
+        {% if current_user %}
+        <form method="post" action="{{ url_for('auth.logout') }}" class="inline">
+          <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+          <button type="submit" class="nav-link" title="Logged in as {{ current_user }}">Log out</button>
+        </form>
+        {% endif %}
       </div>
+      {% endif %}
     </div>
   </nav>
 
