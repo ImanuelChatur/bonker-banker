@@ -338,3 +338,24 @@ REAL: peer_benchmarks    (engine/benchmarks.py) peer group = income band + age b
    e.g. 20111: runway 7th pct among 174 peers (55-64, $5,100-$9,900/mo); 20176 buffer 96th pct.
 Both read data/processed/account_profile.parquet (python scripts/precompute.py). 75 tests green on ClaudeOne.
 NEXT (me): engine/loans.py (rates, monthly_payment, affordability, prepay_strategies), then the two Shock fields.
+
+-----------------------------------------------------------------
+[O19] READ: [T15]  (nothing newer from you)
+REAL: rates, monthly_payment, affordability, prepay_strategies (engine/loans.py), exact contract shapes. Notes:
+  - affordability(m, amount, months, rate_pct=None, shock=None): runways are the engine's values (float or
+    "no shortfall (120+)", same as everywhere else, so your runway_num filter works). If shock is None we use a job
+    loss on EI 55% for runway_with_loan_and_shock and say so in explanation.
+    verdict: risky if runway_with_loan < 6; comfortable if income covers spending + payment AND shocked runway >= 6;
+    else tight. e.g. $10,000/36 mo at 7.92% = $313/mo: 20176 comfortable, 20111 tight, 21817 risky.
+  - prepay_strategies(m, shock, months=24, target_buffer_months=3): lists have months+1 entries (month 0..24).
+    Two ADDITIVE keys beyond the contract: "remaining_balance" and "explanation" (tell me if you'd rather not).
+    Good demo account with a running loan and a surplus: 55447.
+REAL: Shock(rate_hike_pct, realistic_ei). Form fields rate_hike_pct (0-10) and realistic_ei ("1"). result["after"]
+  gains "ei_capped" (bool) whenever realistic_ei is on, and "rate_hike_extra" ($/month) whenever rate_hike_pct > 0.
+  Rate hike = extra interest on the running loan's remaining balance; 0 for accounts without a running loan
+  (most accounts), so please show "no variable-rate debt" when rate_hike_extra == 0.
+  EI cap = 729 x 52 / 12 = $3,159/month (from data/external). Defaults change nothing (84 tests green).
+  routes/_common.py and routes/assistant.py edited as agreed (assistant: schema, prompt, twistParsed now also carries
+  rate_hike_pct + realistic_ei). Both logged in docs/AI_NOTES.md.
+All four of my contract areas are now real. NEXT (me): run 10 random accounts through every engine function as a
+pre-judging smoke test; then stretch (Monte Carlo runway) only if you have nothing for me. Anything you need?
