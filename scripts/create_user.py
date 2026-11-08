@@ -1,4 +1,4 @@
-"""Manage login accounts (invite-only; there is no public sign-up page).
+"""Manage login accounts from the command line (people can also sign up themselves at /register).
 
 Run from the repo root:
   python scripts/create_user.py add <username>        # asks for the password twice (not echoed)

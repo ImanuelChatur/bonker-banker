@@ -13,6 +13,7 @@ def app(tmp_path):
     a.config.update(AUTH_REQUIRED=True, USERS_DB=tmp_path / "users.db", TESTING=True)
     users.create_user("alice", "correct horse battery", tmp_path / "users.db")
     auth_module._failures.clear()
+    auth_module._signups.clear()
     return a
 
 
@@ -70,6 +71,48 @@ def test_csrf_required(app):
 def test_next_cannot_leave_the_site(app, bad):
     r = login(app.test_client(), nxt=bad)
     assert r.headers["Location"] == "/"
+
+
+def register(client, username="newbie", password="a long new password", password2=None, nxt="/"):
+    return client.post("/register", data={"csrf": token(client, "/register"), "username": username,
+                                          "password": password, "password2": password2 or password, "next": nxt})
+
+
+def test_anyone_can_register_and_is_logged_in(app):
+    c = app.test_client()
+    assert c.get("/register").status_code == 200
+    assert "Create one" in c.get("/login").data.decode()                  # sign-up link on the login page
+    r = register(c, nxt="/insights")
+    assert r.status_code == 302 and r.headers["Location"] == "/insights"
+    assert c.get("/").status_code == 200                                    # logged in straight away
+    assert users.verify("newbie", "a long new password", app.config["USERS_DB"]) == "newbie"
+
+
+def test_register_validation(app):
+    c = app.test_client()
+    assert "two passwords" in register(c, password2="something different").data.decode()   # apostrophe is escaped
+    assert "at least" in register(c, password="short").data.decode()
+    assert "already exists" in register(c, username="alice").data.decode()
+    assert c.get("/").status_code == 302                                    # none of those logged anyone in
+
+
+def test_register_needs_csrf_and_is_rate_limited(app):
+    c = app.test_client()
+    c.get("/register")
+    assert c.post("/register", data={"username": "x1y", "password": "a long new password",
+                                     "password2": "a long new password"}).status_code == 400
+    auth_module._signups.clear()
+    for i in range(auth_module.MAX_SIGNUPS_PER_HOUR):
+        register(app.test_client(), username=f"user{i}x")
+    r = register(app.test_client(), username="one-too-many")
+    assert "Too many new accounts" in r.data.decode()
+
+
+def test_registration_can_be_closed(app):
+    app.config["REGISTRATION_OPEN"] = False
+    c = app.test_client()
+    assert c.get("/register").status_code == 404
+    assert "Create one" not in c.get("/login").data.decode()
 
 
 def test_user_rules(tmp_path):

@@ -1,6 +1,6 @@
 """Login accounts: a tiny SQLite table of usernames and password hashes (uploads/users.db, never committed).
 
-Accounts are invite-only: create them with  python scripts/create_user.py <username>
+Anyone can sign up at /register; accounts can also be managed with  python scripts/create_user.py
 Passwords are stored only as salted hashes (werkzeug's default scrypt), never in plain text.
 """
 from __future__ import annotations

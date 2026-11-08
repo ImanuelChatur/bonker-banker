@@ -36,6 +36,11 @@ def auth_required() -> bool:
     return os.environ.get("BB_AUTH", "on").strip().lower() not in ("off", "0", "false", "no")
 
 
+def registration_open() -> bool:
+    """Anyone can create an account at /register. BB_REGISTRATION=off closes sign-up (accounts then only via the script)."""
+    return os.environ.get("BB_REGISTRATION", "on").strip().lower() not in ("off", "0", "false", "no")
+
+
 def cookie_secure() -> bool:
     """Send the session cookie over HTTPS only. Turn on (BB_COOKIE_SECURE=1) once the site is served over HTTPS."""
     return os.environ.get("BB_COOKIE_SECURE", "0").strip().lower() in ("1", "true", "on", "yes")
