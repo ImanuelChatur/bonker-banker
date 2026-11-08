@@ -1,0 +1,37 @@
+{# Small shared UI pieces. Import with: {% import "_ui.html" as ui %} #}
+
+{# Plain-language explanations for the jargon. One place, so every page says the same thing. #}
+{% set GLOSSARY = {
+  "runway": "How many months their savings would last if more money goes out than comes in. Savings divided by the monthly shortfall, capped at 120 months.",
+  "buffer": "Savings buffer: the average daily balance over the last 6 months.",
+  "savings": "The average daily balance over the last 6 months.",
+  "ei": "Employment Insurance: the Canadian benefit paid after a job loss. Usually 55% of earnings, up to $729 a week in 2026.",
+  "realistic_ei": "Also applies the 2026 EI maximum of $729 a week (about $3,159 a month), so high earners get less than 55%.",
+  "fixed_costs": "Costs that barely change month to month: household bills, insurance and loan payments (typical month).",
+  "true_fixed_costs": "Fixed costs plus standing orders and leasing that the standard fixed costs leave out. Our measure; runway still uses the standard figure.",
+  "household_bills": "Rent, utilities and similar household payments in a typical month.",
+  "shortfall": "How much more goes out than comes in each month.",
+  "no_shortfall": "Income covers spending, so savings don't run down at the usual pace.",
+  "percentile": "\"Better than 70%\" means this customer does better than 70 out of 100 similar customers.",
+  "resilience": "Our 0 to 100 score: runway, income stability, days below zero and more. Every point is explained in Advisor mode.",
+  "rate_hike": "Raises the interest on this account's variable-rate debt by this many percentage points.",
+  "at_risk": "Accounts with the shortest runway today or on EI, with the reasons.",
+} %}
+
+{# term("runway") -> the word with a dotted underline and a tooltip (hover or keyboard focus). #}
+{% macro term(key, label=None) -%}
+<span class="term" tabindex="0">{{ label or key | replace('_', ' ') }}<span class="term-tip" role="tooltip">{{ GLOSSARY.get(key, '') }}</span></span>
+{%- endmacro %}
+
+{# {% call ui.howto() %}<li>...</li>{% endcall %} -> a short "How to read this" expander. #}
+{% macro howto(title="How to read this") -%}
+<details class="howto">
+  <summary>{{ title }}</summary>
+  <ul>{{ caller() }}</ul>
+</details>
+{%- endmacro %}
+
+{# A page's one question and its plain-English answer. #}
+{% macro question(q) -%}
+<p class="page-question">{{ q }}</p>
+{%- endmacro %}

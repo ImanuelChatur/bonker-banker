@@ -1,0 +1,136 @@
+/* Bonker Banker: design system layer (loaded last, after styles.css, theme.css and dashboard.css).
+   - One scale for spacing, type and card sizes, used by the new page structure.
+   - Simple / Advisor view: advisor depth is hidden with CSS, never removed from the page.
+   - Colour carries meaning only: good / warn / bad. Bars, charts and chrome stay neutral; the accent marks the
+     one primary action and the current selection. */
+
+:root {
+  --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+  --space-5: 1.5rem;  --space-6: 2rem;   --space-7: 3rem;
+  --text-xs: 0.8125rem; --text-sm: 0.875rem; --text-base: 1rem; --text-lg: 1.125rem;
+  --text-xl: 1.375rem;  --text-2xl: 1.75rem; --text-hero: clamp(3rem, 8vw, 4.5rem);
+  --neutral-bar: var(--muted);
+}
+
+/* ============================================================ Simple / Advisor */
+.mode-simple .advisor-only { display: none !important; }
+.mode-advisor .simple-only { display: none !important; }
+
+.mode-switch { display: inline-flex; border: 1px solid var(--border); border-radius: 0.5rem; padding: 2px; margin-inline-start: var(--space-2); background: var(--surface-2); }
+.mode-btn { font-size: var(--text-sm); font-weight: 600; padding: 0.25rem 0.7rem; border-radius: 0.375rem; color: var(--muted); background: none; cursor: pointer; line-height: 1.4; }
+.mode-btn:hover { color: var(--ink); }
+.mode-btn[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--border); }
+
+/* A small label on cards that only advisors see, so it's clear where the extra detail is. */
+.advisor-tag { display: inline-block; font-size: 0.75rem; font-weight: 600; color: var(--muted); border: 1px solid var(--border); border-radius: 0.3rem; padding: 0 0.4rem; margin-inline-start: var(--space-2); vertical-align: middle; letter-spacing: 0; }
+.advisor-hint { font-size: var(--text-sm); color: var(--muted); margin-top: var(--space-4); }
+.advisor-hint .link-btn { font-size: inherit; }
+
+/* ============================================================ page skeleton: question, sentence, numbers */
+.page { display: grid; gap: var(--space-5); }
+.page > .card, .page > section, .page > div { margin: 0; }
+.page-question { font-size: var(--text-sm); font-weight: 600; color: var(--muted); margin-bottom: var(--space-1); }
+.page-title { font-size: var(--text-2xl); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.lead { font-size: var(--text-xl); font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; max-inline-size: 40rem; margin-block: var(--space-2) var(--space-4); }
+.lead .good, .lead .warn, .lead .bad { font-weight: 700; }
+.sub { color: var(--muted); max-inline-size: 42rem; }
+
+.hero-num { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-3); }
+.hero-num .runway-big { font-size: var(--text-hero); font-weight: 800; line-height: 1; }
+.hero-num-unit { color: var(--muted); font-weight: 500; font-size: var(--text-lg); }
+
+/* At most three supporting numbers under the hero. */
+.support { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: var(--space-4) var(--space-5); margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--border); }
+.support > div { display: grid; gap: 0.1rem; align-content: start; }
+.support dt, .support .support-k { font-size: var(--text-sm); color: var(--muted); }
+.support dd, .support .support-v { font-size: var(--text-xl); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.support .support-note { font-size: var(--text-xs); color: var(--muted); }
+
+/* One primary action leading to the next step, with quieter secondary links beside it. */
+.next-step { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); margin-top: var(--space-5); }
+.next-step .btn-primary { text-decoration: none; }
+.next-step .secondary { color: var(--muted); font-size: var(--text-sm); }
+.next-step .secondary a { color: var(--brand-strong); font-weight: 600; }
+.next-step .secondary a:hover { text-decoration: underline; }
+
+/* ============================================================ tooltips for jargon */
+.term { position: relative; text-decoration: underline dotted; text-decoration-color: var(--muted); text-underline-offset: 3px; cursor: help; }
+.term:focus-visible { outline: 2px solid var(--brand-strong); outline-offset: 1px; border-radius: 2px; }
+.term-tip { position: absolute; z-index: 50; inset-block-end: calc(100% + 6px); inset-inline-start: 50%; transform: translateX(-50%);
+            inline-size: max-content; max-inline-size: min(18rem, 80vw); padding: 0.5rem 0.65rem; border-radius: 0.4rem;
+            background: var(--ink); color: var(--page); font-size: var(--text-xs); font-weight: 400; line-height: 1.45;
+            text-transform: none; letter-spacing: 0; text-align: start; white-space: normal;
+            opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.12s; }
+.term:hover .term-tip, .term:focus .term-tip, .term:focus-within .term-tip { opacity: 1; visibility: visible; }
+/* Near the left edge on small screens, anchor the tip to the start instead of centring it. */
+@media (max-width: 640px) { .term-tip { inset-inline-start: 0; transform: none; } }
+
+/* ============================================================ "How to read this" */
+.howto { margin-top: var(--space-4); font-size: var(--text-sm); color: var(--muted); }
+.howto > summary { cursor: pointer; font-weight: 600; color: var(--muted); list-style: none; display: inline-flex; gap: 0.35rem; align-items: center; }
+.howto > summary::-webkit-details-marker { display: none; }
+.howto > summary::before { content: "?"; display: inline-grid; place-items: center; inline-size: 1.1rem; block-size: 1.1rem; border-radius: 50%; border: 1px solid currentColor; font-size: 0.7rem; font-weight: 700; }
+.howto > summary:hover { color: var(--ink); }
+.howto ul { list-style: disc; padding-inline-start: 1.1rem; margin-top: var(--space-2); display: grid; gap: var(--space-1); max-inline-size: 44rem; color: var(--ink); }
+
+/* ============================================================ tabs */
+.tab-list { display: flex; flex-wrap: wrap; gap: var(--space-1); border-bottom: 1px solid var(--border); margin-bottom: var(--space-4); }
+.tab-list [data-tab] { padding: 0.45rem 0.85rem; font-weight: 600; font-size: var(--text-sm); color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; cursor: pointer; }
+.tab-list [data-tab][aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.tab-list [data-tab]:hover { color: var(--ink); }
+
+/* ============================================================ calm colour: neutral bars */
+.hbar > span, .bar > span, .bar-fill { background: var(--neutral-bar); }
+.bar.peer > span { background: var(--neutral-bar); opacity: 1; }
+.hbar > span.good, .bar > span.good { background: var(--good); }
+.hbar > span.warn, .bar > span.warn { background: var(--warn); }
+.hbar > span.bad,  .bar > span.bad  { background: var(--bad); }
+.goal-bar .bar > span { background: var(--good); }
+
+/* ============================================================ empty, loading, error */
+.empty-state { text-align: center; padding: var(--space-7) var(--space-6); }
+.empty-state .card-title { margin-bottom: var(--space-2); }
+.empty-state p { max-inline-size: 34rem; margin-inline: auto; }
+.empty-state .sample-ids { margin-top: var(--space-4); display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: center; }
+.notice { border-radius: var(--radius); padding: var(--space-5); background: var(--surface); border: 1px solid var(--border); }
+.notice-title { font-weight: 700; font-size: var(--text-lg); margin-bottom: var(--space-1); }
+.notice.is-error { border-color: var(--bad); }
+.notice.is-error .notice-title { color: var(--bad); }
+.notice p + p { margin-top: var(--space-2); }
+
+/* While HTMX waits on a slow reply, show a quiet "Working..." line instead of a frozen area. */
+.lab-result { position: relative; min-block-size: 8rem; }
+.lab-result.htmx-request::after { content: "Updating…"; position: absolute; inset-block-start: var(--space-3); inset-inline-end: var(--space-4);
+  font-size: var(--text-xs); color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 0.1rem 0.6rem; }
+
+/* Sample-account chips (home, empty states) */
+.chip-link { display: inline-flex; gap: 0.4rem; align-items: baseline; padding: 0.3rem 0.7rem; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--ink); text-decoration: none; font-size: var(--text-sm); }
+.chip-link b { font-variant-numeric: tabular-nums; }
+.chip-link span { color: var(--muted); }
+.chip-link:hover { border-color: var(--ink); }
+
+/* ============================================================ "More options" (Shock Lab) */
+.more-options { border: 1px solid var(--border); border-radius: 0.75rem; padding: var(--space-3) var(--space-4); margin-bottom: var(--space-4); }
+.more-options > summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+.more-options > summary::-webkit-details-marker { display: none; }
+.more-options > summary::after { content: "+"; color: var(--muted); font-weight: 700; }
+.more-options[open] > summary::after { content: "−"; }
+.more-options > .more-body { display: grid; gap: var(--space-4); margin-top: var(--space-4); }
+.more-options .lab-group { margin: 0; }
+
+/* ============================================================ misc */
+.skip-link { position: absolute; inset-inline-start: -999px; }
+.skip-link:focus { inset-inline-start: var(--space-4); inset-block-start: var(--space-2); z-index: 60; background: var(--surface); padding: var(--space-2) var(--space-3); border-radius: 0.4rem; box-shadow: var(--ring); }
+.card + .card { margin-top: var(--space-5); }
+.page > .card + .card { margin-top: 0; }
+
+/* Nav on a phone: brand on one row, links scroll sideways instead of wrapping into a tall block. */
+@media (max-width: 720px) {
+  .nav .flex.gap-6 { flex-wrap: nowrap; overflow-x: auto; max-inline-size: 100%; scrollbar-width: none; padding-bottom: 2px; }
+  .nav .flex.gap-6::-webkit-scrollbar { display: none; }
+  .nav-link { white-space: nowrap; padding-inline: 0.5rem; }
+  .mode-switch { flex-shrink: 0; }
+  .runway-hero { flex-wrap: wrap; }
+  .runway-before { text-align: start; }
+  .hero-form input { min-inline-size: 0; flex: 1 1 12rem; }
+}

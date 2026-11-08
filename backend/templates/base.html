@@ -20,8 +20,12 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ui.css') }}">
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen mode-simple">
+  {# Simple is the default view; Advisor shows the depth. Set before anything paints, so there's no flash. #}
+  <script>try { if (localStorage.getItem("bb-mode") === "advisor") document.body.classList.replace("mode-simple", "mode-advisor"); } catch (e) {}</script>
+  <a class="skip-link" href="#main">Skip to content</a>
   <nav class="nav">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="/" class="nav-brand">Bonker Banker</a>
@@ -36,12 +40,16 @@
           ('/shock', 'Shock Lab', true),
           ('/plan', 'Plan', true),
           ('/insights', 'Insights', false),
-          ('/upload', 'Upload', false),
-          ('/sources', 'Sources', false)
+          ('/upload', 'Upload', false)
         ] %}
         <a href="{{ href }}{{ q if keep_id }}"
            class="nav-link {{ 'active' if request.path.startswith(href) }}">{{ label }}</a>
         {% endfor %}
+        <div class="mode-switch" role="group" aria-label="How much detail to show"
+             title="Simple: what a customer needs. Advisor: every number, peer comparisons and loan strategies.">
+          <button type="button" class="mode-btn" data-mode="simple" aria-pressed="true">Simple</button>
+          <button type="button" class="mode-btn" data-mode="advisor" aria-pressed="false">Advisor</button>
+        </div>
         {% if current_user %}
         <form method="post" action="{{ url_for('auth.logout') }}" class="inline">
           <input type="hidden" name="csrf" value="{{ csrf_token() }}">
@@ -53,7 +61,7 @@
     </div>
   </nav>
 
-  <main class="max-w-6xl mx-auto px-4 py-8">
+  <main id="main" class="max-w-6xl mx-auto px-4 py-8">
     {% block content %}{% endblock %}
   </main>
 
