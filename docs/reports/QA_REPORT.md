@@ -49,7 +49,7 @@ Runway in months from the engine (`customer_metrics`, `runway`, `apply_shock`), 
 | 20111 | 38 | $2,330 | 7.8 | 3.4 | no | 4 | 3.4 |
 | **49649** (shortest history: 12 months) | 12 | – | no shortfall | no shortfall | yes | no shortfall | no shortfall |
 | **32078** (negative savings, −$2,513) | 70 | – | 0 | 0 | no | 0 | 0 |
-| **21132** (no income and no spending) | 35 | – | no shortfall | no shortfall | yes | no shortfall | no shortfall |
+| **21132** (typical income and spending both $0; money in only 11 of 35 months) | 35 | – | no shortfall | no shortfall | yes | no shortfall | no shortfall |
 | **20578** (no spending) | 33 | – | no shortfall | no shortfall | yes | no shortfall | no shortfall |
 | **45405** (largest active loan payment, $6,196) | 32 | $6,196 | no shortfall | 8.4 | yes | no shortfall | 7.7 |
 
@@ -95,7 +95,7 @@ the status is wrong; the visible text contains `Traceback`, `Undefined`, `nan`, 
 
 | Problem | Where | Fix | Commit |
 | :-- | :-- | :-- | :-- |
-| `/customer/21132` crashed (500): the peer comparison rounded an empty percentile for an account with no income. Also on `main`. | `customer.html` | Skip peer rows with no value, percentile or peer median | `df2b035` |
+| `/customer/21132` crashed (500): the peer comparison rounded an empty percentile for an account whose typical income is $0. Also on `main`. | `customer.html` | Skip peer rows with no value, percentile or peer median | `df2b035` |
 | An unknown account on a full page showed a bare text snippet with no navigation | `routes/_common.py` | Proper error page with lookup and samples; notice card inside live results | `c107515` |
 | Unknown URLs showed Flask's plain "Not Found" text; unexpected errors showed a stack trace (in debug) or a bare 500 | `routes/__init__.py` | Friendly 404 / 413 / 500 pages | `c107515` |
 | A malformed Gemini reply would have shown "Account not found" | `routes/assistant.py` | Caught separately, with a useful message | `c107515` |
