@@ -29,6 +29,8 @@ def shock_from_form(form) -> Shock:
         one_off_cost=num(form, "one_off_cost", 0, 0),
         one_off_months_of_spending=num(form, "one_off_months", 0, 0, 24),
         duration_months=int(dur) or None,
+        rate_hike_pct=num(form, "rate_hike_pct", 0, 0, 10),
+        realistic_ei=str(form.get("realistic_ei", "")).strip() in ("1", "true", "on"),
     )
 
 
