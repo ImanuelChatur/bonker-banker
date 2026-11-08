@@ -24,7 +24,16 @@
 </head>
 <body class="min-h-screen mode-simple">
   {# Simple is the default view; Advisor shows the depth. Set before anything paints, so there's no flash. #}
-  <script>try { if (localStorage.getItem("bb-mode") === "advisor") document.body.classList.replace("mode-simple", "mode-advisor"); } catch (e) {}</script>
+  {# A link can pick the view with ?view=advisor or ?view=simple (used by the sign-in role choice); it is then remembered. #}
+  <script>
+    (function () {
+      var m = null;
+      try { m = new URLSearchParams(location.search).get("view"); } catch (e) {}
+      if (m === "advisor" || m === "simple") { try { localStorage.setItem("bb-mode", m); } catch (e) {} }
+      else { try { m = localStorage.getItem("bb-mode"); } catch (e) {} }
+      if (m === "advisor") document.body.classList.replace("mode-simple", "mode-advisor");
+    })();
+  </script>
   <a class="skip-link" href="#main">Skip to content</a>
   <nav class="nav">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
