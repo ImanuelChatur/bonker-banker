@@ -63,7 +63,7 @@
       {# Rarely needed: open by default in Advisor view, or when a preset/saved scenario already uses them. #}
       {% set more_used = f.rate_hike_pct or f.realistic_ei or f.one_off_cost or f.extra_spending %}
       <details class="more-options" {{ 'open' if more_used else 'data-advisor-open' }}>
-        <summary>More options <span class="text-muted text-sm font-normal">rate hike, realistic EI, exact amounts</span></summary>
+        <summary><span class="more-options-name">More options</span> <span class="more-options-hint">rate hike, realistic EI, exact amounts</span></summary>
         <div class="more-body">
           {{ slider("rate_hike_pct", "Interest rates up", 0, 3, 0.25, f.rate_hike_pct, "pts") }}
           <label class="check-row" data-job-only>

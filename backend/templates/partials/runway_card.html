@@ -38,11 +38,7 @@
     <div><dt>Before the shock</dt><dd class="{{ before.runway | runway_class }}">{{ ui.months(before.runway) | capitalize }}</dd></div>
     <div><dt>Monthly {{ ui.term("shortfall") }} after</dt>
       <dd class="{{ 'bad' if after.monthly_gap > 0 else 'good' }}">{{ after.monthly_gap | money if after.monthly_gap > 0 else 'None' }}</dd></div>
-    {% if s %}
-    <div><dt>Through {{ s.months }} months of {{ ui.term("ei", "EI") }}</dt>
-      <dd class="{{ 'good' if s.makes_it else 'bad' }}">{{ 'Makes it' if s.makes_it else 'Short ' ~ (s.shortfall | money) }}</dd>
-      <span class="support-note">{{ (s.buffer_at_end | money) ~ ' left at the end' if s.makes_it else 'runs out at month ' ~ (after.runway | runway_num) }}</span></div>
-    {% elif after.one_off_cost %}
+    {% if after.one_off_cost %}
     <div><dt>One-off cost</dt><dd>{{ after.one_off_cost | money }}</dd></div>
     {% endif %}
   </dl>
