@@ -147,3 +147,10 @@
 .plan-shock { margin: 0; }
 .plan-shock.more { border-top: 1px solid var(--border); padding-top: var(--space-5); margin-top: 0; }
 .plan-shock > .runway-card { border: 0; padding: 0; margin-top: var(--space-4); }
+
+/* /insights: the short "who to call" list in Simple view */
+.call-list { display: grid; }
+.call-list li { display: grid; grid-template-columns: 9rem 10rem minmax(0, 1fr); gap: var(--space-1) var(--space-4); align-items: baseline;
+                padding-block: var(--space-3); border-top: 1px solid var(--border); }
+.call-list li > span:nth-child(2) { font-weight: 700; font-variant-numeric: tabular-nums; }
+@media (max-width: 640px) { .call-list li { grid-template-columns: 1fr auto; } .call-list li > span:last-child { grid-column: 1 / -1; } }

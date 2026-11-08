@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "_ui.html" as ui %}
 {% block title %}Insights · Bonker Banker{% endblock %}
 
 {% macro rate_rows(rows, key) %}
@@ -27,132 +28,162 @@
 {% endmacro %}
 
 {% block content %}
+{% set today = (f.stress | selectattr("name", "equalto", "No shock (today)") | first) if f.stress else none %}
+{% set job = (f.stress | selectattr("name", "equalto", "Job loss, EI at 55%") | first) if f.stress else none %}
 <div class="insights-page">
 
-  {# ---------- Hero: one number ---------- #}
-  <section class="card insights-hero">
-    <span class="home-stat-big">{{ head.pct_runout_6m }}%</span>
-    <p class="insights-subhead">{{ head.text }}{% if head._placeholder %}<span class="sample-badge">sample data</span>{% endif %}</p>
-  </section>
-
-  {# ---------- Every shock, every account ---------- #}
+  {# ---------- The answer: one sentence, one number, three supporting numbers ---------- #}
   <section class="card">
-    <h2 class="card-title">Every shock, every account</h2>
-    <p class="text-muted text-sm mb-3">Share of all 4,500 accounts that run out of savings within 6 months.
-      Left to right: income on EI. Top to bottom: household bills going up.</p>
-    {% include "partials/heatmap.html" %}
-  </section>
-
-  {# ---------- Who to call ---------- #}
-  {% if at_risk %}
-  <section class="card">
-    <h2 class="card-title">Who to call this week{% if at_risk[0]._placeholder %}<span class="sample-badge">sample data</span>{% endif %}</h2>
-    <p class="text-muted text-sm mb-3">Most at risk first. Runway today, and if they lost their job (EI at 55%).</p>
-    <div class="table-wrap">
-      <table class="report-table">
-        <thead><tr><th>Account</th><th class="num">Runway</th><th class="num">On EI</th><th>Why</th></tr></thead>
-        <tbody>{% for r in at_risk[:8] %}{{ risk_row(r) }}{% endfor %}</tbody>
-      </table>
+    {{ ui.question("What do we see across all customers?") }}
+    <p class="lead">{{ head.text }}{% if head._placeholder %}<span class="sample-badge">sample data</span>{% endif %}</p>
+    <div class="hero-num">
+      <span class="runway-big bad">{{ head.pct_runout_6m }}%</span>
+      <span class="hero-num-unit">of all accounts out of savings within 6 months, if every customer lost their job and bills rose 15%</span>
     </div>
-    {% if at_risk | length > 8 %}
-    <details class="more">
-      <summary>Show all {{ at_risk | length }}</summary>
+    <dl class="support">
+      {% if today %}<div><dt>Out of savings within 6 months today</dt><dd>{{ today.share_pct }}%</dd></div>{% endif %}
+      {% if head.pct_runout_3m is defined %}<div><dt>Within 3 months, same shock</dt><dd class="bad">{{ head.pct_runout_3m }}%</dd></div>{% endif %}
+      {% if job %}<div><dt>Job loss alone (EI at 55%)</dt><dd class="bad">{{ job.share_pct }}%</dd><span class="support-note">within 6 months</span></div>{% endif %}
+    </dl>
+    <div class="next-step">
+      <a class="btn-primary" href="#who-to-call">See who to call this week ↓</a>
+    </div>
+    {% call ui.howto() %}
+      <li>Every one of the 4,500 accounts is run through the same shock with its own income, spending, bills and savings,
+        using the standard {{ ui.term("runway") }} formula.</li>
+      <li>"Out of savings within 6 months" means a runway under 6 months in that scenario.</li>
+      <li>{{ ui.term("ei", "EI") }} at 55% means income drops to 55% of the customer's usual month.</li>
+    {% endcall %}
+  </section>
+
+  {# ---------- One chart visible; the rest behind tabs ---------- #}
+  <section class="card">
+    <div class="tabs">
+      <div class="tab-list" role="tablist" aria-label="Insights">
+        <button type="button" role="tab" data-tab="shocks" aria-selected="true">Every shock</button>
+        {% if groups %}<button type="button" role="tab" data-tab="groups" aria-selected="false">Who is hit hardest</button>{% endif %}
+        <button type="button" role="tab" data-tab="defaults" aria-selected="false">What predicts default</button>
+        {% if regions %}<button type="button" role="tab" data-tab="regions" aria-selected="false">Where they live</button>{% endif %}
+      </div>
+
+      <div data-tab-panel="shocks">
+        <p class="sub mb-3">Share of all 4,500 accounts that run out of savings within 6 months. Left to right: income on EI.
+          Top to bottom: household bills going up. Pick a repair size above the chart.</p>
+        {% include "partials/heatmap.html" %}
+      </div>
+
+      {% if groups %}
+      <div data-tab-panel="groups" hidden>
+        <p class="sub mb-3">Share of each group out of savings within 6 months, same scenario as the headline.</p>
+        <div class="breakdown-grid">
+          {% for g in groups %}
+          <div>
+            <h3 class="explain-title">{{ g.label }}</h3>
+            <ol class="signal-list breakdown-list">
+              {% for r in g.rows %}
+              <li><span>{{ r.group }}</span>
+                <span class="hbar"><span style="width: {{ r.pct_runout_6m }}%"></span></span>
+                <b class="num">{{ r.pct_runout_6m | round | int }}%</b></li>
+              {% endfor %}
+            </ol>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div data-tab-panel="defaults" hidden>
+        <p class="insights-finding">{{ f.headline }}</p>
+        <div class="table-wrap mt-4">
+          <table class="report-table rate-table">
+            <caption class="sr-only">Default rate by resilience grade</caption>
+            <thead><tr><th>Grade</th><th class="num">Loans</th><th class="num">Defaults</th><th>Default rate</th></tr></thead>
+            <tbody>{{ rate_rows(f.default_by_grade, 'band') }}</tbody>
+          </table>
+        </div>
+        <p class="text-muted text-sm mt-2">Default rate by resilience grade. The grade is our own score, computed on the months before each loan started.</p>
+        <details class="more" data-advisor-open>
+          <summary>Strongest early warning signs</summary>
+          <p>Our score separates defaulters with an AUC of <b>{{ '%.2f' | format(f.auc_score) }}</b>,
+            against <b>{{ '%.2f' | format(f.auc_runway) }}</b> for runway alone (0.5 = coin flip, 1.0 = perfect).</p>
+          <ol class="signal-list">
+            {% for s in f.signals %}
+            <li><span>{{ s.name }}</span>
+              <span class="hbar"><span style="width: {{ (100 * ([s.auc - 0.5, 0] | max) / 0.25) | round(1) }}%"></span></span>
+              <b class="num">{{ '%.2f' | format(s.auc) }}</b></li>
+            {% endfor %}
+          </ol>
+        </details>
+        <details class="more" data-advisor-open>
+          <summary>Default rate by runway before the loan</summary>
+          <div class="table-wrap">
+            <table class="report-table rate-table">
+              <thead><tr><th>Runway</th><th class="num">Loans</th><th class="num">Defaults</th><th>Default rate</th></tr></thead>
+              <tbody>{{ rate_rows(f.default_by_runway, 'bucket') }}</tbody>
+            </table>
+          </div>
+        </details>
+        <ul class="caveats">{% for c in f.caveats %}<li>{{ c | replace("the judges' formula", "the standard formula") }}</li>{% endfor %}</ul>
+      </div>
+
+      {% if regions %}
+      <div data-tab-panel="regions" hidden>
+        <h3 class="explain-title">Does where you live matter? Barely.</h3>
+        <p>{{ regions.headline }}</p>
+        <p class="text-muted text-sm mt-2">Unemployment vs resilience score {{ '%.2f' | format(regions.unemployment_vs_score) }} ·
+          vs shortfall {{ '%.2f' | format(regions.unemployment_vs_shortfall) }} · vs default {{ '%.2f' | format(regions.unemployment_vs_default) }}.
+          {{ regions.note }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  {# ---------- Who to call: short in Simple view, every row and reason in Advisor view ---------- #}
+  {% if at_risk %}
+  <section class="card" id="who-to-call">
+    <h2 class="card-title">Who to call this week{% if at_risk[0]._placeholder %}<span class="sample-badge">sample data</span>{% endif %}</h2>
+    <p class="text-muted text-sm mb-3">The {{ ui.term("at_risk", "most at-risk") }} customers first: runway today, and if they lost their job (EI at 55%).</p>
+
+    <ol class="call-list simple-only">
+      {% for r in at_risk[:5] %}
+      <li>
+        <a class="link" href="/customer/{{ r.account_id }}">Account {{ r.account_id }}</a>
+        <span class="{{ r.runway | runway_class }}">{{ ui.months(r.runway) | capitalize }} of runway</span>
+        <span class="text-muted text-sm">{{ r.reasons[0] if r.reasons }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+    <p class="advisor-hint simple-only">Advisor view lists all {{ at_risk | length }} with every reason.
+      <button type="button" class="link-btn" data-set-mode="advisor">Switch to Advisor</button></p>
+
+    <div class="advisor-only">
       <div class="table-wrap">
         <table class="report-table">
           <thead><tr><th>Account</th><th class="num">Runway</th><th class="num">On EI</th><th>Why</th></tr></thead>
-          <tbody>{% for r in at_risk[8:] %}{{ risk_row(r) }}{% endfor %}</tbody>
+          <tbody>{% for r in at_risk[:10] %}{{ risk_row(r) }}{% endfor %}</tbody>
         </table>
       </div>
-    </details>
-    {% endif %}
+      {% if at_risk | length > 10 %}
+      <details class="more">
+        <summary>Show all {{ at_risk | length }}</summary>
+        <div class="table-wrap">
+          <table class="report-table">
+            <thead><tr><th>Account</th><th class="num">Runway</th><th class="num">On EI</th><th>Why</th></tr></thead>
+            <tbody>{% for r in at_risk[10:] %}{{ risk_row(r) }}{% endfor %}</tbody>
+          </table>
+        </div>
+      </details>
+      {% endif %}
+    </div>
   </section>
   {% endif %}
 
-  {# ---------- What predicts trouble ---------- #}
-  <section class="card">
-    <h2 class="card-title">What predicts trouble</h2>
-    <p class="insights-finding">{{ f.headline }}</p>
-    <details class="more">
-      <summary>Default rate by resilience grade</summary>
-      <p class="text-muted text-sm">Grade from our resilience score (our measure), computed on the months before each loan started.</p>
-      <div class="table-wrap">
-        <table class="report-table rate-table">
-          <thead><tr><th>Grade</th><th class="num">Loans</th><th class="num">Defaults</th><th>Default rate</th></tr></thead>
-          <tbody>{{ rate_rows(f.default_by_grade, 'band') }}</tbody>
-        </table>
-      </div>
-      <ul class="caveats">{% for c in f.caveats %}<li>{{ c }}</li>{% endfor %}</ul>
-    </details>
-    <details class="more">
-      <summary>Strongest early warning signs</summary>
-      <p>Our score separates defaulters with an AUC of <b>{{ '%.2f' | format(f.auc_score) }}</b>,
-        against <b>{{ '%.2f' | format(f.auc_runway) }}</b> for runway alone (0.5 = coin flip).</p>
-      <ol class="signal-list">
-        {% for s in f.signals %}
-        <li><span>{{ s.name }}</span>
-          <span class="hbar"><span style="width: {{ (100 * ([s.auc - 0.5, 0] | max) / 0.25) | round(1) }}%"></span></span>
-          <b class="num">{{ '%.2f' | format(s.auc) }}</b></li>
-        {% endfor %}
-      </ol>
-    </details>
-    <details class="more">
-      <summary>Default rate by runway before the loan</summary>
-      <div class="table-wrap">
-        <table class="report-table rate-table">
-          <thead><tr><th>Runway</th><th class="num">Loans</th><th class="num">Defaults</th><th>Default rate</th></tr></thead>
-          <tbody>{{ rate_rows(f.default_by_runway, 'bucket') }}</tbody>
-        </table>
-      </div>
-    </details>
-  </section>
-
-  {# ---------- More ---------- #}
-  <section class="card">
-    <h2 class="card-title">More</h2>
-    {% if groups %}
-    <details class="more">
-      <summary>Who is hit hardest by a job loss</summary>
-      <div class="breakdown-grid">
-        {% for g in groups %}
-        <div>
-          <h3 class="explain-title">{{ g.label }}</h3>
-          <ol class="signal-list breakdown-list">
-            {% for r in g.rows %}
-            <li><span>{{ r.group }}</span>
-              <span class="hbar"><span style="width: {{ r.pct_runout_6m }}%"></span></span>
-              <b class="num">{{ r.pct_runout_6m | round | int }}%</b></li>
-            {% endfor %}
-          </ol>
-        </div>
-        {% endfor %}
-      </div>
-      <p class="text-muted text-sm">Share of each group out of savings within 6 months, same scenario as the headline.</p>
-    </details>
-    {% endif %}
-    {% if regions %}
-    <details class="more">
-      <summary>Does where you live matter? Barely.</summary>
-      <p>{{ regions.headline }}</p>
-      <p class="text-muted text-sm">Unemployment vs resilience score {{ '%.2f' | format(regions.unemployment_vs_score) }} ·
-        vs shortfall {{ '%.2f' | format(regions.unemployment_vs_shortfall) }} · vs default {{ '%.2f' | format(regions.unemployment_vs_default) }}.
-        {{ regions.note }}</p>
-    </details>
-    {% endif %}
-    <details class="more">
-      <summary>Method</summary>
-      <p>{{ f.method }}</p>
-      <p class="text-muted text-sm">{{ f.n_excluded }} loans were left out because the account had fewer than
-        6 months of history before the loan started. Stress test: every account's own I, S, H and B, run through each shock
-        with the judges' runway formula.</p>
-    </details>
+  <section class="card advisor-only">
+    <h2 class="card-title">Method <span class="advisor-tag">Advisor</span></h2>
+    <p>{{ f.method | replace("the judges' formula", "the standard formula") }}</p>
+    <p class="text-muted text-sm mt-2">{{ f.n_excluded }} loans were left out because the account had fewer than
+      6 months of history before the loan started. Stress test: every account's own I, S, H and B, run through each shock
+      with the standard runway formula.</p>
   </section>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-  document.querySelectorAll("details.more").forEach((d) => d.addEventListener("toggle", () => {
-    if (d.open) d.querySelectorAll("[data-chart-ready]").forEach((el) => echarts.getInstanceByDom(el)?.resize());
-  }));
-</script>
 {% endblock %}
