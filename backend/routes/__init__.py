@@ -5,9 +5,13 @@ from services import data_store
 
 def _money(v) -> str:
     try:
-        return f"${float(v):,.0f}"
+        x = float(v)
     except (TypeError, ValueError):
         return "n/a"
+    if x != x or x in (float("inf"), float("-inf")):   # NaN / infinity: never print "$nan"
+        return "n/a"
+    s = f"${abs(x):,.0f}"
+    return f"−{s}" if round(x) < 0 else s              # "−$2,513", not "$-2,513"
 
 
 def _months(v) -> str:
